@@ -1,0 +1,13 @@
+mvrv/node_modules
+mvrv/public/storage
+mvrv/storage/*.key
+mvrv/vendor
+mvrv/.idea
+Homestead.json
+Homestead.yaml
+.env
+
+.DS_Store
+.vagrant
+Vagrantfile
+*.xcworkspace
