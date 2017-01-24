@@ -4,10 +4,14 @@ namespace App\Http\Controllers\MyPage;
 
 use App\Article;
 use App\Tag;
+use App\TagGroup;
 use App\TagRelation;
 use App\Category;
+use App\Item;
 use Auth;
 use DB;
+
+use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -15,14 +19,16 @@ use App\Http\Controllers\Controller;
 class HomeController extends Controller
 {
     
-	public function __construct(Article $article, Tag $tag, TagRelation $tagRelation, Category $category)
+	public function __construct(Article $article, Tag $tag, TagGroup $tagGroup, TagRelation $tagRelation, Category $category, Item $item)
     {
         $this->middleware('auth');
         
         $this-> article = $article;
         $this-> category = $category;
         $this-> tag = $tag;
+        $this->tagGroup = $tagGroup;
         $this->tagRelation = $tagRelation;
+        $this->item = $item;
         
         //$this->user = Auth::user();
     }
@@ -40,6 +46,7 @@ class HomeController extends Controller
         $posts = Article::where(['owner_id'=>$user->id])
                    ->orderBy('created_at', 'desc')
                    ->get();
+        
         
         $atcls = Article::where(['owner_id'=>0, 'del_status'=>0])
             	->orderBy('id', 'desc')
@@ -63,19 +70,11 @@ class HomeController extends Controller
         $userId = Auth::user()->id;
         $cate = Category::find($atcl->cate_id);
         
-        //Tagの取得
-        $n = 0;
-        while($n < 3) {
-            $str = 'tag_'. ($n+1);
-            $tagIds = array();
-            $tagIds = explode(',', $atcl->{$str});
-            
-            $tags[$n] = $this->tag->find($tagIds);
-            
-            $n++;
-        }
+        $tagGroupAll = $this->tagGroup->where('open_status', 1)->get();
         
-        return view('mypage.create', ['atcl'=> $atcl, 'userId'=>$userId, 'cate'=>$cate, 'tags'=>$tags]); //, ['post'=>$post, 'atcl'=>$atcl]
+        $tags = $this->tag->all()->groupBy('group_id')->toArray();
+
+        return view('mypage.create', ['atcl'=> $atcl, 'userId'=>$userId, 'cate'=>$cate, 'tagGroupAll'=>$tagGroupAll, 'tags'=>$tags]);
     }
 
     /**
@@ -89,6 +88,9 @@ class HomeController extends Controller
     	$baseId = $request->input('base_id');
     	$atcl = Article::find($baseId);
         $userId = Auth::user()->id;
+        
+//        print_r($request->input('keyword'));
+//        exit();
         
     	if($atcl->owner_id) { //オーナーが先に決まった時
         	//return redirect('mypage/error')->with('owner_status', 1);
@@ -114,47 +116,114 @@ class HomeController extends Controller
             }
             if(isset($data['open'])) {
                 $data['open_status'] = 1;
+                $data['open_history'] = 1;
                 $data['open_date'] = date('Y-m-d H:i:s', time());
             }
             
             
-    		//if(str_contains($data['tag_1'], ' ')) {
-            $tag_1 = explode(' ', $data['tag_1']);
-            
-            foreach($tag_1 as $tag) {
-            	$obj = $this->tag->where('name', $tag)->first();
-            
-                //Tagsにセット
-                if(!isset($obj)) {
-                	$settag = Tag::create([
-                    	'group_id' => 1,
-                        'name' => $tag,
-                        //'slug' => NULL,
-                        'view_count' => 0,
-                    ]);
-                    
-                    //slugにIDをセット
-                    $tagm = $this->tag->find($settag->id);
-                    $tagm->slug = $settag->id;
-                    $tagm->save();
-                    //idと名前を取る
-                    $tagId = $settag->id;
-                    $tagName = $tag;
-                }
-                else {
-                	$tagId = $obj->id;
-                    $tagName = $obj->name;
-                }
-                
-                
-                //Relationにセット
-                $settag = TagRelation::create([
-                    'atcl_id' => $baseId,
-                    'tag_id' => $tagId,
-                    'tag_name' => $tagName,
-                ]);
-                	
+            //if(isset($data['item_type'])) {
+            foreach($data['item_type'] as $key => $val) {
+                $sequence_num = $key +1;
+
+                $admin = Item::create(
+                    [
+                        'atcl_id' => $atcl->id,
+                        'item_type' => $data['item_type'][$key],
+                        'item_title' => $data['item_title'][$key],
+                        'item_title_op' => $data['item_title_op'][$key] ? $data['item_title_op'][$key] : 0,
+                        'item_text' => $data['item_text'][$key],
+                        'item_sequence' => $sequence_num,
+                    ]
+                );
             }
+            exit();
+            //}
+            
+            
+            //タグセット
+            //$tagGroups = $this->tagGroup->all();
+            $tagGroups = $this->tagGroup->where('open_status',1)->get();
+            
+            foreach($tagGroups as $tg) {
+            	$tagArr = array();
+                if(isset($data[$tg->slug])) {
+                	$tagArr = $data[$tg->slug];
+                }
+                
+//            	if($data[$tg->slug] != '') //空登録を回避
+//                	$tagArr = explode(' ', $data[$tg->slug]); //if(str_contains($data['tag_1'], ' ')) {
+                
+                foreach($tagArr as $tag) {
+                    $obj = $this->tag->where(['name'=>$tag, 'group_id'=>$tg->id])->first();
+                
+                    //Tagsにセット
+                    if(!isset($obj)) { //同じタグがなければ 既存タグがない場合 or $obj（既存タグ）はあるがグループが違う場合
+                        $settag = Tag::create([
+                            'group_id' => $tg->id,
+                            'name' => $tag,
+                            //'slug' => NULL,
+                            'view_count' => 0,
+                        ]);
+                        
+                        //slugにIDをセット
+                        $tagm = $this->tag->find($settag->id);
+                        $tagm->slug = $settag->id;
+                        $tagm->save();
+                        //idと名前を取る
+                        $tagId = $settag->id;
+                        $tagName = $tag;
+                    }
+                    else {
+                        $tagId = $obj->id;
+                        //$tagName = $obj->name;
+                    }
+                    
+                    
+                    //Relationにセット
+                    $settag = TagRelation::create([
+                        'atcl_id' => $baseId,
+                        'tag_id' => $tagId,
+                        //'tag_name' => $tagName,
+                    ]);
+                        
+                }
+            }
+
+//            $tag_1 = explode(' ', $data['tag_1']);
+//            foreach($tag_1 as $tag) {
+//            	$obj = $this->tag->where('name', $tag)->first();
+//            
+//                //Tagsにセット
+//                if(!isset($obj)) {
+//                	$settag = Tag::create([
+//                    	'group_id' => 1,
+//                        'name' => $tag,
+//                        //'slug' => NULL,
+//                        'view_count' => 0,
+//                    ]);
+//                    
+//                    //slugにIDをセット
+//                    $tagm = $this->tag->find($settag->id);
+//                    $tagm->slug = $settag->id;
+//                    $tagm->save();
+//                    //idと名前を取る
+//                    $tagId = $settag->id;
+//                    $tagName = $tag;
+//                }
+//                else {
+//                	$tagId = $obj->id;
+//                    $tagName = $obj->name;
+//                }
+//                
+//                
+//                //Relationにセット
+//                $settag = TagRelation::create([
+//                    'atcl_id' => $baseId,
+//                    'tag_id' => $tagId,
+//                    'tag_name' => $tagName,
+//                ]);
+//                	
+//            }
             
 
             //$atclModel = $this->article;
@@ -217,7 +286,33 @@ class HomeController extends Controller
         $cate = Category::find($atcl->cate_id);
         $edit = 1;
         
-        return view('mypage.edit', ['atcl'=>$atcl, 'cate'=>$cate, 'edit'=>1]);
+        //relationからtagIdを取得
+        $tagRelIds = $this->tagRelation->where('atcl_id', $atcl->id)->get()->map(function($rel){
+        	return $rel->tag_id;
+        })
+        ->all(); //配列にする
+        
+        //tagObjを取得してgroup分け
+        $useTag = $this->tag->find($tagRelIds);
+        $tagGroups = $useTag->groupBy('group_id')->toArray();
+        
+        $tagGroupAll = $this->tagGroup->where('open_status', 1)->get();
+        
+        $tags = $this->tag->all()->groupBy('group_id')->toArray();
+        
+        $items = $this->item->where(['atcl_id'=>$id, 'delete_key'=>0])->orderBy('item_sequence', 'asc')->get();
+
+        
+        //group分けした配列のkeyをnameに変更してtagsへ
+//        $tagWithNames = array();
+//        foreach($tagGroups as $key => $val) {
+//        	$tagName = $this->tagGroup->find($key)->name;
+//        	$tagWithNames[$tagName] = $val;
+//        }
+		
+        //$tagModel = $this->tag;
+        
+        return view('mypage.edit', ['atcl'=>$atcl, 'cate'=>$cate, 'edit'=>1, 'tagGroups'=>$tagGroups, 'tagGroupAll'=>$tagGroupAll, 'tags'=>$tags, 'items'=>$items]);
     }
 
     /**
@@ -239,63 +334,148 @@ class HomeController extends Controller
         
         $data = $request->all(); //requestから配列として$dataにする
         
-        if(! isset($data['open_status'])) {
-        	$data['open_status'] = 0;
+        
+        if(isset($data['open'])) { //公開するボタン 初公開
+            $data['open_status'] = 1;
+            $data['open_history'] = 1;
+            $data['open_date'] = date('Y-m-d H:i:s', time());
         }
         else {
-        	$data['open_date'] = date('Y-m-d H:i:s', time());
+        	$data['open_status'] = isset($data['open_status']) ? 1 : 0;
         }
         
-        //タグセット
-        $tag_1 = explode(' ', $data['tag_1']);
-            
-        foreach($tag_1 as $tag) {
-            $obj = $this->tag->where('name', $tag)->first();
+//        if(count($request->file('image_path')) > 0) {
+//        	print_r($request->file('image_path'));
+//        }
+//        exit();
         
-            //Tagsにセット
-            if(!isset($obj)) {
-                $settag = Tag::create([
-                    'group_id' => 1,
-                    'name' => $tag,
-                    //'slug' => NULL,
-                    'view_count' => 0,
-                ]);
+        //Sumbnail Upload
+        if($request->file('sumbnail') != '') {
+        	$filename = $request->file('sumbnail')->getClientOriginalName();
+        	$filename = $id . '/sumbnail/' . $filename;
+        	$path = $request->file('sumbnail')->storeAs('public', $filename);
+        
+        	$data['sumbnail'] = $filename;
+        }
+        
+        $imgArr = $request->file('image_path');
+//        print_r($imgArr);
+//        print_r($data['main_title']);
+//        exit();
+        
+        //Item セット
+        if(isset($data['item_type'])) {
+        $sequence_num = 1;
+        foreach($data['item_type'] as $key => $val) {
+        	if($val != '') {
+            	
+                $item_id = isset($data['item_id'][$key]) ? $data['item_id'][$key] : 0; //item_idは既存のitemにのみセットされている
+				
+                if($item_id && $data['delete_key'][$key]) {
+                    Item::destroy($item_id); //find($item_id)->delete()
+                }
+                else {
                 
-                //slugにIDをセット
-                $tagm = $this->tag->find($settag->id);
-                $tagm->slug = $settag->id;
-                $tagm->save();
-                //idと名前を取る
-                $tagId = $settag->id;
-                $tagName = $tag;
+                if(isset($imgArr[$key])) {
+                    $itemFileName = $imgArr[$key]->getClientOriginalName();
+                    $itemFileName = $id . '/item/' . $itemFileName;
+                    $itemPath = $imgArr[$key]->storeAs('public', $itemFileName);
+            
+                    $data['image_path'][$key] = $itemFileName;
+                }
+                elseif(isset($data['image_path_hidden'][$key])) {
+                    $data['image_path'][$key] = $data['image_path_hidden'][$key];
+                }
+                else {
+                    $data['image_path'][$key] = '';
+                }
                 
+
+                $itemModel = Item::updateOrCreate(
+                    ['id' => $item_id, 'atcl_id' => $id],
+                    [
+                        'atcl_id' => $id,
+                        'item_type' => $data['item_type'][$key],
+                        'main_title' => $data['main_title'][$key],
+                        'title_option' => $data['title_option'][$key] ? $data['title_option'][$key] : 0,
+                        'main_text' => $data['main_text'][$key],
+                        'image_path' => $data['image_path'][$key],
+                        'image_title' => $data['image_title'][$key],
+                        'image_orgurl' => $data['image_orgurl'][$key],
+                        'image_comment' => $data['image_comment'][$key],
+                        'link_title' => $data['link_title'][$key],
+                        'link_url' => $data['link_url'][$key],
+                        'link_imgurl' => $data['link_imgurl'][$key],
+                        'link_option' => $data['link_option'][$key] ? $data['link_option'][$key] : 0, //or NULL
+                        'item_sequence' => $sequence_num,
+                    ]
+                );
+            	
+                $sequence_num++;
+                } //delete_key
+            } //$val != ''
+        }
+        //exit();
+        }
+        
+        
+        //タグセット
+        //$tagGroups = $this->tagGroup->all();
+        $tagGroups = $this->tagGroup->where('open_status', 1)->get();
+        
+        $tagIds = array();
+        
+        foreach($tagGroups as $tg) {
+        	$tagArr = array();
+            if(isset($data[$tg->slug])) {
+                $tagArr = $data[$tg->slug];
             }
-            else {
-                $tagId = $obj->id;
-                $tagName = $obj->name;
-            }
+//            if($data[$tg->slug] != '') //空登録を回避
+//	            $tagArr = explode(' ', $data[$tg->slug]);
             
-            //tagIdがRelationになければセット
-            $tagRel = $this->tagRelation->where([
-            	['tag_id', '=', $tagId], ['atcl_id', '=', $id],
-            ])->get();
-            if($tagRel->isEmpty()) {
-                $settag = TagRelation::create([
-                    'atcl_id' => $id,
-                    'tag_id' => $tagId,
-                    'tag_name' => $tagName,
-                ]);
-            }
+            foreach($tagArr as $tag) {
+                $obj = $this->tag->where(['name'=>$tag, 'group_id'=>$tg->id])->first();
             
-            $tagIds[] = $tagId;
-        } //foreach
+                //Tagsにセット
+                if(!isset($obj)) { //既存タグがない場合 or $obj（既存タグ）はあるがグループが違う場合
+                    $settag = Tag::create([
+                        'group_id' => $tg->id,
+                        'name' => $tag,
+                        //'slug' => NULL,
+                        'view_count' => 0,
+                    ]);
+                    
+                    //slugにIDをセット
+                    $tagm = $this->tag->find($settag->id);
+                    $tagm->slug = $settag->id;
+                    $tagm->save();
+                    //idと名前を取る
+                    $tagId = $settag->id;
+                    //$tagName = $tag;
+                }
+                else {
+                    $tagId = $obj->id;
+                }
+                
+                //tagIdがRelationになければセット
+                $tagRel = $this->tagRelation->where([
+                    ['tag_id', '=', $tagId], ['atcl_id', '=', $id],
+                ])->get();
+                
+                if($tagRel->isEmpty()) {
+                    $settag = TagRelation::create([
+                        'atcl_id' => $id,
+                        'tag_id' => $tagId,
+                    ]);
+                }
+                
+                $tagIds[] = $tagId;
+            } //foreach
+        
+        }
         
         
         //元々relationにあったtagがなくなった場合：今回取得したtagIdの中にrelationのtagIdがない場合
-//        $tr = $this->tagRelation->where('atcl_id', $id)->get();
-//    	foreach($tr as $val) {
-//        	$relTagIds[] = $val->tag_id;
-//        }
 		$relTagIds = $this->tagRelation->where('atcl_id', $id)->get()->map(function($rel){
         	return $rel->tag_id;
         });
@@ -310,11 +490,9 @@ class HomeController extends Controller
         
         //exit();
         
-        
         $postModel = $this->article->find($id);
-        
         $postModel->fill($data); //モデルにセット
-        $postModel->save(); //モデルからsave
+        $postModel->save(); //モデルsave
         
         //Save&手動ログイン：以下でも可 :Eroquent ORM database/seeds/UserTableSeeder内にもあるので注意
 //		$admin = Article::create([
@@ -322,6 +500,9 @@ class HomeController extends Controller
 //			'admin_email' => $data['admin_email'],
 //			'admin_password' => bcrypt($data['admin_password']),
 //		]);
+
+		
+
         
 
         return redirect('mypage/'.$id.'/edit')->with('status', '記事が更新されました！');
@@ -338,6 +519,50 @@ class HomeController extends Controller
         //
     }
     
+    private function setTag() {
+    	$tagGroups = $this->tagGroup->all();
+            
+        foreach($tagGroups as $tg) {
+            $tagArr = explode(' ', $data[$tg->slug]); //if(str_contains($data['tag_1'], ' ')) {
+            
+            foreach($tagArr as $tag) {
+                $obj = $this->tag->where('name', $tag)->first();
+            
+                //Tagsにセット
+                if(!isset($obj)) { //同じタグがなければ
+                    $settag = Tag::create([
+                        'group_id' => $tg->id,
+                        'name' => $tag,
+                        //'slug' => NULL,
+                        'view_count' => 0,
+                    ]);
+                    
+                    //slugにIDをセット
+                    $tagm = $this->tag->find($settag->id);
+                    $tagm->slug = $settag->id;
+                    $tagm->save();
+                    //idと名前を取る
+                    $tagId = $settag->id;
+                    $tagName = $tag;
+                }
+                else {
+                    $tagId = $obj->id;
+                    $tagName = $obj->name;
+                }
+                
+                
+                //Relationにセット
+                $settag = TagRelation::create([
+                    'atcl_id' => $baseId,
+                    'tag_id' => $tagId,
+                    'tag_name' => $tagName,
+                ]);
+                    
+            }
+        }
+    }
+    
+    
     // --------------------------------------------------------------------------------------
     //        if(! isset($data['open_status'])) {
     //        	$data['open_status'] = 0;
@@ -349,4 +574,16 @@ class HomeController extends Controller
     //        	if(is_array($data[$key]))
     //            	$data[$key] = implode(',', $data[$key]);
     //        }
+    
+    //Tagの取得
+//        $n = 0;
+//        while($n < 3) {
+//            $str = 'tag_'. ($n+1);
+//            $tagIds = array();
+//            $tagIds = explode(',', $atcl->{$str});
+//            
+//            $tags[$n] = $this->tag->find($tagIds);
+//            
+//            $n++;
+//        }
 }

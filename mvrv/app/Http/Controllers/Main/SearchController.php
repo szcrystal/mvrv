@@ -1,0 +1,253 @@
+<?php
+
+namespace App\Http\Controllers\Main;
+
+use App\Article;
+use App\User;
+use App\Tag;
+use App\TagRelation;
+use App\TagGroup;
+use App\Category;
+
+use Ctm;
+use DB;
+use Schema;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+
+use Illuminate\Pagination\LengthAwarePaginator;
+
+class SearchController extends Controller
+{
+    public function __construct(Article $article, User $user, Tag $tag, TagRelation $tagRelation, TagGroup $tagGroup, Category $category)
+    {
+        //$this->middleware('search');
+        
+        $this->article = $article;
+        $this->user = $user;
+        $this->tag = $tag;
+        $this->tagRelation = $tagRelation;
+        $this->tagGroup = $tagGroup;
+        $this->category = $category;
+        
+        $this->perPage = env('PER_PAGE', 20);
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+    	$searchs = $request->s;
+        //exit();
+        
+        $objs = $this->returnSearchObj($searchs);
+        extract($objs); //$allResultはコレクション->all()で配列になっている
+        
+        //Custom Pagination
+        $perPage = $this->perPage;
+        $total = count($allResults);
+        $chunked = array();
+        
+        if($total) {
+            $chunked = array_chunk($allResults, $perPage);
+            $current_page = $request->page ? $request->page : 1;
+            $chunked = $chunked[$current_page - 1]; //現在のページに該当する配列を$chunkedに入れる
+        }
+        
+        $allResults = new LengthAwarePaginator($chunked, $total, $perPage); //pagination インスタンス
+        $allResults -> setPath('search'); //pathセット
+        $allResults -> appends(['s' => $search]); //get set
+        
+        
+        //Sidebar
+        $rankName = '全体';
+        $arg = Ctm::getArgForView('', 'all');
+        extract($arg);
+        
+        $groupModel = $this->tagGroup;
+        
+    	return view('main.search.index', ['pages'=>$allResults, 'searchStr' => $search, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel]);
+    
+    	//return view('main.index', ['posts'=>$posts, 'rankName'=>$rankName, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName]);
+    }
+    
+    
+    //検索関数
+    private function returnSearchObj($search)
+    {
+        //全角スペース時半角スペースに置き換える
+        if( str_contains($search, '　')) {
+            $search = str_replace('　', ' ', $search);
+        }
+    
+    	//article
+        //category
+        $table_name = 'tags';
+        
+        //query取得
+        $query = DB::table($table_name);
+        
+        
+        //検索queryをカラムごとに繰り返すメイン関数
+        function queryWhere($array, $qry, $word) {
+        	foreach($array as $column) {
+            	if($column != 'created_at' && $column != 'updated_at') {
+                    
+                    if($column == 'job_number' || $column == 'user_number') 
+                        $qry -> orWhere($column, $word);
+                    elseif($column == 'name' || $column == 'title' || $column == 'movie_site' || $column == 'movie_url' || $column == 'content')
+                        $qry -> orWhere($column, 'like', $word);
+                }
+            }
+        }        
+        
+        //カラム名の全てを取得
+        $arr = Schema::getColumnListing($table_name); //これでカラム取得が出来る
+        
+        
+        if(str_contains($search, ' ')) { //半角スペース AND検索
+            $searchs = explode(' ', $search);
+            
+            //Tag Search ---
+            foreach($searchs as $val) {
+                $val = "%".$val."%";
+                
+                //Tag Search ---
+                $query ->where( function($query) use($arr, $val) { //絞り込み検索の時はwhereクロージャを使う。別途の引数はuse()を利用。
+                    queryWhere($arr, $query, $val);
+                });
+            }
+                
+            $tagIds = array();
+            if($query->count() > 0) {
+                $tagIds = $query->get()->map(function($tag){
+                    return $tag->id;
+                })->all();
+            }
+            
+            //get article by tag id
+            $atclIds = DB::table('tag_relations') ->whereIn('tag_id', $tagIds)->get()->map(function($tr){
+                return $tr->atcl_id;
+            })->all();
+            
+            //tag result
+            $first = DB::table('articles')->whereIn('id', $atclIds);
+                
+            
+            //Category Search ---
+            $table_name = 'categories';
+            $query = DB::table($table_name);
+            $columnArr = Schema::getColumnListing($table_name);
+            
+            foreach($searchs as $val) {
+                $val = "%".$val."%";
+                $query ->where( function($query) use($columnArr, $val) {
+                	queryWhere($columnArr, $query, $val);
+                });
+            }
+                
+            $ids = array();
+            if($query->count() > 0) {
+                $ids = $query->get()->map(function($arg){
+                    return $arg->id;
+                })->all();
+            }
+            
+            //cate search result
+//            $atclIds = DB::table('cate_relations') ->whereIn('cate_id', $ids)->get()->map(function($tr){
+//            	return $tr->atcl_id;
+//            })->all();
+            
+            $second = DB::table('articles')->whereIn('cate_id', $ids);
+                
+                
+            //Article search ---
+            $atclQuery = DB::table('articles');
+            $columnArr = Schema::getColumnListing('articles');
+            
+            foreach($searchs as $val) {
+                $val = "%".$val."%";
+                $atclQuery ->where( function($qry) use($columnArr, $val) {
+                	queryWhere($columnArr, $qry, $val);
+                });
+            }
+                
+            //union使用（結合）なのでコレクションにする必要がある（paginationが使えない）
+            //$allResults = $first->union($second)->union($atclQuery)->get()->where('open_status', 1)->all();
+                
+        }
+        else { //1word検索
+            $val = "%".$search."%";
+            
+            //Tag search
+            queryWhere($arr, $query, $val);
+            
+			$tagIds = array();
+			if($query->count() > 0) {
+                $tagIds = $query->get()->map(function($tag){
+                    return $tag->id;
+                })->all();
+            }
+            
+            //tag search result
+            $atclIds = DB::table('tag_relations') ->whereIn('tag_id', $tagIds)->get()->map(function($tr){
+            	return $tr->atcl_id;
+            })->all();
+            
+            $first = DB::table('articles')->whereIn('id', $atclIds);
+            
+            //print_r($atclIds);
+            
+            
+            //Category Search
+            $table_name = 'categories';
+            $query = DB::table($table_name);
+            $columnArr = Schema::getColumnListing($table_name);
+            queryWhere($columnArr, $query, $val);
+            
+            $ids = array();
+			if($query->count() > 0) {
+                $ids = $query->get()->map(function($arg){
+                    return $arg->id;
+                })->all();
+            }
+            
+            //cate search result
+//            $atclIds = DB::table('cate_relations') ->whereIn('cate_id', $ids)->get()->map(function($tr){
+//            	return $tr->atcl_id;
+//            })->all();
+            
+            $second = DB::table('articles')->whereIn('cate_id', $ids);
+            
+            
+            //Article Search
+            $atclQuery = DB::table('articles');
+            $columnArr = Schema::getColumnListing('articles');
+            queryWhere($columnArr, $atclQuery, $val);
+            
+            //$atclQuery->where('open_status',1);
+            
+            //$allResults = $first->union($second)->union($atclQuery)->get()->where('open_status', 1)->all();
+            
+        } //1word Else
+        
+        
+        //All Result: union使用（結合）なのでコレクションにする必要がある（paginationが使えない）
+        $allResults = $first->union($second)->union($atclQuery)->get()->where('open_status', 1)->all();
+        
+        //$count = $query->count();
+        //$pages = $query->paginate($this->pg);
+        //$pages -> appends(['s' => $search]); //paginateのヘルパー：urlを付ける
+        
+        return compact('allResults', 'search');
+        //return [$pages, $search];
+    }
+
+    
+    
+    
+}

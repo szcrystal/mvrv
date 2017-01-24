@@ -4,8 +4,6 @@
 <body class="dashboard">
 
     <div id="wrapper">
-    
-		<a href="/dashboard/logout">logout</a>
 
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
@@ -16,7 +14,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">SB Admin v2.0</a>
+                <a class="navbar-brand" href="index.html">MovieReview DashBoard</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -222,9 +220,13 @@
 
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-user fa-fw"></i>
-                        @if(isset($name))
-						{{ $name }}
-                    	@endif
+                        @if (Auth::guard('admin')->viaRemember())
+							viaRemember
+                        @else
+							NoViaRemember
+                        @endif
+
+						{{ Auth::guard('admin')->user()->name }}
                         <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
@@ -328,7 +330,7 @@
                             <a href="#"><i class="fa fa-wrench fa-fw"></i> 管理者設定<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="{{ url('dashboard/regist') }}">管理者追加</a>
+                                    <a href="{{ url('dashboard/register') }}">管理者追加</a>
                                 </li>
 
                             </ul>

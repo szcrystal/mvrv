@@ -73,9 +73,6 @@
                 	{{ $obj->view_count }}
                 </td>
 
-
-
-
                 <td>
                 	<a style="margin:auto;" href="{{url('dashboard/articles/'.$obj->id)}}" class="btn btn-primary btn-sm center-block">編集</a>
                 </td>
@@ -86,7 +83,7 @@
         </table>
         </div>
     
-    <?php //echo $objs->render(); ?>
+    {{ $atclObjs->links() }}
         
 @endsection
 

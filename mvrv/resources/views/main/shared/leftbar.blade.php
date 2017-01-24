@@ -9,7 +9,7 @@
                 <div>
                 <h4>カテゴリ</h4>
                 <ul class="no-list">
-                <?php foreach($cates as $val) { ?>
+                <?php foreach($cateLeft as $val) { ?>
                     <li style="border: 1px solid #aaa;">
                         <a href="{{url('/category/'.$val->slug)}}">{{$val->name}}</a>
                     </li>
@@ -21,9 +21,9 @@
                 <div>
                 <h4>人気タグ</h4>
                 <ul class="no-list">
-                <?php foreach($tagRanks as $val) { ?>
-                    <li style="border: 1px solid #aaa;">
-                        <p><a href="{{url('/tag/'.$val->slug)}}">{{$val->name}}</a></p>
+                <?php foreach($tagLeftRanks as $val) { ?>
+                    <li style="margin-bottom:0.7em">
+                        <i class="fa fa-tag" aria-hidden="true"></i><a href="{{url($groupModel->find($val->group_id)->slug.'/'.$val->slug)}}">{{$val->name}}</a>
 
                     </li>
                 <?php } ?>

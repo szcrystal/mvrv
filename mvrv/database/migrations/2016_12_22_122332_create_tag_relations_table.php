@@ -17,7 +17,7 @@ class CreateTagRelationsTable extends Migration
             $table->increments('id');
             $table->integer('atcl_id');
             $table->integer('tag_id');
-            $table->string('tag_name');
+            //$table->string('tag_name');
             $table->timestamps();
         });
         

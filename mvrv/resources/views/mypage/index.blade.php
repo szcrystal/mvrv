@@ -34,17 +34,21 @@
 
                             <td>
                             	@if($post->open_status)
-                                公開中
+                                <span class="text-info">公開中</span>
                                 @else
-                                未公開
+                                <span class="text-danger">未公開</span>
                                 @endif
                             </td>
 
-                            <td>{{$cateModel->find($post->cate_id)->name}}</td>
-                            <td>{{$post->title}}</td>
-
+                            <td>
+                            @if($cate = $cateModel->find($post->cate_id))
+                            {{ $cate->name }}
+                            @endif
+                            </td>
                                                 
                             <td>{{ $post->title }}</td>
+
+                            <td></td>
 
                             <td>
                                 {{ date('Y/m/d H:i', strtotime($post->updated_at)) }}
@@ -83,13 +87,12 @@
                       <thead>
                         <tr>
                           <th>ID</th>
-                          <th class="col-md-2">状態</th>
-                          <th>カテゴリー</th>
+                          <th class="col-md-1">状態</th>
+                          <th class="col-md-2">カテゴリー</th>
                           <th class="col-md-3">タイトル</th>
-                          <th class="col-md-2">動画元</th>
-                          <th class="col-md-5">コンテンツ</th>
-                          <th class="col-md-5">コンテンツ</th>
-                          <th></th>
+                          <th class="col-md-1">動画元</th>
+                          <th class="col-md-3">動画URL</th>
+                          <th class="col-md-3"></th>
                           
                         </tr>
                       </thead>
@@ -120,16 +123,13 @@
                             </td>
 
                             <td>
-                                {{$atcl->title}}
+                                <a href="{{$atcl->movie_url}}">{{$atcl->movie_url}}</a>
                             </td>
 
-                            <td>
-                                <strong>{{$atcl->movie_site}}</strong>
-                            </td>
 
                             <td>
 								@if($closeCount > 4)
-									取得できません
+									取得不可
                                 @else
                                 <a style="margin:auto;" href="{{url('mypage/'.$atcl->id.'/create')}}" class="btn btn-success btn-sm center-block">取得</a>
                                 @endif

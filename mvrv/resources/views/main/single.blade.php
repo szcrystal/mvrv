@@ -1,7 +1,7 @@
 @extends('layouts.appSingle')
 
 @section('content')
-<div class="container">
+<div class="container single">
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
             <div class="panel panel-default">
@@ -22,7 +22,7 @@
 
 					<div class="clear">
                     <div class="pull-right">
-						<a href="{{ url('contact') }}" class="btn btn-danger center-block">削除を依頼</a>
+						<a href="{{ url('contact/'. $atcl->id) }}" class="btn btn-danger center-block">削除を依頼</a>
                     </div>
                     </div>
 
@@ -39,51 +39,70 @@
                                     <td>{{ $atcl -> title }}</td>
                                 </tr>
                                 <tr>
-									<th>動画サイト</th>
+                                    <th>動画サイト</th>
+                                    <td>{{ $atcl -> movie_site }}</td>
+                                </tr>
+                                <tr>
+									<th>動画URL</th>
                                     <td><a href="{{ $atcl -> movie_url }}">{{ $atcl -> movie_url }}</a></td>
                                 </tr>
                                 <tr>
                                     <th>カテゴリー</th>
-                                    <td>{{ $atcl -> category }}</td>
+                                    <td><a href="{{ url('category/' . $cate->slug) }}">{{ $cate->name }}</a></td>
                                 </tr>
+
+                                @foreach($tagGroupAll as $group)
                                 <tr>
-                                    <th>タグ１</th>
-                                    <td><?php if(!$tags[0]->isEmpty()) {
-                                        foreach($tags[0] as $tag)
-                                            echo '<a href="'. url('/tag/'.$tag->id).'">'.$tag->name .'</a>, ';
-                                    } ?></td>
+                                    <th>{{ $group->name }}</th>
+                                    <td>
+                                    @if(isset($tagGroups[$group->id]))
+                                    	@foreach($tagGroups[$group->id] as $tag)
+											<a href="{{ url('tag/'. $tag['slug']) }}">{{ $tag['name'] }}</a>&nbsp;&nbsp;
+                                        @endforeach
+									@endif
+                                    </td>
                                 </tr>
-                                <tr>
-                                    <th>タグ２</th>
-                                    <td><?php if(!$tags[1]->isEmpty()) {
-                                        foreach($tags[1] as $tag)
-                                            echo '<a href="'. url('/tag/'.$tag->id).'">'.$tag->name .'</a>, ';
-                                    } ?></td>
-                                </tr>
-                                <tr>
-                                    <th>タグ３</th>
-                                    <td><?php if(!$tags[2]->isEmpty()) {
-                                        foreach($tags[2] as $tag)
-                                            echo '<a href="'. url('/tag/'.$tag->id).'">'.$tag->name .'</a>, ';
-                                    } ?></td>
-                                </tr>
-                                
+
+                                @endforeach
 
                             </tbody>
                 		</table>
                     </div>
 
                     <div>
-                    	サムネイル：{{ $atcl -> sumbnail }}
-                        引用元：{{ $atcl -> sumbnail_url }}
-
-                        <div class="meta">
-                        	<small>公開日時：{{ date('Y年n月j日', strtotime($atcl -> open_date)) }}</small><br>
-                            <small>レビューオーナー：{{ $user->name }}</small>
+                    	<div class="well clearfix">
+                            <div class="col-md-4 pull-left">
+                            	<img style="border:10px solid #fff; width:100%;" src="{{ Storage::url($atcl -> sumbnail) }}">
+                            </div>
+                            <div class="col-md-6 pull-left">
+                                <p>サムネイル引用元：{{ $atcl -> sumbnail_url }}</p>
+                                <p>公開日時：{{ Ctm::changeDate($atcl->open_date, 'notime') }}</p>
+                                <p>レビューオーナー：{{ $user->name }}</p>
+                            </div>
                         </div>
 
-                        <div>
-							<p>{!! nl2br($atcl->content) !!}</p>
+                        <div style="margin-top: 3em;" class="rv-content">
+							@foreach($items as $item)
+								@if($item->item_type == 'title')
+									@if($item->title_option == 1)
+										<h1>{{ $item->main_title }}</h1>
+                                    @else
+										<h2>{{ $item->main_title }}</h2>
+                                    @endif
+                                @elseif($item->item_type == 'text')
+									<p>{!! nl2br($item->main_text) !!}</p>
+                                @elseif($item->item_type == 'image')
+                                    <img src="{{ Storage::url($item->image_path) }}">
+                                	<h4>{{$item->image_title}}</h4>
+                                	<p>引用元：{{$item->image_orgurl}}</p>
+                                	<p>コメント：<br>{!! nl2br($item->image_comment) !!}</p>
+
+                                @elseif($item->item_type == 'link')
+                                	<p>{{ $item->link_title }} Option:{{ $item->link_option }}</p>
+                                	<a href="{{ $item->link_url}}"><img src="{{ $item->link_imgurl }}"></a>
+
+                                @endif
+                            @endforeach
                         </div>
 
 

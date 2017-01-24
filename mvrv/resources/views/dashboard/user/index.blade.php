@@ -60,7 +60,7 @@
         </table>
         </div>
     
-    <?php //echo $objs->render(); ?>
+    {{ $users->links() }}
         
 @endsection
 

@@ -10,12 +10,11 @@
                 </div>
 
                 <div>
-                <h4>{{ $rankName }}ランキング</h4>
+                <h4>{{ $rankName }} TOP20</h4>
                 <ul class="no-list">
-                <?php foreach($ranks as $val) { ?>
+                <?php foreach($rightRanks as $val) { ?>
                     <li style="border: 1px solid #aaa;">
                         <a href="{{url('/single/'.$val->id)}}">{{$val->title}}</a>
-                        <p><a href="{{$val->movie_url}}">{{$val->movie_url}}</a></p>
                     </li>
                 <?php } ?>
 

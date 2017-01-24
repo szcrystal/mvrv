@@ -44,36 +44,40 @@
             </div>
 
             <div class="panel-body">
-            	<div class="form-group{{ $errors->has('group') ? ' has-error' : '' }}">
+            	<div class="form-group{{ $errors->has('group_id') ? ' has-error' : '' }}">
                     <label for="group" class="col-md-4 control-label">グループ</label>
 
                     <div class="col-md-6">
                         <select class="form-control" name="group_id">
 
                             @foreach($groups as $group)
-                                <option value="{{ $group->id }}"{{ isset($tag) && $tag->group_id == $group->id ? ' selected' : '' }}>{{ $group->name }}</option>
+                            	@if(old('group_id') !== NULL)
+									<option value="{{ $group->id }}"{{ old('group_id') == $group->id ? ' selected' : '' }}>{{ $group->name }}</option>
+                                @else
+                                	<option value="{{ $group->id }}"{{ isset($tag) && $tag->group_id == $group->id ? ' selected' : '' }}>{{ $group->name }}</option>
+                                @endif
                             @endforeach
 
                         </select>
 
-                        @if ($errors->has('group'))
+                        @if ($errors->has('group_id'))
                             <span class="help-block">
-                                <strong>{{ $errors->first('group') }}</strong>
+                                <strong>{{ $errors->first('group_id') }}</strong>
                             </span>
                         @endif
                     </div>
                 </div>
 
 
-                <div class="form-group{{ $errors->has('category') ? ' has-error' : '' }}">
-                    <label for="category" class="col-md-4 control-label">タグ名</label>
+                <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
+                    <label for="name" class="col-md-4 control-label">タグ名</label>
 
                     <div class="col-md-6">
-                        <input id="category" type="text" class="form-control" name="name" value="{{ isset($tag) ? $tag->name : old('name') }}" required autofocus>
+                        <input id="name" type="text" class="form-control" name="name" value="{{ old('name') === NULL && isset($tag) ? $tag->name : old('name') }}" required>
 
-                        @if ($errors->has('category'))
+                        @if ($errors->has('name'))
                             <span class="help-block">
-                                <strong>{{ $errors->first('category') }}</strong>
+                                <strong>{{ $errors->first('name') }}</strong>
                             </span>
                         @endif
                     </div>
@@ -81,12 +85,12 @@
 
 
                 <div class="form-group{{ $errors->has('slug') ? ' has-error' : '' }}">
-                    <label for="title" class="col-md-4 control-label">スラッグ</label>
+                    <label for="slug" class="col-md-4 control-label">スラッグ</label>
 
                     <div class="col-md-6">
-                        <input id="title" type="text" class="form-control" name="slug" value="{{ isset($tag) ? $tag->slug : old('slug') }}" required autofocus>
+                        <input id="slug" type="text" class="form-control" name="slug" value="{{ old('slug') === NULL && isset($tag) ? $tag->slug : old('slug') }}" required>
 
-                        @if ($errors->has('title'))
+                        @if ($errors->has('slug'))
                             <span class="help-block">
                                 <strong>{{ $errors->first('slug') }}</strong>
                             </span>

@@ -15,10 +15,10 @@ class CreateContactsTable extends Migration
     {
         Schema::create('contacts', function (Blueprint $table) {
             $table->increments('id');
-            
-            $table->string('category')->nullable()->default(NULL);
-            $table->string('name')->nullable()->default(NULL);
-            $table->string('email')->nullable()->default(NULL);
+            $table->string('ask_category');
+            $table->integer('delete_id')->nullable()->default(NULL);
+            $table->string('user_name');
+            $table->string('user_email');
             $table->text('context')->nullable()->default(NULL);
             $table->boolean('done_status');
 
@@ -28,9 +28,9 @@ class CreateContactsTable extends Migration
         $n = 0;
         while($n < 5) {
             DB::table('contacts')->insert([
-                    'category' => 'お問合わせ',
-                    'name' => 'あいうえお',
-                    'email' => 'bonjour@frank.fam.cx',
+                    'ask_category' => 'お問合わせ',
+                    'user_name' => 'あいうえお',
+                    'user_email' => 'bonjour@frank.fam.cx',
                     'context' => 'あいうえおかきくけこさしすせそ',
                     'done_status' => 0,
 

@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Contact extends Model
 {
     protected $fillable = [
-    	'category',
-        'name',
-        'email',
+    	'ask_category',
+        'delete_id',
+        'user_name',
+        'user_email',
         'context',
         'done_status',
     ];

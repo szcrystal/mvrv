@@ -12,8 +12,10 @@
           <thead>
             <tr>
               <th>ID</th>
-            	<th class="col-md-2">問合わせ日</th>
+            	<th class="col-md-1">問合わせ日</th>
               <th class="col-md-2">カテゴリー</th>
+              <th>削除記事ID</th>
+              <th class="col-md-2">削除記事タイトル</th>
               <th class="col-md-2">名前</th>
               <th class="col-md-2">メール</th>
               <th class="col-md-3">テキスト</th>
@@ -33,19 +35,29 @@
                 </td>
 
                 <td>
-                	{{ date('Y/n/j H:i', strtotime($contact->created_at)) }}
+                	{{ Ctm::changeDate($contact->created_at) }}
                 </td>
 
 				<td>
-	        		<strong>{{$contact->category}}</strong>
-                </td>
-                                    
-                <td>
-                	{{ $contact->name }}
+	        		<strong>{{$contact->ask_category}}</strong>
                 </td>
 
                 <td>
-                	{{ $contact->email }}
+					{{ $contact->delete_id }}
+                </td>
+
+                <td>
+                	@if($contact->delete_id)
+						<a href="{{ url('dashboard/articles/'.$contact->delete_id) }}">{{ $atcl->find($contact->delete_id)->title }}</a>
+                    @endif
+                </td>
+                                    
+                <td>
+                	{{ $contact->user_name }}
+                </td>
+
+                <td>
+                	{{ $contact->user_email }}
                 </td>
 
                 <td>

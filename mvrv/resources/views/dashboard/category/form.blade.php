@@ -45,15 +45,15 @@
 
             <div class="panel-body">
 
-                <div class="form-group{{ $errors->has('category') ? ' has-error' : '' }}">
-                    <label for="category" class="col-md-4 control-label">カテゴリー名</label>
+                <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
+                    <label for="name" class="col-md-4 control-label">カテゴリー名</label>
 
                     <div class="col-md-6">
-                        <input id="category" type="text" class="form-control" name="name" value="{{ isset($cate) ? $cate->name : old('name') }}" required autofocus>
+                        <input id="name" type="text" class="form-control" name="name" value="{{ old('name') === NULL && isset($cate) ? $cate->name : old('name') }}" required>
 
-                        @if ($errors->has('category'))
+                        @if ($errors->has('name'))
                             <span class="help-block">
-                                <strong>{{ $errors->first('category') }}</strong>
+                                <strong>{{ $errors->first('name') }}</strong>
                             </span>
                         @endif
                     </div>
@@ -61,12 +61,12 @@
 
 
                 <div class="form-group{{ $errors->has('slug') ? ' has-error' : '' }}">
-                    <label for="title" class="col-md-4 control-label">スラッグ</label>
+                    <label for="slug" class="col-md-4 control-label">スラッグ</label>
 
                     <div class="col-md-6">
-                        <input id="title" type="text" class="form-control" name="slug" value="{{ isset($cate) ? $cate->slug : old('slug') }}" required>
+                        <input id="slug" type="text" class="form-control" name="slug" value="{{ old('slug') === NULL && isset($cate) ? $cate->slug : old('slug') }}" required>
 
-                        @if ($errors->has('title'))
+                        @if ($errors->has('slug'))
                             <span class="help-block">
                                 <strong>{{ $errors->first('slug') }}</strong>
                             </span>

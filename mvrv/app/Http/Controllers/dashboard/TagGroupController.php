@@ -38,6 +38,7 @@ class TagGroupController extends Controller
     {
         return view('dashboard.tagGroup.form');
     }
+    
 
     /**
      * Store a newly created resource in storage.
@@ -47,13 +48,18 @@ class TagGroupController extends Controller
      */
     public function store(Request $request)
     {
+    	$editId = $request->input('edit_id');
+        
         $rules = [
-//            'admin_name' => 'required|max:255',
-//            'admin_email' => 'required|email|max:255', /* |unique:admins 注意:unique */
-//            'admin_password' => 'required|min:6',
+            'name' => 'required|max:255',
+            'slug' => 'required|unique:tag_groups,slug,'.$editId.'|max:255', /* |unique:admins 注意:unique */
         ];
         
-        $this->validate($request, $rules);
+        $messages = [
+            'name.required' => '「グループ名」は必須です。',
+        ];
+        
+        $this->validate($request, $rules, $messages);
         
         $data = $request->all(); //requestから配列として$dataにする
         

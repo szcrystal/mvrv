@@ -12,13 +12,14 @@ class UserController extends Controller
 {
 	public function __construct(Admin $admin, User $user)
     {
-    	
         $this -> middleware('adminauth');
         //$this->middleware('auth:admin', ['except' => 'index']);
         //$this -> middleware('log', ['only' => ['getIndex']]);
         
         $this -> admin = $admin;
         $this->user = $user;
+        
+        $this->perPage = 30;
         
 	}
     /**
@@ -28,7 +29,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::orderBy('id', 'desc')->get();
+        $users = User::orderBy('id', 'desc')->paginate($this->perPage);
         
         //$status = $this->articlePost->where(['base_id'=>15])->first()->open_date;
         

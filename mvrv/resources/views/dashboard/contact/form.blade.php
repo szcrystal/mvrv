@@ -34,10 +34,6 @@
                 <div class="pull-left">
                     <a href="{{ url('/dashboard/contacts') }}" class="btn btn-success btn-sm"><span class="octicon octicon-triangle-left"></span>一覧へ戻る</a>
                 </div>
-                
-				<div class="pull-right col-md-2">{{-- col-md-offset-10 --}}
-                    <button type="submit" class="btn btn-primary btn-block"><span class="octicon octicon-sync"></span>更 新</button>
-                </div>
             </div>
 
             <div class="panel-body">
@@ -52,20 +48,34 @@
                             <tbody>
                                 <tr>
                                     <th>問合わせ日</th>
-                                    <td>{{ date('Y/n/j H:i', strtotime($contact->created_at)) }}</td>
+                                    <td>{{-- date('Y/n/d H:i', strtotime($contact->created_at)) --}}
+										{{ Ctm::changeDate($contact->created_at) }}
+                                    </td>
                                 </tr>
 
                                 <tr>
                                     <th>カテゴリー</th>
-                                    <td>{{ $contact->category }}</td>
+                                    <td>{{ $contact->ask_category }}</td>
+                                </tr>
+                                <tr>
+                                    <th>削除記事ID</th>
+                                    <td>{{ $contact->delete_id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>削除記事タイトル</th>
+                                    <td>
+                                    @if($contact->delete_id)
+                                    {{ $atcl->find($contact->delete_id)->title }}
+                                    @endif
+                                    </td>
                                 </tr>
                                 <tr>
 									<th>名前</th>
-                                    <td>{{ $contact->name }}</td>
+                                    <td>{{ $contact->user_name }}</td>
                                 </tr>
                                 <tr>
                                     <th>メールアドレス</th>
-                                    <td>{{ $contact->email }}</td>
+                                    <td>{{ $contact->user_email }}</td>
                                 </tr>
                                 <tr>
                                     <th>テキスト</th>

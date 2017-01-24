@@ -60,7 +60,7 @@
         </table>
         </div>
     
-    <?php //echo $objs->render(); ?>
+    {{ $cates->links() }}
         
 @endsection
 

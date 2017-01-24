@@ -64,7 +64,7 @@
 					--}}
 
                     <div class="form-group">
-                        <div class="col-md-6 col-md-offset-4">
+                        <div class="col-md-7 col-md-offset-3">
                             <div class="checkbox">
                                 <label>
                                     <input type="checkbox" name="del_status" value="1"{{isset($article) && $article->del_status ? ' checked' : '' }}> 削除する
@@ -73,28 +73,11 @@
                         </div>
                     </div>
 
-					{{--
-                    <div class="form-group{{ $errors->has('up_date') ? ' has-error' : '' }}">
-                            <label for="name" class="col-md-4 control-label">更新日時</label>
-
-                            <select name="up_year">
-                                {{ $thisClass->selectBox(2016, 2017, old('up_year')) }}
-                            </select><span class="t-down"></span><span class="date-unit">年</span>
-
-                            <select name="up_month">
-                            	{{ $thisClass->selectBox(1, 12, old('up_month')) }}
-                            </select><span class="t-down"></span><span class="date-unit">月</span>
-                            
-                            <select name="up_day">
-                                {{ $thisClass->selectBox(1, 31, old('up_day')) }}
-                            </select><span class="t-down"></span><span class="date-unit">日</span>
-                    </div>
-                    --}}
-
+					
                     <div class="form-group{{ $errors->has('cate_id') ? ' has-error' : '' }}">
-                        <label for="group" class="col-md-4 control-label">グループ</label>
+                        <label for="group" class="col-md-3 control-label">カテゴリー</label>
 
-                        <div class="col-md-6">
+                        <div class="col-md-7">
                             <select class="form-control" name="cate_id">
 								<option disabled selected>選択</option>
                                 @foreach($cates as $cate)
@@ -113,10 +96,10 @@
 
 
                     <div class="form-group{{ $errors->has('title') ? ' has-error' : '' }}">
-                            <label for="title" class="col-md-4 control-label">タイトル</label>
+                            <label for="title" class="col-md-3 control-label">タイトル</label>
 
-                            <div class="col-md-6">
-                                <input id="title" type="text" class="form-control" name="title" value="{{ isset($article) ? $article->title : old('title') }}" required autofocus>
+                            <div class="col-md-7">
+                                <input id="title" type="text" class="form-control" name="title" value="{{ isset($article) ? $article->title : old('title') }}" required>
 
                                 @if ($errors->has('title'))
                                     <span class="help-block">
@@ -198,10 +181,10 @@
                         --}}
 
                         <div class="form-group{{ $errors->has('movie_site') ? ' has-error' : '' }}">
-                            <label for="title" class="col-md-4 control-label">動画サイト</label>
+                            <label for="title" class="col-md-3 control-label">動画サイト</label>
 
-                            <div class="col-md-6">
-                                <input id="title" type="text" class="form-control" name="movie_site" value="{{ isset($article) ? $article->movie_site : old('movie_site') }}" required autofocus placeholder="youtubeやniconico、vimeoなど">
+                            <div class="col-md-7">
+                                <input id="title" type="text" class="form-control" name="movie_site" value="{{ isset($article) ? $article->movie_site : old('movie_site') }}" required placeholder="youtubeやniconico、vimeoなど">
 
                                 @if ($errors->has('movie_site'))
                                     <span class="help-block">
@@ -213,10 +196,10 @@
 
 
                         <div class="form-group{{ $errors->has('movie_url') ? ' has-error' : '' }}">
-                            <label for="title" class="col-md-4 control-label">動画URL</label>
+                            <label for="title" class="col-md-3 control-label">動画URL</label>
 
-                            <div class="col-md-6">
-                                <input id="title" type="text" class="form-control" name="movie_url" value="{{ isset($article) ? $article->movie_url : old('movie_url') }}" required autofocus>
+                            <div class="col-md-7">
+                                <input id="title" type="text" class="form-control" name="movie_url" value="{{ isset($article) ? $article->movie_url : old('movie_url') }}" required>
 
                                 @if ($errors->has('movie_url'))
                                     <span class="help-block">

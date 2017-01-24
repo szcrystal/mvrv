@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers\Main;
 
-//use App\ArticleBase;
-//use App\ArticlePost;
-//use App\Tag;
-//use Auth;
+use App\Article;
 use App\Contact;
 use App\ContactCategory;
 use Mail;
@@ -18,12 +15,13 @@ class ContactController extends Controller
 {
 	//public $ctm;
     
-	public function __construct(Contact $contact, ContactCategory $category, Mail $mail)
+	public function __construct(Contact $contact, ContactCategory $category, Article $article, Mail $mail)
     {
         //$this->middleware('auth');
         
         $this-> contact = $contact;
         $this->category = $category;
+        $this->article = $article;
         $this->mail = $mail;
         
         //$this->ctm = $ctm;
@@ -35,19 +33,25 @@ class ContactController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id=0)
     {
     	$objs = $this->category->all();
         
         $cate_option = $objs->map(function ($obj) {
     		return $obj->category;
 		});
-//        foreach($objs as $obj) {
-//        	$cate_option[] = $obj->category;
-//        }
 
-        return view('main.contact.index', ['cate_option'=>$cate_option]);
+        $atclObj = NULL;
+        $select = '';
+		if($id) {
+        	$atclObj = $this->article->find($id);
+            $select = '削除依頼';
+        }
+
+        return view('main.contact.index', ['cate_option'=>$cate_option, 'atclObj'=>$atclObj, 'select'=>$select]);
     }
+    
+
 
     /**
      * Show the form for creating a new resource.
@@ -68,20 +72,24 @@ class ContactController extends Controller
     public function store(Request $request)
     {
         $rules = [
-//            'admin_name' => 'required|max:255',
-//            'admin_email' => 'required|email|max:255', /* |unique:admins 注意:unique */
+            'user_name' => 'required|max:255',
+            'user_email' => 'required|email|max:255', /* |unique:admins 注意:unique */
 //            'admin_password' => 'required|min:6',
         ];
         
         $this->validate($request, $rules);
         
         $data = $request->all(); //requestから配列として$dataにする
-
+		//$data['delete_id'] = 1;
         $contactModel = $this->contact;
         
         $contactModel->fill($data); //モデルにセット
         $contactModel->save(); //モデルからsave
         //$id = $postModel->id;
+        
+        if(isset($data['delete_id'])) {
+        	$data['atclTitle'] = $this->article->find($data['delete_id'])->title;
+        }
         
         $this->sendMail($data);
         //$this->fakeMail($data);
@@ -98,9 +106,9 @@ class ContactController extends Controller
         Mail::send('emails.contact', $data, function($message) use ($data) //引数について　http://readouble.com/laravel/5/1/ja/mail.html
         {
             //$dataは連想配列としてviewに渡され、その配列のkey名を変数としてview内で取得出来る
-            $message -> from('bonjour@frank.fam.cx', 'MovieReview')
-                     -> to($data['email'], $data['name'])
-                     -> subject('お問い合わせ送信完了しました');
+            $message -> from(env('ADMIN_EMAIL'), 'MovieReview')
+                     -> to($data['user_email'], $data['user_name'])
+                     -> subject('お問い合わせの送信が完了しました');
             //$message->attach($pathToFile);
         });
         
@@ -109,8 +117,8 @@ class ContactController extends Controller
         //if(! env('MAIL_CHECK', 0)) { //本番時 env('MAIL_CHECK')がfalseの時
             Mail::send('emails.contact', $data, function($message) use ($data)
             {
-                $message -> from('bonjour@frank.fam.cx', 'MovieReview')
-                         -> to('opal@frank.fam.cx', 'MovieReview 運営者')
+                $message -> from(env('ADMIN_EMAIL'), env('ADMIN_NAME'))
+                         -> to(env('ADMIN_EMAIL'), env('ADMIN_NAME'))
                          -> subject('お問い合わせがありました - MovieReview -');
             });
     }

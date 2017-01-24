@@ -6,16 +6,19 @@
 	{{-- @include('dbd_shared.search') --}}
 
     <h3>タグ一覧</h3>
+
+    {{ $tags->links() }}
         
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
           <thead>
             <tr>
               <th>ID</th>
-              <th class="col-md-2">名前</th>
-              <th class="col-md-4">スラッグ</th>
-              <th class="col-md-2">グループ</th>
-              <th class="col-md-3">View数</th>
+              <th class="col-md-3">名前</th>
+              <th class="col-md-2">スラッグ</th>
+              <th class="col-md-3">グループ</th>
+              <th class="col-md-2">グループ有無</th>
+              <th class="col-md-2">View数</th>
               <th></th>
               
             </tr>
@@ -41,6 +44,14 @@
                 <td>
 					{{ $groupModel->find($tag->group_id)->name }}
                 </td>
+                <td>
+                	<?php $groupStatus = $groupModel->find($tag->group_id)->open_status; ?>
+                    @if($groupStatus)
+                    有効
+                    @else
+                    <span class="text-danger">無効</span>
+                    @endif
+                </td>
                 {{--
                 <td>
                 	@if($tag->open_status)
@@ -64,7 +75,7 @@
         </table>
         </div>
     
-    <?php //echo $objs->render(); ?>
+    {{ $tags->links() }}
         
 @endsection
 

@@ -5,60 +5,87 @@
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
             <div class="panel panel-default">
-{{ Ctm::changeDate('2016-12-4 11:30:50') }}
+
+
+
                 <div class="panel-heading">
                 	<h2>お問い合わせ</h2>
                 </div>
 
                 <div class="panel-body">
 
+                    @if (count($errors) > 0)
+                        <div class="alert alert-danger">
+                            <strong>Error!!</strong> 追加できません<br><br>
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
 					<div class="table-responsive">
-                    	<table class="table table-bordered">
+                    	<form class="form-horizontal" role="form" method="POST" action="/contact">
+                            {{ csrf_field() }}
+
+                            <input type="hidden" name="done_status" value="0">
+
+                        <table class="table table-bordered">
                             <colgroup>
-                                <col class="cth">
+                                <col style="width:30%;" class="cth">
                                 <col class="ctd">
                             </colgroup>
                             
                             <tbody>
-                            	<form class="form-horizontal" role="form" method="POST" action="/contact">
-                        		{{ csrf_field() }}
-
-                                <input type="hidden" name="done_status" value="0">
-
                                 <tr>
+                                	<th>お問い合わせ内容</th>
                                     <td>
-										<div class="form-group{{ $errors->has('category') ? ' has-error' : '' }}">
-                                            <label for="category" class="col-md-4 control-label">お問い合わせ内容</label>
+										<div class="form-group{{ $errors->has('ask_category') ? ' has-error' : '' }}">
 
-                                            <div class="col-md-6">
-                                            	<select class="form-control" name="category">
+                                            <div class="col-md-10">
+                                            	@if($select)
+													{{ $select }}
+                                                    <input type="hidden" name="ask_category" value="{{$select}}">
+                                                @else
+                                                    <select class="form-control" name="ask_category">
+                                                        @foreach($cate_option as $val)
+                                                            <option value="{{ $val }}"{{ old('ask_category') && old('ask_category') == $val ? ' selected' : '' }}>{{ $val }}</option>
+                                                        @endforeach
+                                                    </select>
 
-                                                    <?php foreach($cate_option as $val) { ?>
-                                                    <option value="{{ $val }}"{{ old('category') && old('category') == $val ? ' selected' : '' }}>{{ $val }}</option>
-                                                    <?php } ?>
-                                                </select>
-
-                                                @if ($errors->has('category'))
-                                                    <span class="help-block">
-                                                        <strong>{{ $errors->first('category') }}</strong>
-                                                    </span>
+                                                    @if ($errors->has('ask_category'))
+                                                        <span class="help-block">
+                                                            <strong>{{ $errors->first('ask_category') }}</strong>
+                                                        </span>
+                                                    @endif
                                                 @endif
                                             </div>
                                         </div>
                                     </td>
                                 </tr>
 
+                                @if($atclObj)
+
+                                    <tr>
+										<th>削除依頼記事タイトル</th>
+                                        <td>{{$atclObj->title}}</td>
+                                        <input type="hidden" name="delete_id" value="{{$atclObj->id}}">
+                                    </tr>
+                                @endif
+
                                 <tr>
+                                	<th>お名前</th>
                                     <td>
-                                    	<div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                                            <label for="category" class="col-md-4 control-label">お名前</label>
+                                    	<div class="form-group{{ $errors->has('user_name') ? ' has-error' : '' }}">
+                                            {{-- <label for="user_name" class="col-md-4 control-label">お名前</label> --}}
 
-                                            <div class="col-md-6">
-                                                <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" required autofocus>
+                                            <div class="col-md-10">
+                                                <input id="user_name" type="text" class="form-control" name="user_name" value="{{ old('user_name') }}" required>
 
-                                                @if ($errors->has('name'))
+                                                @if ($errors->has('user_name'))
                                                     <span class="help-block">
-                                                        <strong>{{ $errors->first('name') }}</strong>
+                                                        <strong>{{ $errors->first('user_name') }}</strong>
                                                     </span>
                                                 @endif
                                             </div>
@@ -67,16 +94,15 @@
                                 </tr>
 
                                 <tr>
+                                	<th>メールアドレス</th>
                                     <td>
-                                    	<div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                                            <label for="category" class="col-md-4 control-label">メールアドレス</label>
+                                    	<div class="form-group{{ $errors->has('user_email') ? ' has-error' : '' }}">
+                                            <div class="col-md-10">
+                                                <input id="user_email" type="user_email" class="form-control" name="user_email" value="{{ old('user_email') }}" required>
 
-                                            <div class="col-md-6">
-                                                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus>
-
-                                                @if ($errors->has('email'))
+                                                @if ($errors->has('user_email'))
                                                     <span class="help-block">
-                                                        <strong>{{ $errors->first('email') }}</strong>
+                                                        <strong>{{ $errors->first('user_email') }}</strong>
                                                     </span>
                                                 @endif
                                             </div>
@@ -84,12 +110,11 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                	<th>コメント</th>
                                     <td>
 										<div class="form-group{{ $errors->has('context') ? ' has-error' : '' }}">
-                                            <label for="context" class="col-md-4 control-label">テキスト</label>
-
-                                            <div class="col-md-6">
-                                                <textarea id="context" class="form-control" name="context" required>{{ old('text') }}</textarea>
+                                            <div class="col-md-10">
+                                                <textarea id="context" class="form-control" name="context" required>{{ old('context') }}</textarea>
 
                                                 @if ($errors->has('context'))
                                                     <span class="help-block">
@@ -101,20 +126,16 @@
                                     </td>
                                 </tr>
 
-                                <tr>
-									<td>
-										<div class="form-group">
-                                            <div class="col-md-8 col-md-offset-4">
-                                                <button type="submit" class="btn btn-primary">送信</button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
 
-                                </form>
 
                             </tbody>
                 		</table>
+                        <div class="form-group">
+                            <div class="col-md-7 col-md-offset-5">
+                                <button type="submit" class="btn btn-primary">送信</button>
+                            </div>
+                        </div>
+                    </form>
                     </div>
 
 

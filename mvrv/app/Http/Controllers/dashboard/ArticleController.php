@@ -25,6 +25,8 @@ class ArticleController extends Controller
         $this->user = $user;
         $this->category = $category;
         
+        $this->perPage = 20;
+        
         // URLの生成
 		//$url = route('dashboard');
         
@@ -42,7 +44,7 @@ class ArticleController extends Controller
         $atclObjs = //Article::where('active', 1)
            Article::orderBy('id', 'desc')
            //->take(10)
-           ->get();
+           ->paginate($this->perPage);
         
         $cateModel = $this->category;
         
@@ -71,9 +73,10 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         $rules = [
-//            'admin_name' => 'required|max:255',
-//            'admin_email' => 'required|email|max:255', /* |unique:admins 注意:unique */
-//            'admin_password' => 'required|min:6',
+            'cate_id' => 'required',
+            'title' => 'required|max:255', /* |unique:admins 注意:unique */
+            'movie_site' => 'required|max:255',
+            'movie_url' => 'required',
         ];
         
         $this->validate($request, $rules);
@@ -201,9 +204,10 @@ class ArticleController extends Controller
     {
         
         $rules = [
-//            'admin_name' => 'required|max:255',
-//            'admin_email' => 'required|email|max:255', /* |unique:admins 注意:unique */
-//            'admin_password' => 'required|min:6',
+            'cate_id' => 'required',
+            'title' => 'required|max:255',
+            'movie_site' => 'required|max:255',
+            'movie_url' => 'required',
         ];
         
         $this->validate($request, $rules);

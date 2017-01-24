@@ -28,7 +28,10 @@ class LoginController extends Controller
     {
 //    	echo session('beforePath');
 //        exit();
-    	return view('dashboard.login');
+		if(Auth::guard('admin')->check())
+            return redirect('dashboard');
+        else
+	    	return view('dashboard.login');
     }
     
     public function postLogin(Request $request)
@@ -38,12 +41,14 @@ class LoginController extends Controller
             'password' => 'required|min:6',
         ];
         
-        //$this->validate($request, $rules); //errorなら自動で$errorが返されてリダイレクト、通過で自動で次の処理へ
+        $this->validate($request, $rules); //errorなら自動で$errorが返されてリダイレクト、通過で自動で次の処理へ
         
         $data = $request->all();
         
-        if (Auth::guard('admin')->attempt(['email' => $data['email'], 'password' => $data['password'] ])) {
-            // 認証に成功した
+        $remember = isset($data['remember']) ? true : false;
+        
+        if (Auth::guard('admin')->attempt(['email' => $data['email'], 'password' => $data['password']], $remember)) {
+            
             return redirect()->intended('dashboard');
         }
         else {

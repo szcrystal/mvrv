@@ -23,6 +23,8 @@ class TagController extends Controller
         $this->tagGroup = $tagGroup;
         $this->user = $user;
         
+        $this->perPage = 30;
+        
         // URLの生成
 		//$url = route('dashboard');
         
@@ -38,8 +40,8 @@ class TagController extends Controller
     public function index()
     {
         $tags = Tag::orderBy('id', 'desc')
-           //->take(10)
-           ->get();
+           //->take(10)->get();
+           ->paginate($this->perPage);
         
         $groupModel = $this->tagGroup;
         
@@ -88,13 +90,21 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
+    	$editId = $request->input('edit_id');
+        $groupId = $request->input('group_id');
+        
         $rules = [
-//            'admin_name' => 'required|max:255',
-//            'admin_email' => 'required|email|max:255', /* |unique:admins 注意:unique */
-//            'admin_password' => 'required|min:6',
+        	'group_id' => 'required',
+            'name' => 'required|same_tag:'.$editId.','.$groupId.'|max:255', //same_tag-> on AppServiceProvider
+            'slug' => 'required|unique:tags,slug,'.$editId.'|max:255', /* |unique:admins 注意:unique */
         ];
         
-        $this->validate($request, $rules);
+        $messages = [
+            'name.required' => '「タグ名」は必須です。',
+            'name.same_tag' => '「タグ名」が指定したグループの中で既に存在します。',
+        ];
+        
+        $this->validate($request, $rules, $messages);
         
         $data = $request->all();
 

@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\dashboard;
 
 use App\Admin;
-use App\ArticleBase;
-use App\ArticlePost;
+use App\Article;
 use App\Tag;
 use App\User;
 use App\Contact;
@@ -15,15 +14,14 @@ use App\Http\Controllers\Controller;
 
 class ContactController extends Controller
 {
-	public function __construct(Admin $admin, ArticleBase $articleBase, Tag $tag, ArticlePost $articlePost, User $user, Contact $contact, ContactCategory $category)
+	public function __construct(Admin $admin, Article $article, Tag $tag, User $user, Contact $contact, ContactCategory $category)
     {
     	
         $this -> middleware('adminauth');
         //$this -> middleware('log', ['only' => ['getIndex']]);
         
         $this -> admin = $admin;
-        $this-> articleBase = $articleBase;
-        $this-> articlePost = $articlePost;
+        $this-> article = $article;
         $this->user = $user;
         $this->contact = $contact;
         $this->category = $category;
@@ -45,9 +43,11 @@ class ContactController extends Controller
            //->take(10)
            ->get();
         
+        $atcl = $this->article;
+        
         //$status = $this->articlePost->where(['base_id'=>15])->first()->open_date;
         
-        return view('dashboard.contact.index', ['contacts'=>$contacts]);
+        return view('dashboard.contact.index', ['contacts'=>$contacts, 'atcl'=>$atcl]);
     }
 
     /**
@@ -129,8 +129,9 @@ class ContactController extends Controller
     public function edit($id)
     {
         $contact = $this->contact->find($id);
+        $atcl = $this->article;
         
-    	return view('dashboard.contact.form', ['contact'=>$contact, 'id'=>$id]);
+    	return view('dashboard.contact.form', ['contact'=>$contact, 'id'=>$id, 'atcl'=>$atcl]);
     }
 
     /**

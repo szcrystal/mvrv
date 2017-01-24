@@ -11,8 +11,15 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Styles -->
+    <link href="{{ asset('/bootstrap/vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
     <link href="/css/app.css" rel="stylesheet">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <link href="/css/style.css" rel="stylesheet">
+
+
+  <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="{{ asset('/js/script.js') }}"></script>
 
     <!-- Scripts -->
     <script>
@@ -20,4 +27,5 @@
             'csrfToken' => csrf_token(),
         ]); ?>
     </script>
+
 </head>

@@ -12,6 +12,7 @@ class CategoryController extends Controller
 	public function __construct(Category $category)
     {
     	$this->category = $category;
+        $this->perPage = 30;
     }
     /**
      * Display a listing of the resource.
@@ -22,7 +23,7 @@ class CategoryController extends Controller
     {
         $cates = Category::orderBy('id', 'desc')
            //->take(10)
-           ->get();
+           ->paginate($this->perPage);
         
         return view('dashboard.category.index', ['cates'=>$cates]);
     }
@@ -45,13 +46,19 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+    	$editId = $request->input('edit_id');
+        
         $rules = [
-//            'admin_name' => 'required|max:255',
-//            'admin_email' => 'required|email|max:255', /* |unique:admins 注意:unique */
-//            'admin_password' => 'required|min:6',
+            'name' => 'required|unique:categories,name,'.$editId.'|max:255',
+            'slug' => 'required|unique:categories,slug,'.$editId.'|max:255', /* 注意:unique */
         ];
         
-        $this->validate($request, $rules);
+        $messages = [
+            'name.required' => '「カテゴリー名」は必須です。',
+            'name.unique' => '「カテゴリー名」が既に存在します。',
+        ];
+        
+        $this->validate($request, $rules, $messages);
         
         $data = $request->all(); //requestから配列として$dataにする
         

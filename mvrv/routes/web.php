@@ -13,19 +13,19 @@
 
 Route::get('/', 'Main\HomeController@index');
 
-Route::get('/single/{postId}', 'Main\HomeController@showSingle');
+Route::get('single/{postId}', 'Main\HomeController@showSingle');
 
-//Tag
-Route::get('tag', 'Main\TagController@index');
-Route::get('tag/{slug}', 'Main\TagController@show');
 
 //Category
 Route::get('category', 'Main\CategoryController@index');
 Route::get('category/{slug}', 'Main\CategoryController@show');
 
-
 //Contact
+Route::get('contact/{id}', 'Main\ContactController@index');
 Route::resource('contact', 'Main\ContactController');
+
+//Search
+Route::get('search', 'Main\SearchController@index');
 
 
 
@@ -69,7 +69,6 @@ Route::resource('mypage', 'MyPage\HomeController');
 
 
 
-
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');
@@ -77,3 +76,10 @@ Route::get('/home', 'HomeController@index');
 Route::get('/auth/register', function () {
 	return view('auth/register');
 });
+
+//Tag =======
+Route::get('{groupSlug}', 'Main\TagController@index');
+Route::get('{groupSlug}/{tagSlug}', 'Main\TagController@show');
+
+
+

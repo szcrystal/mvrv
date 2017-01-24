@@ -83,7 +83,7 @@ class MainController extends Controller
     public function getLogout(Request $request) {
     	//$request->session()->pull('admin');
         Auth::guard('admin')->logout();
-        return redirect('/dashboard/login')->intended('/');
+        return redirect('dashboard/login'); //->intended('/')
         //return view('dashboard.login');
     }
     

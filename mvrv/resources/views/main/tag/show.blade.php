@@ -8,9 +8,9 @@
 
             <div class="panel panel-default">
             	@if($tagPosts->isEmpty())
-                <div class="panel-heading">タグ：{{ $tagName}}の記事がありません</div>
+                <div class="panel-heading">{{ $groupName}}：{{ $tagName}}の記事がありません</div>
 				@else
-				<div class="panel-heading">タグ：{{ $tagName}}</div>
+				<div class="panel-heading">{{ $groupName}}：{{ $tagName}}</div>
                 @endif
 
                 <div class="panel-body">
@@ -18,13 +18,13 @@
                         <ul class="no-list">
                         <?php foreach($tagPosts as $val) { ?>
                             <li style="border: 1px solid #aaa;">
-                                <p><a href="{{url('/single/'.$val->id)}}">{{$val->title}}</a></p>
-                                <p>{{$val->text}}</p>
-                                <p><a href="{{$val->movie_url}}">{{$val->movie_url}}</a></p>
+                                <a href="{{url('/single/'.$val->id)}}">{{$val->title}}</a>
                             </li>
                         <?php } ?>
 
                         </ul>
+
+                        {{ $tagPosts->links() }}
                     </div>
 
                 </div>

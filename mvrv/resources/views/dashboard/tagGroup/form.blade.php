@@ -57,30 +57,34 @@
                     </div>
 
 
-                    <div class="form-group{{ $errors->has('category') ? ' has-error' : '' }}">
-                            <label for="category" class="col-md-4 control-label">タグ名</label>
+                    <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
+                        <label for="category" class="col-md-4 control-label">グループ名</label>
 
-                            <div class="col-md-6">
-                                <input id="category" type="text" class="form-control" name="name" value="{{ isset($group) ? $group->name : old('name') }}" required autofocus>
+                        <?php $value = (old('name') !== NULL) ? old('name') : (isset($group) ? $group->name : ''); ?>
 
-                                @if ($errors->has('category'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('category') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
+                        <div class="col-md-6">
+                            <input id="category" type="text" class="form-control" name="name" value="{{ $value }}" required>
+
+                            @if ($errors->has('name'))
+                                <span class="help-block">
+                                    <strong>{{-- $errors->first('name') --}}</strong>
+                                </span>
+                            @endif
+                        </div>
                     </div>
 
 
                     <div class="form-group{{ $errors->has('slug') ? ' has-error' : '' }}">
                         <label for="title" class="col-md-4 control-label">スラッグ</label>
 
-                        <div class="col-md-6">
-                            <input id="title" type="text" class="form-control" name="slug" value="{{ isset($group) ? $group->slug : old('slug') }}" required>
+                        <?php $value = (old('slug') !== NULL) ? old('slug') : (isset($group) ? $group->slug : ''); ?>
 
-                            @if ($errors->has('title'))
+                        <div class="col-md-6">
+                            <input id="title" type="text" class="form-control" name="slug" value="{{ $value }}" required>
+
+                            @if ($errors->has('slug'))
                                 <span class="help-block">
-                                    <strong>{{ $errors->first('slug') }}</strong>
+                                    <strong>{{-- $errors->first('slug') --}}</strong>
                                 </span>
                             @endif
                         </div>
