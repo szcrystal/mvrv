@@ -15,8 +15,8 @@ class Article extends Model
         'movie_site',
     	'movie_url',
     
-        'sumbnail',
-    	'sumbnail_org',
+        'thumbnail',
+    	'thumbnail_org',
     	'content',
     
 		'open_status',

@@ -112,19 +112,20 @@ a.ui-button:active,
     vertical-align: top;
 }
 
-.panel-body {
+.mp-edit .panel-body,
+.mp-create .panel-body {
 	min-height: 2000px;
 }
 
 textarea {
-	min-height: 15em;
+	min-height: 20em;
 }
 
 .add-item {
 	//border: 1px solid red;
 }
 .add-item section {
-	border: 1px solid #aaa;
+	border: 1px solid #ccc;
     position: relative;
 }
 .add-item section:after {
@@ -166,7 +167,7 @@ textarea {
 }
 .item-panel {
 	width: 100%;
-    //border: 1px solid #ddd;
+    //border: 1px solid blue;
     margin-bottom: 2em;
     //position: relative;
 }
@@ -188,7 +189,7 @@ textarea {
 .item-panel input,
 .item-panel textarea {
 	display: block;
-    width: 50%;
+    width: 65%;
 }
 
 /*.first-panel .add-nav {*/
@@ -203,7 +204,10 @@ textarea {
 }
 
 .add-nav {
-	border-top: 1px dashed #aaa;
+	border: 1px dashed #aaa;
+    margin-top: 1em;
+    border-radius: 0.5em;
+    padding: 0.5em 0;
 }
 .add-nav em {
 	cursor: pointer;
@@ -224,11 +228,54 @@ textarea {
     z-index: 9999;
 }
 .item-link {
-	min-height: 25em;
+	min-height: 35em;
+}
+.item-link label {
+	display: block;
+}
+.item-link input[type="text"] {
+	display: inline-block;
+}
+.item-link .subm-check {
+	display: inline-block;
 }
 .link-frame {
-	display: none;
+	display: block;
+    width: 75%;
+    min-height: 23em;
 }
+
+.linkimg-wrap {
+	overflow: hidden;
+    position: relative;
+    height: 150px;
+}
+.linkimg-wrap img {
+	display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: auto;
+    height: 80%;
+}
+.linkimg-wrap img:first-of-type {
+	display: block;
+}
+.linksel-wrap {
+
+}
+.linksel-wrap span {
+	border: 1px solid #aaa;
+    padding: 0.5em;
+    cursor: pointer;
+}
+.linksel-wrap small {
+	font-size: 1.2em;
+}
+.linksel-wrap small em {
+	font-style: normal;
+}
+
 
 .add-item h1 {
 	font-weight: bold;

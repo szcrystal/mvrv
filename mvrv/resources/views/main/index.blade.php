@@ -18,7 +18,7 @@
                     	<li class="clearfix">
 							<a href="{{url('/single/'.$val->id)}}">
                             	<div class="pull-left">
-                                <img src="{{Storage::url($val->sumbnail)}}">
+                                <img src="{{Storage::url($val->thumbnail)}}">
                                 </div>
                                 <h2 class="pull-right">{{$val->title}}</h2></a>
 

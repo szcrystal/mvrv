@@ -4,9 +4,10 @@
 
 <?php //print_r($_SERVER); ?>
 
-<div class="container">
+<div class="container mp-create">
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
+        	<a href="{{url('mypage/newmovie')}}">戻る</a>
             <div class="panel panel-default">
 
                 @if($atcl->owner_id)
@@ -63,21 +64,42 @@
 
 
 					<div style="margin-top: 3em;">
-                    <form class="form-horizontal" role="form" method="POST" action="/mypage">
+                    <form class="form-horizontal" role="form" method="POST" action="/mypage" enctype="multipart/form-data">
                         {{ csrf_field() }}
 
                         <input type="hidden" name="user_id" value="{{$userId}}">
-                        <input type="hidden" name="base_id" value="{{ $atcl->id }}">
+                        <input type="hidden" name="atcl_id" value="{{ $atcl->id }}">
 
 
-                        <p>ユーザー編集 ----------</p>
-                        <div class="form-group{{ $errors->has('title') ? ' has-error' : '' }}">
-                            <label for="title" class="col-md-4 control-label">サムネイル</label>
+                        <div style="margin-bottom: 2em;" class="clear">
+                            <div style="width: 170px; height:170px; border: 1px solid #ccc;" class="pull-left col-md-3">
+                                No Image
+                            </div>
 
-                            <div class="col-md-6">
-                            	サムネイルUP
+                            <div class="pull-left col-md-9">
+                                <div class="form-group{{ $errors->has('thumbnail') ? ' has-error' : '' }}">
+                                    <label for="thumbnail" class="col-md-4 control-label">サムネイル</label>
+
+                                    <div class="col-md-8">
+                                        <input id="thumbnail" type="file" name="thumbnail">
+                                    </div>
+                                </div>
+
+                                <div class="form-group{{ $errors->has('thumbnail_org') ? ' has-error' : '' }}">
+                                    <label for="thumbnail_org" class="col-md-4 control-label">サムネイル引用元URL</label>
+                                    <div class="col-md-8">
+                                        <input id="thumbnail_org" type="text" class="form-control" name="thumbnail_org" value="{{old('thumbnail_org') }}">
+
+                                        @if ($errors->has('thumbnail_org'))
+                                            <span class="help-block">
+                                                <strong>{{ $errors->first('thumbnail_org') }}</strong>
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
 
 
                         @foreach($tagGroupAll as $group)
@@ -89,7 +111,7 @@
 
 
                         	<div class="tag-group form-group{{ $errors->has($group->slug) ? ' has-error' : '' }}">
-                                <label for="title" class="col-md-4 control-label">タグ：{{ $group->name }}</label>
+                                <label for="title" class="col-md-4 control-label">{{ $group->name }}</label>
                                 <div class="col-md-4 clearfix">
                                     <input id="{{ $group->slug }}" type="text" class="form-control tag-control" name="input-{{ $group->slug }}" value="{{ old($group->slug) }}" autocomplete="off">
 
@@ -104,8 +126,6 @@
                             </div>
 
                         @endforeach
-
-
 
 						{{--
 						<div class="form-group{{ $errors->has('title') ? ' has-error' : '' }}">
@@ -123,27 +143,6 @@
                         </div>
                         --}}
 
-
-                        <div class="form-group{{ $errors->has('content') ? ' has-error' : '' }}">
-                            <label for="text" class="col-md-4 control-label">コンテンツ（--仮カラム--）</label>
-
-                            <div class="col-md-6">
-                                <textarea id="text" type="text" class="form-control" name="content" required>{{ isset($atcl) ? $atcl->content : old('content') }}</textarea>
-
-                                @if ($errors->has('content'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('content') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-
-
-
-
-
-
                         {{--
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-4">
@@ -156,51 +155,30 @@
                         </div>
                         --}}
 
-                        <div class="form-group">
-                            <div style="margin-bottom: 1em;" class="col-md-8 col-md-offset-4">
+                        <div class="col-md-offset-4 clearfix">
+                            <div style="margin-bottom: 1em;" class="col-md-3 pull-left">
                                 <input type="submit" class="btn btn-primary" name="keep" value="保存する">
                             </div>
 
-                            <div class="col-md-8 col-md-offset-4">
+                            <div class="col-md-2 pull-left">
                                 <input type="submit" class="btn btn-danger" name="open" value="公開する">
                             </div>
                         </div>
 
 
+                <div class="add-item">
+                	<div class="visible-none">
+                        @include('mypage.shared.itemCtrlNav')
 
-                    <div class="add-item">
-                        <ul class="ctrl-nav">
-                            <li class="del-sec">削除
-                            <li class="up-sec">
-                            <li class="down-sec">
-                        </ul>
-
-                        <div class="item-panel first-panel">
-                            <div class="clearfix add-nav">
-                                <em>ここにアイテムを追加</em>
-                            </div>
-
-                            <div class="item-btn">
-                                <ul class="clearfix">
-                                    <li class="i-title">タイトル
-                                    <li class="i-text">テキスト
-                                    <li class="i-image">画像
-                                    <li class="i-link">リンク
-                                </ul>
-                            </div>
-
-                            <div class="item-title">
-                                <input class="cts_title" type="text" name="cts_title" value="">
-                                <button class="title_subm" data-num="0">Send</button>
-                            </div>
-
-                            <div class="item-text">
-                                <textarea class="cts_text" name="cts_text"></textarea>
-                                <button class="text_subm" data-num="0">send</button>
-                            </div>
-                        </div>
-
+                        @include('mypage.shared.newItemForm')
                     </div>
+
+                    @include('mypage.shared.newItemForm')
+                    {{-- <div class="item-panel first-panel"> --}}
+
+
+
+                </div><?php /*addItem*/ ?>
 
 
 

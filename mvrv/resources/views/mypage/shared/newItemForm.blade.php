@@ -5,10 +5,10 @@
 
     <div class="item-btn">
         <ul class="clearfix">
-            <li class="i-title">タイトル
-            <li class="i-text">テキスト
-            <li class="i-image">画像
-            <li class="i-link">リンク
+            <li class="i-title"><i class="fa fa-th-large" aria-hidden="true"></i></i>タイトル
+            <li class="i-text"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>テキスト
+            <li class="i-image"><i class="fa fa-picture-o" aria-hidden="true"></i>画像
+            <li class="i-link"><i class="fa fa-link" aria-hidden="true"></i>リンク
         </ul>
     </div>
 
@@ -43,12 +43,13 @@
         </div>
 
         <div class="item-link">
-            <label>リンク</label>
+            <label>リンクボタンオプション</label>
             <select name="link_option[]">
                 <option value="1">通常リンク</option>
                 <option value="2">ボタンタイプA</option>
                 <option value="3">ボタンタイプB</option>
             </select>
+            <label>リンクURL</label>
             <input class="link-url" type="text" name="link_url[]" value="http://www.yahoo.co.jp">
             <button class="subm-check">チェック</button>
             <div class="link-frame"></div>

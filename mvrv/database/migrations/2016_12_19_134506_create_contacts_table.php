@@ -26,7 +26,7 @@ class CreateContactsTable extends Migration
         });
         
         $n = 0;
-        while($n < 5) {
+        while($n < 3) {
             DB::table('contacts')->insert([
                     'ask_category' => 'お問合わせ',
                     'user_name' => 'あいうえお',
@@ -34,8 +34,8 @@ class CreateContactsTable extends Migration
                     'context' => 'あいうえおかきくけこさしすせそ',
                     'done_status' => 0,
 
-                    'created_at' => date('Y-m-n H:i:s', time()),
-                    'updated_at' => date('Y-m-n H:i:s', time()),
+                    'created_at' => date('Y-m-d H:i:s', time()),
+                    'updated_at' => date('Y-m-d H:i:s', time()),
                 ]
             );
             

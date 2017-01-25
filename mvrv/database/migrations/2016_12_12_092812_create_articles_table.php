@@ -23,9 +23,9 @@ class CreateArticlesTable extends Migration
             $table->string('movie_site');
             $table->string('movie_url');
             
-            $table->string('sumbnail')->nullable()->default(NULL);
-            $table->string('sumbnail_org')->nullable()->default(NULL);
-            $table->text('content')->nullable()->default(NULL);
+            $table->string('thumbnail')->nullable()->default(NULL);
+            $table->string('thumbnail_org')->nullable()->default(NULL);
+            //$table->text('content')->nullable()->default(NULL);
             
             $table->boolean('open_status');
             $table->boolean('open_history');
@@ -48,18 +48,18 @@ class CreateArticlesTable extends Migration
 //                    'tag_1' => 'タグ1-A,タグ1-C',
 //                    'tag_2' => 'タグ2-B',
 //                    'tag_3' => 'タグ3-B,タグ3-C',
-					'sumbnail' => '/images/UnKnown.jpg',
-                    'sumbnail_org' => 'http://example.com',
-                    'content' => "すると、バルセロナの背番号10が立て続けに切れ味鋭いドリブルからゴールを演出する。後半22分、イニエスタが相手数人に囲まれながらもメッシにつなぐと、メッシが狭いエリアで細かいタッチを駆使して4人を抜き去って左足シュート。ヒメネスが弾いたボールに反応したL・スアレスがきっちり蹴り込み、リードを2点差に広げた。さらに直後の同24分にはドリブル突破を仕掛けたメッシが一気にスピードアップして再び相手4人を置き去りにすると、こぼれたボールをDFジョルディ・アルバが流し込んで3点目が生まれた。\n後半34分にDFダビド・ロペスに決められてエスパニョールに1点を返されたバルセロナだが、同45分にL・スアレスとのパス交換からPA内に進入したメッシがダイレクトで合わせてネットを揺らし、4-1の快勝を収めた。\nご視聴いただき、ありがとうございます。\nチャンネル登録、コメント＆高評価をいただけると嬉しいです♪\nチャンネル登録はこちら\nhttps://www.youtube.com/channel/UCMFR...\n【引用元】Livedoor NEWS",
+					'thumbnail' => '',
+                    'thumbnail_org' => '',
+                    //'content' => "すると、バルセロナの背番号10が立て続けに切れ味鋭いドリブルからゴールを演出する。後半22分、イニエスタが相手数人に囲まれながらもメッシにつなぐと、メッシが狭いエリアで細かいタッチを駆使して4人を抜き去って左足シュート。ヒメネスが弾いたボールに反応したL・スアレスがきっちり蹴り込み、リードを2点差に広げた。さらに直後の同24分にはドリブル突破を仕掛けたメッシが一気にスピードアップして再び相手4人を置き去りにすると、こぼれたボールをDFジョルディ・アルバが流し込んで3点目が生まれた。\n後半34分にDFダビド・ロペスに決められてエスパニョールに1点を返されたバルセロナだが、同45分にL・スアレスとのパス交換からPA内に進入したメッシがダイレクトで合わせてネットを揺らし、4-1の快勝を収めた。\nご視聴いただき、ありがとうございます。\nチャンネル登録、コメント＆高評価をいただけると嬉しいです♪\nチャンネル登録はこちら\nhttps://www.youtube.com/channel/UCMFR...\n【引用元】Livedoor NEWS",
                    	
-                    'open_status' => 1,
-                    'open_history' => 1,
-                    'open_date' => '2017-03-03 11:11:11',
+                    'open_status' => 0,
+                    'open_history' => 0,
+                    'open_date' => '2017-01-10 11:11:11',
                     'view_count' => $n+3,
                     
                     
-                    'created_at' => date('Y-m-n H:i:s', time()),
-                    'updated_at' => date('Y-m-n H:i:s', time()),
+                    'created_at' => date('Y-m-d H:i:s', time()),
+                    'updated_at' => date('Y-m-d H:i:s', time()),
                 ]
             );
             

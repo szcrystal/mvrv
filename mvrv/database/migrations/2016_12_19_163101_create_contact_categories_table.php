@@ -23,24 +23,24 @@ class CreateContactCategoriesTable extends Migration
         DB::table('contact_categories')->insert([
                 'category' => 'お問合わせ',
 
-                'created_at' => date('Y-m-n H:i:s', time()),
-                'updated_at' => date('Y-m-n H:i:s', time()),
+                'created_at' => date('Y-m-d H:i:s', time()),
+                'updated_at' => date('Y-m-d H:i:s', time()),
             ]
         );
         
         DB::table('contact_categories')->insert([
                 'category' => '削除依頼',
 
-                'created_at' => date('Y-m-n H:i:s', time()),
-                'updated_at' => date('Y-m-n H:i:s', time()),
+                'created_at' => date('Y-m-d H:i:s', time()),
+                'updated_at' => date('Y-m-d H:i:s', time()),
             ]
         );
         
         DB::table('contact_categories')->insert([
                 'category' => 'その他',
 
-                'created_at' => date('Y-m-n H:i:s', time()),
-                'updated_at' => date('Y-m-n H:i:s', time()),
+                'created_at' => date('Y-m-d H:i:s', time()),
+                'updated_at' => date('Y-m-d H:i:s', time()),
             ]
         );
         

@@ -385,7 +385,7 @@ var exe = (function() {
                 var title = $frame.find('div').eq(0).text();
                 var url = $frame.find('div').eq(1).text();
                 //image url取得 後ほど-----
-                var imgUrl = $frame.find('img').eq(0).attr('src'); //find(img:visible).attr(src)
+                var imgUrl = $frame.find('img:visible').attr('src'); //find(img:visible).attr(src)
                 // imageUrlEND------
                 var option = $(this).prevAll('select').val();
                 console.log(imgUrl);
@@ -592,6 +592,26 @@ var exe = (function() {
                 	console.log('nullnull');
                 }
             
+            });
+           
+            //$('.linksel-wrap').find('span').live('click', function(e){
+            $(document).delegate('.linksel-wrap span', 'click', function() {
+            	var $img = $(this).parent('div').prev('.linkimg-wrap').find('img:visible');
+                var num;
+                if($(this).is(':first-child')) {
+                	if($img.prev().is('img')) {
+                		$img.fadeOut(100);
+                    	num = $img.prev('img').fadeIn(100).data('count');
+                    }
+                }
+                else {
+                	if($img.next().is('img')) {
+                    	$img.fadeOut(100);
+                		num = $img.next('img').fadeIn(100).data('count');
+                    }
+                }
+                
+                $(this).siblings('small').find('em').eq(0).text(num);
             });
            
         },

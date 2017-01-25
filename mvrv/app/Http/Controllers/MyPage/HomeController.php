@@ -47,16 +47,29 @@ class HomeController extends Controller
                    ->orderBy('created_at', 'desc')
                    ->get();
         
-        
-        $atcls = Article::where(['owner_id'=>0, 'del_status'=>0])
-            	->orderBy('id', 'desc')
-                ->get();
-        
-        $closeCount = $posts->where('open_status', 0)->count();
+//        $atcls = Article::where(['owner_id'=>0, 'del_status'=>0])
+//            	->orderBy('id', 'desc')
+//                ->get();
+//        
+//        $closeCount = $posts->where('open_status', 0)->count();
         
         $cateModel = $this->category;
         
-        return view('mypage.index', ['posts'=>$posts, 'user'=>$user, 'atcls'=>$atcls, 'cateModel'=>$cateModel, 'closeCount'=>$closeCount]);
+        return view('mypage.index', ['posts'=>$posts, 'user'=>$user, 'cateModel'=>$cateModel]);
+    }
+    
+    public function newMovie() {
+    	$user = Auth::user();
+        
+    	$atcls = Article::where(['owner_id'=>0, 'del_status'=>0])
+            	->orderBy('id', 'desc')
+                ->get();
+        
+        $closeCount = Article::where(['owner_id'=>$user->id, 'open_status'=>0])->count();
+        
+        $cateModel = $this->category;
+        
+        return view('mypage.newMovie', ['atcls'=>$atcls, 'user'=>$user, 'cateModel'=>$cateModel, 'closeCount'=>$closeCount]);
     }
 
     /**
@@ -85,8 +98,8 @@ class HomeController extends Controller
      */
     public function store(Request $request)
     {
-    	$baseId = $request->input('base_id');
-    	$atcl = Article::find($baseId);
+    	$atclId = $request->input('atcl_id');
+    	$atcl = Article::find($atclId);
         $userId = Auth::user()->id;
         
 //        print_r($request->input('keyword'));
@@ -95,99 +108,139 @@ class HomeController extends Controller
     	if($atcl->owner_id) { //オーナーが先に決まった時
         	//return redirect('mypage/error')->with('owner_status', 1);
             return view('mypage.error', ['owner_status'=>1, 'atcl'=>$atcl]);
-        	
     	}
-        else { //オーナーが決まっていなければowner_idをセットして継続
-            $atcl->owner_id = $userId;
-        	$atcl->save();
         
-            $rules = [
-    //            'admin_name' => 'required|max:255',
-    //            'admin_email' => 'required|email|max:255', /* |unique:admins 注意:unique */
-    //            'admin_password' => 'required|min:6',
-            ];
-            
-            $this->validate($request, $rules);
-            
-            $data = $request->all(); //requestから配列として$dataにする
-            
-            if(isset($data['keep'])) {
-                $data['open_status'] = 0;
-            }
-            if(isset($data['open'])) {
-                $data['open_status'] = 1;
-                $data['open_history'] = 1;
-                $data['open_date'] = date('Y-m-d H:i:s', time());
-            }
-            
-            
-            //if(isset($data['item_type'])) {
+        //オーナーが決まっていなければowner_idをセットして継続
+        $atcl->owner_id = $userId;
+        $atcl->save();
+    
+        $rules = [
+//            'admin_name' => 'required|max:255',
+//            'admin_email' => 'required|email|max:255', /* |unique:admins 注意:unique */
+//            'admin_password' => 'required|min:6',
+        ];
+        
+        $this->validate($request, $rules);
+        
+        $data = $request->all(); //requestから配列として$dataにする
+        
+        if(isset($data['keep'])) {
+            $data['open_status'] = 0;
+        }
+        if(isset($data['open'])) {
+            $data['open_status'] = 1;
+            $data['open_history'] = 1;
+            $data['open_date'] = date('Y-m-d H:i:s', time());
+        }
+        
+        //Thumbnail Upload
+        if($request->file('thumbnail') != '') {
+            $filename = $request->file('thumbnail')->getClientOriginalName();
+            $filename = $userId .'/' . $atclId .'/thumbnail/' . $filename;
+            $path = $request->file('thumbnail')->storeAs('public', $filename);
+        
+            $data['thumbnail'] = $filename;
+        }
+        
+        $imgArr = $request->file('image_path');
+//            print_r($imgArr);
+//            exit();
+        
+        if(isset($data['item_type'])) {
+            $sequence_num = 1;
             foreach($data['item_type'] as $key => $val) {
-                $sequence_num = $key +1;
+                
+                if($val == '') { //item_typeが空ならスキップ
+                    continue;
+                }
+                    
+                //Create時にitem_idは使用しない
+                
+                if(isset($imgArr[$key])) {
+                    $itemFileName = $imgArr[$key]->getClientOriginalName();
+                    $itemFileName = $userId .'/' . $atclId .'/item/' . $itemFileName;
+                    $itemPath = $imgArr[$key]->storeAs('public', $itemFileName);
+            
+                    $data['image_path'][$key] = $itemFileName;
+                }
+                else {
+                    $data['image_path'][$key] = $data['image_path_hidden'][$key];
+                }
 
-                $admin = Item::create(
+                $itemModel = Item::create(
+                    //['id' => $item_id, 'atcl_id' => $id],
                     [
-                        'atcl_id' => $atcl->id,
+                        'atcl_id' => $atclId,
                         'item_type' => $data['item_type'][$key],
-                        'item_title' => $data['item_title'][$key],
-                        'item_title_op' => $data['item_title_op'][$key] ? $data['item_title_op'][$key] : 0,
-                        'item_text' => $data['item_text'][$key],
+                        'main_title' => $data['main_title'][$key],
+                        'title_option' => $data['title_option'][$key] ? $data['title_option'][$key] : 0,
+                        'main_text' => $data['main_text'][$key],
+                        'image_path' => $data['image_path'][$key],
+                        'image_title' => $data['image_title'][$key],
+                        'image_orgurl' => $data['image_orgurl'][$key],
+                        'image_comment' => $data['image_comment'][$key],
+                        'link_title' => $data['link_title'][$key],
+                        'link_url' => $data['link_url'][$key],
+                        'link_imgurl' => $data['link_imgurl'][$key],
+                        'link_option' => $data['link_option'][$key] ? $data['link_option'][$key] : 0, //or NULL
                         'item_sequence' => $sequence_num,
                     ]
                 );
-            }
-            exit();
-            //}
-            
-            
-            //タグセット
-            //$tagGroups = $this->tagGroup->all();
-            $tagGroups = $this->tagGroup->where('open_status',1)->get();
-            
-            foreach($tagGroups as $tg) {
-            	$tagArr = array();
-                if(isset($data[$tg->slug])) {
-                	$tagArr = $data[$tg->slug];
-                }
                 
+                $sequence_num++;
+            }
+            //exit();
+        }
+        
+        
+        //タグセット
+        //$tagGroups = $this->tagGroup->all();
+        $tagGroups = $this->tagGroup->where('open_status',1)->get();
+        
+        foreach($tagGroups as $tg) {
+            $tagArr = array();
+            if(isset($data[$tg->slug])) {
+                $tagArr = $data[$tg->slug];
+            }
+            
 //            	if($data[$tg->slug] != '') //空登録を回避
 //                	$tagArr = explode(' ', $data[$tg->slug]); //if(str_contains($data['tag_1'], ' ')) {
-                
-                foreach($tagArr as $tag) {
-                    $obj = $this->tag->where(['name'=>$tag, 'group_id'=>$tg->id])->first();
-                
-                    //Tagsにセット
-                    if(!isset($obj)) { //同じタグがなければ 既存タグがない場合 or $obj（既存タグ）はあるがグループが違う場合
-                        $settag = Tag::create([
-                            'group_id' => $tg->id,
-                            'name' => $tag,
-                            //'slug' => NULL,
-                            'view_count' => 0,
-                        ]);
-                        
-                        //slugにIDをセット
-                        $tagm = $this->tag->find($settag->id);
-                        $tagm->slug = $settag->id;
-                        $tagm->save();
-                        //idと名前を取る
-                        $tagId = $settag->id;
-                        $tagName = $tag;
-                    }
-                    else {
-                        $tagId = $obj->id;
-                        //$tagName = $obj->name;
-                    }
-                    
-                    
-                    //Relationにセット
-                    $settag = TagRelation::create([
-                        'atcl_id' => $baseId,
-                        'tag_id' => $tagId,
-                        //'tag_name' => $tagName,
+            
+            foreach($tagArr as $tag) {
+                $obj = $this->tag->where(['name'=>$tag, 'group_id'=>$tg->id])->first();
+            
+                //Tagsにセット
+                if(!isset($obj)) { //同じタグがなければ 既存タグがない場合 or $obj（既存タグ）はあるがグループが違う場合
+                    $settag = Tag::create([
+                        'group_id' => $tg->id,
+                        'name' => $tag,
+                        //'slug' => NULL,
+                        'view_count' => 0,
                     ]);
-                        
+                    
+                    //slugにIDをセット
+                    $tagm = $this->tag->find($settag->id);
+                    $tagm->slug = $settag->id;
+                    $tagm->save();
+                    //idと名前を取る
+                    $tagId = $settag->id;
+                    $tagName = $tag;
                 }
+                else {
+                    $tagId = $obj->id;
+                    //$tagName = $obj->name;
+                }
+                
+                
+                //Relationにセット
+                $settag = TagRelation::create([
+                    'atcl_id' => $atclId,
+                    'tag_id' => $tagId,
+                    //'tag_name' => $tagName,
+                ]);
+                    
             }
+        }
 
 //            $tag_1 = explode(' ', $data['tag_1']);
 //            foreach($tag_1 as $tag) {
@@ -224,20 +277,20 @@ class HomeController extends Controller
 //                ]);
 //                	
 //            }
-            
+        
 
-            //$atclModel = $this->article;
-            
-            $atcl->fill($data); //モデルにセット
-            $atcl->save(); //モデルからsave
-            
-            $id = $atcl->id;
-            
-            //articleBaseにpost_idをセット
-            //$atcl->post_id = $id;
-            //$atcl->save();
-            
-            //tagRelationへのセット
+        //$atclModel = $this->article;
+        
+        $atcl->fill($data); //モデルにセット
+        $atcl->save(); //モデルからsave
+        
+        $id = $atcl->id;
+        
+        //articleBaseにpost_idをセット
+        //$atcl->post_id = $id;
+        //$atcl->save();
+        
+        //tagRelationへのセット
 //            if(isset($data['open'])) { //公開（ボタン押下）時にセットする
 //            	$n = 0;
 //            	while ($n < 3) {
@@ -258,9 +311,9 @@ class HomeController extends Controller
 //                }
 //            }
 
-            //return view('dashboard.article.form', ['thisClass'=>$this, 'tags'=>$tags, 'status'=>'記事が更新されました。']);
-            return redirect('mypage/'.$id.'/edit')->with('status', '記事が追加されました！');
-        }
+        //return view('dashboard.article.form', ['thisClass'=>$this, 'tags'=>$tags, 'status'=>'記事が更新されました。']);
+        return redirect('mypage/'.$id.'/edit')->with('status', '記事が追加されました！');
+        
     }
 
     /**
@@ -324,6 +377,8 @@ class HomeController extends Controller
      */
     public function update(Request $request, $id)
     {
+    	$userId = Auth::user()->id;
+        
         $rules = [
 //            'admin_name' => 'required|max:255',
 //            'admin_email' => 'required|email|max:255', /* |unique:admins 注意:unique */
@@ -349,13 +404,13 @@ class HomeController extends Controller
 //        }
 //        exit();
         
-        //Sumbnail Upload
-        if($request->file('sumbnail') != '') {
-        	$filename = $request->file('sumbnail')->getClientOriginalName();
-        	$filename = $id . '/sumbnail/' . $filename;
-        	$path = $request->file('sumbnail')->storeAs('public', $filename);
+        //Thumbnail Upload
+        if($request->file('thumbnail') != '') {
+        	$filename = $request->file('thumbnail')->getClientOriginalName();
+        	$filename = $userId . '/' .$id . '/thumbnail/' . $filename;
+        	$path = $request->file('thumbnail')->storeAs('public', $filename);
         
-        	$data['sumbnail'] = $filename;
+        	$data['thumbnail'] = $filename;
         }
         
         $imgArr = $request->file('image_path');
@@ -365,57 +420,55 @@ class HomeController extends Controller
         
         //Item セット
         if(isset($data['item_type'])) {
-        $sequence_num = 1;
-        foreach($data['item_type'] as $key => $val) {
-        	if($val != '') {
-            	
-                $item_id = isset($data['item_id'][$key]) ? $data['item_id'][$key] : 0; //item_idは既存のitemにのみセットされている
-				
-                if($item_id && $data['delete_key'][$key]) {
+            $sequence_num = 1;
+            foreach($data['item_type'] as $key => $val) {
+                
+                if($val == '') { //item_typeが空ならスキップ
+                    continue;
+                }
+                
+                $item_id = $data['item_id'][$key] != '' ? $data['item_id'][$key] : 0; //item_idは既存のitemにのみセットされている
+                
+                if($item_id && $data['delete_key'][$key]) { //delete_keyはjsにてitem_idのあるもののみにセット
                     Item::destroy($item_id); //find($item_id)->delete()
                 }
                 else {
+                	//Item画像
+                    if(isset($imgArr[$key])) {
+                        $itemFileName = $imgArr[$key]->getClientOriginalName();
+                        $itemFileName = UserId . '/' .$id . '/item/' . $itemFileName;
+                        $itemPath = $imgArr[$key]->storeAs('public', $itemFileName);
                 
-                if(isset($imgArr[$key])) {
-                    $itemFileName = $imgArr[$key]->getClientOriginalName();
-                    $itemFileName = $id . '/item/' . $itemFileName;
-                    $itemPath = $imgArr[$key]->storeAs('public', $itemFileName);
-            
-                    $data['image_path'][$key] = $itemFileName;
-                }
-                elseif(isset($data['image_path_hidden'][$key])) {
-                    $data['image_path'][$key] = $data['image_path_hidden'][$key];
-                }
-                else {
-                    $data['image_path'][$key] = '';
-                }
-                
+                        $data['image_path'][$key] = $itemFileName;
+                    }
+                    else {
+                        $data['image_path'][$key] = $data['image_path_hidden'][$key];
+                    }
 
-                $itemModel = Item::updateOrCreate(
-                    ['id' => $item_id, 'atcl_id' => $id],
-                    [
-                        'atcl_id' => $id,
-                        'item_type' => $data['item_type'][$key],
-                        'main_title' => $data['main_title'][$key],
-                        'title_option' => $data['title_option'][$key] ? $data['title_option'][$key] : 0,
-                        'main_text' => $data['main_text'][$key],
-                        'image_path' => $data['image_path'][$key],
-                        'image_title' => $data['image_title'][$key],
-                        'image_orgurl' => $data['image_orgurl'][$key],
-                        'image_comment' => $data['image_comment'][$key],
-                        'link_title' => $data['link_title'][$key],
-                        'link_url' => $data['link_url'][$key],
-                        'link_imgurl' => $data['link_imgurl'][$key],
-                        'link_option' => $data['link_option'][$key] ? $data['link_option'][$key] : 0, //or NULL
-                        'item_sequence' => $sequence_num,
-                    ]
-                );
-            	
-                $sequence_num++;
+                    $itemModel = Item::updateOrCreate(
+                        ['id' => $item_id, 'atcl_id' => $id],
+                        [
+                            'atcl_id' => $id,
+                            'item_type' => $data['item_type'][$key],
+                            'main_title' => $data['main_title'][$key],
+                            'title_option' => $data['title_option'][$key] ? $data['title_option'][$key] : 0,
+                            'main_text' => $data['main_text'][$key],
+                            'image_path' => $data['image_path'][$key],
+                            'image_title' => $data['image_title'][$key],
+                            'image_orgurl' => $data['image_orgurl'][$key],
+                            'image_comment' => $data['image_comment'][$key],
+                            'link_title' => $data['link_title'][$key],
+                            'link_url' => $data['link_url'][$key],
+                            'link_imgurl' => $data['link_imgurl'][$key],
+                            'link_option' => $data['link_option'][$key] ? $data['link_option'][$key] : 0, //or NULL
+                            'item_sequence' => $sequence_num,
+                        ]
+                    );
+                    
+                    $sequence_num++;
                 } //delete_key
-            } //$val != ''
-        }
-        //exit();
+            }
+        	//exit();
         }
         
         
@@ -503,9 +556,13 @@ class HomeController extends Controller
 
 		
 
-        
-
-        return redirect('mypage/'.$id.'/edit')->with('status', '記事が更新されました！');
+        if(isset($data['preview'])) {
+        	$mypage = 'mypage/'.$id.'/edit/';
+        	return redirect('single/'.$id)->with('fromMp', $mypage);
+        }
+		else {
+        	return redirect('mypage/'.$id.'/edit')->with('status', '記事が更新されました！');
+        }
     }
 
     /**

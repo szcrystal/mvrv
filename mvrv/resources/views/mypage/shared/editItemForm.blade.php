@@ -27,12 +27,13 @@
             <button class="subm-image">Send</button>
         </div>
         <div class="item-link">
-            <label>リンク</label>
+            <label>リンクボタンオプション</label>
             <select name="link_option[]">
                 <option value="1"{{$item->link_option==1 ? ' selected' : ''}}>通常リンク</option>
                 <option value="2"{{$item->link_option==2 ? ' selected' : ''}}>ボタンタイプA</option>
                 <option value="3"{{$item->link_option==3 ? ' selected' : ''}}>ボタンタイプB</option>
             </select>
+            <label>リンクURL</label>
             <input class="link-url" type="text" name="link_url[]" value="{{$item->link_url}}">
             <button class="subm-check">チェック</button>
             <div class="link-frame">

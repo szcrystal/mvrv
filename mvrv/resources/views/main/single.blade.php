@@ -20,10 +20,15 @@
 
                 <div class="panel-body">
 
-					<div class="clear">
-                    <div class="pull-right">
-						<a href="{{ url('contact/'. $atcl->id) }}" class="btn btn-danger center-block">削除を依頼</a>
-                    </div>
+					<div class="clearfix">
+                    	@if(session('fromMp'))
+                            <div class="pull-left">
+                                <a href="{{ url(session('fromMp')) }}" class="btn btn-warning center-block">編集画面へ戻る</a>
+                            </div>
+                        @endif
+                        <div class="pull-right">
+                            <a href="{{ url('contact/'. $atcl->id) }}" class="btn btn-danger center-block">削除を依頼</a>
+                        </div>
                     </div>
 
                     <div class="table-responsive">
@@ -71,11 +76,11 @@
 
                     <div>
                     	<div class="well clearfix">
-                            <div class="col-md-4 pull-left">
-                            	<img style="border:10px solid #fff; width:100%;" src="{{ Storage::url($atcl -> sumbnail) }}">
+                            <div class="col-md-3 pull-left">
+                            	<img style="border:8px solid #fff; width:100%;" src="{{ Storage::url($atcl -> thumbnail) }}">
                             </div>
                             <div class="col-md-6 pull-left">
-                                <p>サムネイル引用元：{{ $atcl -> sumbnail_url }}</p>
+                                <p>サムネイル引用元：{{ $atcl -> thumbnail_org }}</p>
                                 <p>公開日時：{{ Ctm::changeDate($atcl->open_date, 'notime') }}</p>
                                 <p>レビューオーナー：{{ $user->name }}</p>
                             </div>

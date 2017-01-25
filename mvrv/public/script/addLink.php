@@ -7,6 +7,7 @@ $data['url'] = $url;
 //phpinfo();
 //exit();
 
+//No Curl -> apt-get -y install php-curl
 //$ch = curl_init();
 //
 //// URL や他の適当なオプションを設定します
@@ -34,37 +35,49 @@ $data['title'] = $doc["title"]->text();
 //$data['image'] = $doc['img'];
 
 
-echo 'Image Count:' . count($doc['img']) ."<br>";
+$imgCount = count($doc['img']);
 
 echo '<label>タイトル</label>'.'<div>'.$data['title'].'</div>'."\n";
 echo '<label>URL</label>'.'<div>'.$data['url'].'</div>'."\n";
-echo '<label>画像</label><div>';
 
-$n = 0;
+$imgFrame = '<label>画像</label><div class="linkimg-wrap">'."\n";
+
+$n = 1;
 foreach($doc['img'] as $val) {
-	if($n < 10) {
-		//$data['image'][] = pq($val); forjson
-        
-        $src = pq($val)->attr('src');
-        //echo $src;
-        
-        if(strpos($src, '://') !== FALSE) {
-        	echo pq($val) . "</div>";
-        }
-        else {
-            //echo $url.$src;
-            echo '<img src="'.$url.$src.'">' . "</div>";
-        }
+	if($n > 10) {
+    	break;
     }
+    //$data['image'][] = pq($val); forjson
+        
+    $width = pq($val)->attr('width');
+    if($width && $width < 50) {
+        continue;
+    }
+    
+    $src = pq($val)->attr('src');
+    
+    if(strpos($src, '://') === FALSE) {
+        $src = $url.$src;
+    }
+    
+    $imgFrame .= '<img src="'.$src.'" data-count="'.$n.'">'."\n";
+    //$imgFrame .= pq($val)."\n";
+    
 	$n++;
 }
+$firstNum = $n > 1 ? 1 : 0;
+
+$imgFrame .= "</div>\n";
+$imgFrame .= '<div class="linksel-wrap">'."\n";
+$imgFrame .= '<span>＜</span>'."\n";
+$imgFrame .= '<small><em>'.$firstNum.'</em>／<em>'.($n-1).'</em></small>'."\n";
+$imgFrame .= '<span>＞</span>'."\n";
+$imgFrame .= '</div>'."\n";
+
+echo $imgFrame;
 
 //$data = json_encode($data);
 //echo $data;
-
-
-
-
 
 
 

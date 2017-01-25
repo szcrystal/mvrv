@@ -65,6 +65,7 @@ Route::resource('dashboard/contacts', 'dashboard\ContactController');
 
 //MyPage
 Route::get('mypage/{atclId}/create', 'MyPage\HomeController@create');
+Route::get('mypage/newmovie', 'MyPage\HomeController@newMovie');
 Route::resource('mypage', 'MyPage\HomeController');
 
 

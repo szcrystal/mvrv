@@ -2,60 +2,10 @@
 
 @section('content')
 
-<?php
-
-//require_once('script/phpQuery-onefile.php');
-
-//$url='http://www.yahoo.co.jp';
-//$data = array();
-//$data['url'] = $url;
-
-//$html = file_get_contents($url, false, stream_context_create(array(
-//    'http'=>array(
-//        'method'=>"GET",
-//        'header'=>"User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:13.0) Gecko/20100101 Firefox/13.0.1",
-//        'ignore_errors'=>true,
-//    ),
-//)));
-//
-//$doc = phpQuery::newDocument($html);
-//$data['title'] = pq("title")->text();
-//$data['image'] = $doc['img'];
-//
-//echo count($doc['img']);
-//
-//echo '<label>タイトル</label>'.'<p>'.$data['title'].'</p>'."\n";
-//echo '<label>URL</label>'.'<p>'.$data['url'].'</p>'."\n";
-//echo '<label>画像</label>'."\n";
-//foreach($doc['img'] as $val) {
-//	echo "<p>" . pq($val) . "</p>";
-//}
-
-
-
-//$curl = curl_init($url);
-// 
-//  if (!$curl) {
-//    // cURLが使えない場合はURLにリンクを貼る
-//    return '<a href="' . $url . '">' . htmlspecialchars($url) . '</a>';
-//  }
-// 
-//  // HTMLソースを取得
-//  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-//  $html = curl_exec($curl);
-//  curl_close($curl);
-// 
-// echo $html;
-//  if (preg_match("/<title>(.*?)<\/title>/i", $html, $matches)) {
-//    // タイトル文字列にリンクを貼る
-//    return '<a href="' . $url . '">' . $matches[1] . '</a>';
-//  }
-?>
-
-<div class="container">
+<div class="container mp-edit">
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
-        	<a href="/mypage">戻る</a>
+        	<a href="{{url('mypage')}}">戻る</a>
             <div class="panel panel-default">
                 <div class="panel-heading"><h3>{{ $atcl->title }} の記事を編集</h3></div>
 				@if(session('status'))
@@ -129,39 +79,75 @@
 
                         {{ method_field('PUT') }}
 
-						<div class="clearfix">
-                            <div style="width: 170px; height:170px; overflow:hidden;" class="pull-left col-md-3">
-                                @if($atcl->sumbnail)
-                                <img style="width: 120%;" src="{{ Storage::url($atcl->sumbnail) }}">
+						<div class="well">
+                            @if($atcl->open_history)
+                                <div class="form-group">
+                                    <div class="col-md-6 col-md-offset-7">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" name="open_status" value="1" {{isset($atcl) && $atcl->open_status ? 'checked' : '' }}> 公開する
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div class="clearfix col-md-offset-7">
+                                @if(! $atcl->open_history)
+                                <div class="form-group pull-left">
+                                    <div class="col-md-3">
+                                        <input type="submit" class="btn btn-danger" name="open" value="公開する">
+                                    </div>
+                                </div>
+                                @endif
+                                <div class="form-group pull-left">
+                                    <div class="col-md-3 col-md-offset-1">
+                                        <input type="submit" class="btn btn-warning" name="preview" value="保存してプレビュー">
+                                    </div>
+                                </div>
+                                <div class="form-group pull-left">
+                                    <div class="col-md-3 col-md-offset-2">
+                                        <input type="submit" class="btn btn-primary" name="keep" value="保存する">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+						<div class="clearfix thumb-wrap">
+                            <div style="width:170px; height:170px; overflow:hidden;" class="pull-left">
+                                @if($atcl->thumbnail)
+                                <img style="width: 120%;" src="{{ Storage::url($atcl->thumbnail) }}">
                                 @else
-                                <div style="width: 170px; height:170px; border: 1px solid #ccc;"></div>
+                                <div style="width:100%; height:100%; border:1px solid #ccc;">No Image</div>
                                 @endif
                             </div>
 
                             <div class="pull-left col-md-9">
-                            <div class="form-group{{ $errors->has('sumbnail') ? ' has-error' : '' }}">
-                                <label for="sumbnail" class="col-md-4 control-label">サムネイル</label>
+                                <div class="form-group{{ $errors->has('thumbnail') ? ' has-error' : '' }}">
+                                    <label for="thumbnail" class="col-md-4 control-label">サムネイル</label>
 
-                                <div class="col-md-8">
-                                    <input id="sumbnail" type="file" name="sumbnail">
+                                    <div class="col-md-8">
+                                        <input id="thumbnail" type="file" name="thumbnail">
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="form-group{{ $errors->has('sumbnail_org') ? ' has-error' : '' }}">
-                                <label for="sumbnail_org" class="col-md-4 control-label">サムネイル引用元URL</label>
-                                <div class="col-md-8">
-                                    <input id="sumbnail_org" type="text" class="form-control" name="sumbnail_org" value="{{ isset($atcl) ? $atcl->sumbnail_org : old('sumbnail_org') }}">
+                                <div class="form-group{{ $errors->has('thumbnail_org') ? ' has-error' : '' }}">
+                                    <label for="thumbnail_org" class="col-md-4 control-label">サムネイル引用元URL</label>
+                                    <div class="col-md-8">
+                                        <input id="thumbnail_org" type="text" class="form-control" name="thumbnail_org" value="{{ isset($atcl) ? $atcl->thumbnail_org : old('thumbnail_org') }}">
 
-                                    @if ($errors->has('sumbnail_org'))
-                                        <span class="help-block">
-                                            <strong>{{ $errors->first('sumbnail_org') }}</strong>
-                                        </span>
-                                    @endif
+                                        @if ($errors->has('thumbnail_org'))
+                                            <span class="help-block">
+                                                <strong>{{ $errors->first('thumbnail_org') }}</strong>
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
-                            </div>
+                        	</div>
                         </div>
 
-                        </div>
+                        <div class="tag-wrap">
 
 						@foreach($tagGroupAll as $group)
                         	<?php
@@ -202,6 +188,8 @@
 
                         @endforeach
 
+                        </div><?php //tagwrap ?>
+
 
                         {{--
                         	@foreach($tagGroups as $key => $tagArr)
@@ -222,78 +210,9 @@
                         --}}
 
 
-                        {{--
-                        <div class="form-group{{ $errors->has('keyword') ? ' has-error' : '' }}">
-                            <label for="title" class="col-md-4 control-label">タグ：キーワード</label>
-
-                            <div class="col-md-6">
-                                <input id="keyword" type="text" class="form-control" name="keyword" value="{{ old('keyword') }}" required>
-
-                                @if ($errors->has('keyword'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('keyword') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group{{ $errors->has('actor') ? ' has-error' : '' }}">
-                            <label for="title" class="col-md-4 control-label">タグ：俳優</label>
-
-                            <div class="col-md-6">
-                                <input id="actor" type="text" class="form-control" name="actor" value="{{ old('actor') }}" required>
-
-                                @if ($errors->has('actor'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('actor') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group{{ $errors->has('staff') ? ' has-error' : '' }}">
-                            <label for="title" class="col-md-4 control-label">タグ：スタッフ</label>
-
-                            <div class="col-md-6">
-                                <input id="staff" type="text" class="form-control" name="staff" value="{{ old('staff') }}" required>
-
-                                @if ($errors->has('staff'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('staff') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-						--}}
 
 
-						@if($atcl->open_history)
-                        <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" name="open_status" value="1" {{isset($atcl) && $atcl->open_status ? 'checked' : '' }}> 公開する
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
 
-						<div class="clearfix col-md-offset-5">
-                            <div class="form-group pull-left">
-                                <div style="margin-right: 3em;" class="col-md-7 col-md-offset-3">
-                                    <input type="submit" class="btn btn-primary" name="keep" value="保存する">
-                                </div>
-                            </div>
-
-                            @if(! $atcl->open_history)
-                            <div class="form-group pull-left">
-                                <div class="col-md-7 col-md-offset-3">
-                                    <input type="submit" class="btn btn-danger" name="open" value="公開する">
-                                </div>
-                            </div>
-                            @endif
-						</div>
 <p>http://www.msn.com/ja-jp?rd=1</p>
 <p>https://www.google.co.jp/?gws_rd=ssl</p>
 <p>http://www.yahoo.co.jp</p>
@@ -301,12 +220,8 @@
 
                 <div class="add-item">
                 	<div class="visible-none">
-                        <ul class="ctrl-nav">
-                            <li class="edit-sec" data-target="">編集
-                            <li class="del-sec">削除
-                            <li class="up-sec">UP
-                            <li class="down-sec">DOWN
-                        </ul>
+                        @include('mypage.shared.itemCtrlNav')
+
                         @include('mypage.shared.newItemForm')
                     </div>
 
@@ -317,12 +232,7 @@
                     @foreach($items as $item)
                         @if($item->item_type == 'title')
                             <section>
-                                <ul class="ctrl-nav">
-                                    <li class="edit-sec" data-target="{{$item->item_type}}">編集</li>
-                                    <li class="del-sec">削除</li>
-                                    <li class="up-sec">UP</li>
-                                    <li class="down-sec">DOWN</li>
-                                </ul>
+								@include('mypage.shared.itemCtrlNav')
 
                                 @if($item->title_option == 1)
                                     <h1>{{ $item->main_title }}</h1>
@@ -335,12 +245,8 @@
 
                         @elseif($item->item_type == 'text')
                             <section>
-                                <ul class="ctrl-nav">
-                                    <li class="edit-sec" data-target="{{$item->item_type}}">編集</li>
-                                    <li class="del-sec">削除</li>
-                                    <li class="up-sec">UP</li>
-                                    <li class="down-sec">DOWN</li>
-                                </ul>
+                                @include('mypage.shared.itemCtrlNav')
+
                                 <p>{!! nl2br($item->main_text) !!}</p>
 
                                 @include('mypage.shared.editItemForm')
@@ -348,12 +254,8 @@
 
                         @elseif($item->item_type == 'image')
                             <section>
-                                <ul class="ctrl-nav">
-                                    <li class="edit-sec" data-target="{{$item->item_type}}">編集</li>
-                                    <li class="del-sec">削除</li>
-                                    <li class="up-sec">UP</li>
-                                    <li class="down-sec">DOWN</li>
-                                </ul>
+                                @include('mypage.shared.itemCtrlNav')
+
                                 <img src="{{ Storage::url($item->image_path) }}" width="120" height="120">
                                 <h4>{{$item->image_title}}</h4>
                                 <p>引用元：{{$item->image_orgurl}}</p>
@@ -364,12 +266,8 @@
 
                         @elseif($item->item_type == 'link')
                             <section>
-                                <ul class="ctrl-nav">
-                                    <li class="edit-sec" data-target="{{$item->item_type}}">編集</li>
-                                    <li class="del-sec">削除</li>
-                                    <li class="up-sec">UP</li>
-                                    <li class="down-sec">DOWN</li>
-                                </ul>
+                                @include('mypage.shared.itemCtrlNav')
+
                                 <p><a href="{{ $item->link_url}}">{{ $item->link_title }} Option:{{ $item->link_option }}<br>
                                 <img src="{{ $item->link_imgurl }}"></a></p>
 
