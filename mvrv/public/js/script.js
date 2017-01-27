@@ -182,12 +182,23 @@ var exe = (function() {
                 });
                 
                 $tagInput.on('keydown', function(event){ //or keypress
-                	if(event.which == 13) //40
+                	if(event.which == 13) {//40
+                    	if(event.type=='keydown') { // && $('.ui-menu').is(':hidden')
+                        	var texts = $(this).val();
+                            if(texts != '') {
+                        		if(addTagOnArea(this, texts, group))
+                             		$(this).val('');
+                             
+                            	console.log(event.type);
+                            }
+                        }
                     	event.preventDefault();
+                    }
                     
                     if($(this).val().length < 2) { //event.which == 8 &&
                 		$(this).next('.add-btn').fadeOut(100);
                 	}
+                    
                     
                 });
                 

@@ -436,7 +436,7 @@ class HomeController extends Controller
                 	//Item画像
                     if(isset($imgArr[$key])) {
                         $itemFileName = $imgArr[$key]->getClientOriginalName();
-                        $itemFileName = UserId . '/' .$id . '/item/' . $itemFileName;
+                        $itemFileName = $userId . '/' .$id . '/item/' . $itemFileName;
                         $itemPath = $imgArr[$key]->storeAs('public', $itemFileName);
                 
                         $data['image_path'][$key] = $itemFileName;

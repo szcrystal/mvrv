@@ -45,8 +45,9 @@ class SearchController extends Controller
         //exit();
         
         $objs = $this->returnSearchObj($searchs);
-        extract($objs); //$allResultはコレクション->all()で配列になっている
+        extract($objs); //$allResultはコレクション->all()で配列になっている -> 該当するIDを配列で取得に変更
         
+        /*
         //Custom Pagination
         $perPage = $this->perPage;
         $total = count($allResults);
@@ -58,10 +59,15 @@ class SearchController extends Controller
             $chunked = $chunked[$current_page - 1]; //現在のページに該当する配列を$chunkedに入れる
         }
         
-        $allResults = new LengthAwarePaginator($chunked, $total, $perPage); //pagination インスタンス
-        $allResults -> setPath('search'); //pathセット
-        $allResults -> appends(['s' => $search]); //get set
+        $allResults = new LengthAwarePaginator($chunked, $total, $perPage); //pagination インスタンス作成
+        $allResults -> setPath('search'); //url pathセット
+        $allResults -> appends(['s' => $search]); //get url set
+        //Custom pagination END
+        */
         
+        $allResults = $this->article->whereIn('id', $allResIds)->where([
+        	['del_status', '=', 0], ['open_status', '=', 1], ['owner_id', '>', 0]
+        ])->orderBy('open_date','DESC')->paginate($this->perPage);
         
         //Sidebar
         $rankName = '全体';
@@ -70,13 +76,11 @@ class SearchController extends Controller
         
         $groupModel = $this->tagGroup;
         
-    	return view('main.search.index', ['pages'=>$allResults, 'searchStr' => $search, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel]);
-    
-    	//return view('main.index', ['posts'=>$posts, 'rankName'=>$rankName, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName]);
+    	return view('main.search.index', ['atcls'=>$allResults, 'searchStr' => $search, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel]);
     }
     
     
-    //検索関数
+    //検索関数 on private
     private function returnSearchObj($search)
     {
         //全角スペース時半角スペースに置き換える
@@ -237,13 +241,38 @@ class SearchController extends Controller
         
         
         //All Result: union使用（結合）なのでコレクションにする必要がある（paginationが使えない）
-        $allResults = $first->union($second)->union($atclQuery)->get()->where('open_status', 1)->all();
+        //union()->where()が効かない
+        //$allResults = $first->union($second)->union($atclQuery)->get()->where('open_status', 1)->all();
+        
+        /* ORG *****
+        $allResults = $first->union($second)->union($atclQuery)->get()
+                        ->sortByDesc('open_date')
+                        ->map(function($item){
+                            if($item->del_status == 0 && $item->open_status == 1 && $item->owner_id > 0) {
+                                return $item;
+                            }
+                        })
+                        ->all();
+        //print_r($allResults);
+        
+        $allResults = array_filter($allResults); //空要素を削除
+        $allResults = array_merge($allResults); //indexを振り直す
+        ***** ORG END */
+        
+        $allResIds = $first->union($second)->union($atclQuery)->get()->map(function($item){
+            return $item->id;
+        })->all();
+        
+//        print_r($allResIds);
+//        exit();
+        
         
         //$count = $query->count();
         //$pages = $query->paginate($this->pg);
         //$pages -> appends(['s' => $search]); //paginateのヘルパー：urlを付ける
         
-        return compact('allResults', 'search');
+        //return compact('allResults', 'search');
+        return compact('allResIds', 'search');
         //return [$pages, $search];
     }
 

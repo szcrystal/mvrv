@@ -1,4 +1,4 @@
-@extends('appDashBoard')
+@extends('layouts.appDashBoard')
 
 @section('content')
 	

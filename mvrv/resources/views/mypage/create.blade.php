@@ -70,6 +70,22 @@
                         <input type="hidden" name="user_id" value="{{$userId}}">
                         <input type="hidden" name="atcl_id" value="{{ $atcl->id }}">
 
+						<div class="well">
+                            <div class="col-md-offset-9 clearfix">
+                            	<div class="form-group pull-left">
+                                <div class="col-md-3">
+                                    <input type="submit" class="btn btn-primary" name="keep" value="保存する">
+                                </div>
+                                </div>
+
+								<div class="form-group pull-left">
+                                <div class="col-md-3 col-md-offset-2">
+                                    <input type="submit" class="btn btn-danger" name="open" value="公開する">
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+
 
                         <div style="margin-bottom: 2em;" class="clear">
                             <div style="width: 170px; height:170px; border: 1px solid #ccc;" class="pull-left col-md-3">
@@ -155,15 +171,7 @@
                         </div>
                         --}}
 
-                        <div class="col-md-offset-4 clearfix">
-                            <div style="margin-bottom: 1em;" class="col-md-3 pull-left">
-                                <input type="submit" class="btn btn-primary" name="keep" value="保存する">
-                            </div>
 
-                            <div class="col-md-2 pull-left">
-                                <input type="submit" class="btn btn-danger" name="open" value="公開する">
-                            </div>
-                        </div>
 
 
                 <div class="add-item">

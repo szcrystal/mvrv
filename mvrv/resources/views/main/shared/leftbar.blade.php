@@ -10,7 +10,8 @@
                 <h4>カテゴリ</h4>
                 <ul class="no-list">
                 <?php foreach($cateLeft as $val) { ?>
-                    <li style="border: 1px solid #aaa;">
+                    <li>
+                        <i class="fa fa-crosshairs" aria-hidden="true"></i>
                         <a href="{{url('/category/'.$val->slug)}}">{{$val->name}}</a>
                     </li>
                 <?php } ?>

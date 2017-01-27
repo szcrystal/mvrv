@@ -14,19 +14,7 @@
                 @endif
 
                 <div class="panel-body">
-					<div>
-                        <ul class="no-list">
-                        <?php foreach($atcls as $val) { ?>
-                            <li style="border: 1px solid #aaa;">
-                                <p><a href="{{url('/single/'.$val->id)}}">{{$val->title}}</a></p>
-                            </li>
-                        <?php } ?>
-
-                        </ul>
-
-                        {{ $atcls->links() }}
-                    </div>
-
+                	@include('main.shared.main')
                 </div>
             </div>
 

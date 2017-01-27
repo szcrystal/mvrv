@@ -12,13 +12,24 @@
 */
 
 Route::get('/', 'Main\HomeController@index');
-
 Route::get('single/{postId}', 'Main\HomeController@showSingle');
 
 
 //Category
 Route::get('category', 'Main\CategoryController@index');
 Route::get('category/{slug}', 'Main\CategoryController@show');
+
+//Tag =======
+use App\TagGroup;
+$groupSlugs = TagGroup::where('open_status', 1)->get();
+foreach($groupSlugs as $gs) {
+	Route::group(['prefix' => $gs->slug], function(){
+    	Route::get('/', 'Main\TagController@index');
+        Route::get('{tagSlug}', 'Main\TagController@show');
+    });
+}
+//Route::get('{groupSlug}', 'Main\TagController@index');
+//Route::get('{groupSlug}/{tagSlug}', 'Main\TagController@show');
 
 //Contact
 Route::get('contact/{id}', 'Main\ContactController@index');
@@ -28,6 +39,10 @@ Route::resource('contact', 'Main\ContactController');
 Route::get('search', 'Main\SearchController@index');
 
 
+//MyPage
+Route::get('mypage/{atclId}/create', 'MyPage\HomeController@create');
+Route::get('mypage/newmovie', 'MyPage\HomeController@newMovie');
+Route::resource('mypage', 'MyPage\HomeController');
 
 
 //DashBoard
@@ -59,17 +74,6 @@ Route::post('dashboard/contacts/cate/{cateId}', 'dashboard\ContactController@pos
 Route::resource('dashboard/contacts', 'dashboard\ContactController');
 
 
-//Route::get('/dashboard/register', function () {
-//	return view('dashboard/register');
-//});
-
-//MyPage
-Route::get('mypage/{atclId}/create', 'MyPage\HomeController@create');
-Route::get('mypage/newmovie', 'MyPage\HomeController@newMovie');
-Route::resource('mypage', 'MyPage\HomeController');
-
-
-
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');
@@ -78,9 +82,7 @@ Route::get('/auth/register', function () {
 	return view('auth/register');
 });
 
-//Tag =======
-Route::get('{groupSlug}', 'Main\TagController@index');
-Route::get('{groupSlug}/{tagSlug}', 'Main\TagController@show');
+
 
 
 

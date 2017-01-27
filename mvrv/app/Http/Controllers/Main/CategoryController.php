@@ -30,14 +30,18 @@ class CategoryController extends Controller
     public function index()
     {
     	
-        return view('dashboard.index', ['name'=>$adminUser->name]);
+        //return view('dashboard.index', ['name'=>$adminUser->name]);
     }
     
     public function show($cateSlug)
     {
     	$cate = $this->category->where('slug', $cateSlug)->first();
         //$posts = $this->article->where(['cate_id'=>$cate->id, 'open_status'=>1])->get();
-        $posts = $this->article->where(['cate_id'=>$cate->id, 'open_status'=>1])->paginate($this->perPage);
+        $atcls = $this->article
+                    ->where(['cate_id'=>$cate->id, 'open_status'=>1, 'del_status'=>0])
+                    ->whereNotIn('owner_id', [0])
+                    ->orderBy('open_date','DESC')
+                    ->paginate($this->perPage);
         
         //getSidebarArg
         $arg = Ctm::getArgForView($cateSlug, 'cate');
@@ -53,7 +57,7 @@ class CategoryController extends Controller
         $rankName = 'カテゴリー:'.$cate->name;
         $groupModel = $this->tagGroup;
         
-        return view('main.category.show', ['posts'=> $posts, 'cateName'=>$cate->name, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel]);
+        return view('main.category.show', ['atcls'=> $atcls, 'cateName'=>$cate->name, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel]);
     }
     
 

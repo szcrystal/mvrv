@@ -28,6 +28,8 @@ class HomeController extends Controller
         $this->tagGroup = $tagGroup;
         $this->category = $category;
         $this->item = $item;
+        
+        $this->perPage = env('PER_PAGE', 20);
     }
 
     /**
@@ -37,12 +39,11 @@ class HomeController extends Controller
      */
     public function index()
     {
-    	$atcl = Article::where([
-                    ['del_status', '=', '0'], ['owner_id', '>', '0'], ['open_status','=',1]
-                ])->get();
+    	$atcls = Article::where([
+                    ['del_status', '=', 0], ['open_status','=',1], ['owner_id', '>', 0]
+                ])->orderBy('open_date','DESC')->paginate($this->perPage);
         
-        
-    	$posts = $atcl ->sortByDesc('open_date')->take(30); //Collection
+    	//$atcls = $atcl ->sortByDesc('open_date')->paginate($this->perPage); //Collection
         //$ranks = $atcl ->sortByDesc('view_count')->take(20);
         
 //        $objId = array();
@@ -63,12 +64,20 @@ class HomeController extends Controller
         
         $groupModel = $this->tagGroup;
     
-    	return view('main.index', ['posts'=>$posts, 'rankName'=>$rankName, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel]);
+    	return view('main.index', ['atcls'=>$atcls, 'rankName'=>$rankName, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel]);
     }
     
     public function showSingle($postId)
     {
-    	$atcl = Article::find($postId);
+    	$atcl = Article::where([
+                    ['del_status', '=', 0], ['open_status','=',1], ['owner_id', '>', 0]
+                ])->find($postId);
+        //Error
+        if(!isset($atcl)) {
+        	abort(404);
+        }
+        
+        
         $user = User::find($atcl->owner_id);
 
 		//relationからtagIdを取得

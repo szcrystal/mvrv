@@ -1,8 +1,12 @@
 
+#app {
+	min-height: 1000px;
+}
 #main {
 	width: 58%;
     //border: 1px solid red;
     float: left;
+    min-height: 1000px;
 }
 #left-bar {
 	float: left;
@@ -21,12 +25,17 @@
 	height: 15em;
     width: 100%;
 }
-.no-list {
+.main-list {
 	list-style: none;
     margin: 0;
     padding: 0;
 }
-
+#left-bar ul,
+#right-bar ul {
+	list-style: none;
+    padding: 0;
+    margin: 0;
+}
 
 .clear:after {
 	display: block;
@@ -35,19 +44,19 @@
     height: 0;
 }
 
-.top .panel-body li {
+#main .main-list li {
 	border-bottom: 1px solid #ccc;
     padding: 0.7em;
 }
-.top .panel-body li div {
+#main .main-list li div {
 	width: 140px;
     height: 140px;
     overflow: hidden;
 }
-.top .panel-body li div > img {
+#main .main-list li div > img {
 	width: 130%;
 }
-.top .panel-body li div + h2 {
+#main .main-list li div + h2 {
 	font-size: 1.0em;
     width: 70%;
 }
@@ -296,4 +305,18 @@ textarea {
 .single .rv-content p {
 	font-size: 1.1em;
     font-family: sans-serif;
+}
+
+#colop > div {
+	min-height: 15em;
+    background: #FFFEFF;
+    border-top: 1px solid #efefef;
+}
+#colop > p {
+	margin: 0;
+    padding: 0;
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 0.5em 0;
 }

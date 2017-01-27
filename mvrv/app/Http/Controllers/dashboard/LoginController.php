@@ -38,7 +38,7 @@ class LoginController extends Controller
     {
     	$rules = [
             'email' => 'required|email|max:255',
-            'password' => 'required|min:6',
+            'password' => 'required|min:8',
         ];
         
         $this->validate($request, $rules); //errorなら自動で$errorが返されてリダイレクト、通過で自動で次の処理へ

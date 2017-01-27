@@ -114,7 +114,7 @@ return [
         'user_name' => '「お名前」', // forお問い合わせ
         'user_email' => '「メールアドレス」',// forお問い合わせ
         'ask_category' => 'お問合わせ内容',
-        'name' => '「名前」',
+        'name' => '「ユーザー名」',
         'email' => '「メールアドレス」',
         'context' => '「コメント」',
         'title' => '「タイトル」',

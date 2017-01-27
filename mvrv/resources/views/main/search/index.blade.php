@@ -8,29 +8,14 @@
 
             <div class="panel panel-default">
 
-            	@if(!count($pages))
+            	@if(!count($atcls))
                 <div class="panel-heading">検索ワード：{{ $searchStr }}の記事がありません</div>
 				@else
 				<div class="panel-heading">検索ワード：{{ $searchStr }}</div>
                 @endif
 
-
                 <div class="panel-body">
-					<div>
-                        <ul class="no-list">
-                        @foreach($pages as $val)
-                            <li style="border: 1px solid #aaa;">
-                                <p><a href="{{url('/single/'.$val->id)}}">{{ $val->title }}</a></p>
-                                <p>{{-- $val->text --}}</p>
-                            </li>
-                        @endforeach
-
-                        </ul>
-                    </div>
-
-                    {{-- $pages->render() --}}
-                    {{ $pages->links() }}
-
+                	@include('main.shared.main')
                 </div>
             </div>
 

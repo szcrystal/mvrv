@@ -20,7 +20,7 @@ class MainController extends Controller
 	public function __construct(Admin $admin, ArticleBase $articleBase, Tag $tag)
     {
     	
-        $this -> middleware('adminauth', ['except' => ['getRegister','postRegister']]);
+        $this -> middleware('adminauth'/*, ['except' => ['getRegister','postRegister']]*/);
         //$this->middleware('auth:admin', ['except' => 'getLogout']);
         //$this -> middleware('log', ['only' => ['getIndex']]);
         
@@ -56,8 +56,8 @@ class MainController extends Controller
         
     	$rules = [
             'name' => 'required|max:255',
-            'email' => 'required|email|max:255', /* |unique:admins 注意:unique */
-            'password' => 'required|min:6',
+            'email' => 'required|email|unique:admins|max:255', /* |unique:admins 注意:unique */
+            'password' => 'required|min:8',
         ];
         
         $this->validate($request, $rules);

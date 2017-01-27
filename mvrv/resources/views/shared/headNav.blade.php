@@ -52,8 +52,7 @@
                     </li>
                 @endif
                 <li><a href="{{ url('/contact') }}">Contact</a></li>
-                <li><a href="{{ url('dashboard') }}" target="_brank">管理画面</a></li>
-                <li><a href="{{ url('dashboard/register') }}" target="_brank">管理者登録</a></li>
+                
 
                 <li style="margin-top: 0.4em;" class="sidebar-search">
 					<form class="form-horizontal" role="form" method="GET" action="{{ url('search') }}">

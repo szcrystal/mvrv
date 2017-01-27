@@ -220,12 +220,13 @@
 
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-user fa-fw"></i>
+                        {{--
                         @if (Auth::guard('admin')->viaRemember())
 							viaRemember
                         @else
 							NoViaRemember
                         @endif
-
+						--}}
 						{{ Auth::guard('admin')->user()->name }}
                         <i class="fa fa-caret-down"></i>
                     </a>
@@ -245,17 +246,7 @@
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
-                        <li class="sidebar-search">
-                            <div class="input-group custom-search-form">
-                                <input type="text" class="form-control" placeholder="Search...">
-                                <span class="input-group-btn">
-                                <button class="btn btn-default" type="button">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </span>
-                            </div>
-                            <!-- /input-group -->
-                        </li>
+
                         <li>
                             <a href="{{ url('/dashboard') }}"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
@@ -327,7 +318,7 @@
                         </li>
 
                         <li>
-                            <a href="#"><i class="fa fa-wrench fa-fw"></i> 管理者設定<span class="fa arrow"></span></a>
+                            <a href="{{ url('dashboard/register') }}"><i class="fa fa-wrench fa-fw"></i> 管理者設定<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
                                     <a href="{{ url('dashboard/register') }}">管理者追加</a>

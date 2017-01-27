@@ -25,16 +25,19 @@ class RedirectIfAuthenticated
         }
         
 
-        if($request->has('userLogin') && $request->userLogin) { //ログイン時のみ activeかどうか
-            $email = $request->input('email');
-            $user = User::where(['email'=>$email])->first();
-            
-            if(! $user->active) {
-                //return redirect('login')->with('status', 'ログインが許可されていません');
-                $error = 'ログインが許可されていません';
-                return redirect() -> back() -> withErrors($error);
-            }
-        }
+//        if($request->has('userLogin') && $request->userLogin) { //ログイン時のみ activeかどうか
+//            $email = $request->input('email');
+//            $user = User::where(['email'=>$email])->first();
+//            
+//            if(!isset($user)) {
+//            	return redirect() -> back();
+//            }
+//            else if(! $user->active) {
+//                //return redirect('login')->with('status', 'ログインが許可されていません');
+//                $error = 'ログインが許可されていません';
+//                return redirect() -> back() -> withErrors($error);
+//            }
+//        }
 
         return $next($request);
     }

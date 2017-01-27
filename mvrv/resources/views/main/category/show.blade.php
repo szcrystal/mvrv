@@ -7,26 +7,14 @@
 		<div class="col-md-12">
 
             <div class="panel panel-default">
-            	@if($posts->isEmpty())
+            	@if($atcls->isEmpty())
                 <div class="panel-heading">カテゴリー：{{ $cateName }}の記事がありません</div>
 				@else
 				<div class="panel-heading">カテゴリー：{{ $cateName }}</div>
                 @endif
 
                 <div class="panel-body">
-
-                        <ul class="no-list">
-                        <?php foreach($posts as $val) { ?>
-                            <li style="border: 1px solid #aaa;">
-                                <p><a href="{{url('/single/'.$val->id)}}">{{$val->title}}</a></p>
-
-                            </li>
-                        <?php } ?>
-
-                        </ul>
-
-                    {{ $posts->links() }}
-
+                	@include('main.shared.main')
                 </div>
             </div>
 

@@ -61,7 +61,7 @@
                                     <td>
                                     @if(isset($tagGroups[$group->id]))
                                     	@foreach($tagGroups[$group->id] as $tag)
-											<a href="{{ url('tag/'. $tag['slug']) }}">{{ $tag['name'] }}</a>&nbsp;&nbsp;
+											<a href="{{ url($group->slug .'/'. $tag['slug']) }}">{{ $tag['name'] }}</a>&nbsp;&nbsp;
                                         @endforeach
 									@endif
                                     </td>
@@ -93,23 +93,24 @@
                             @endif
 
                             <div class="clearfix col-md-offset-7">
-                                @if(! $atcl->open_history)
+
                                 <div class="form-group pull-left">
                                     <div class="col-md-3">
-                                        <input type="submit" class="btn btn-danger" name="open" value="公開する">
-                                    </div>
-                                </div>
-                                @endif
-                                <div class="form-group pull-left">
-                                    <div class="col-md-3 col-md-offset-1">
                                         <input type="submit" class="btn btn-warning" name="preview" value="保存してプレビュー">
                                     </div>
                                 </div>
                                 <div class="form-group pull-left">
-                                    <div class="col-md-3 col-md-offset-2">
+                                    <div class="col-md-3 col-md-offset-1">
                                         <input type="submit" class="btn btn-primary" name="keep" value="保存する">
                                     </div>
                                 </div>
+                                @if(! $atcl->open_history)
+                                <div class="form-group pull-left">
+                                    <div class="col-md-3 col-md-offset-3">
+                                        <input type="submit" class="btn btn-danger" name="open" value="公開する">
+                                    </div>
+                                </div>
+                                @endif
                             </div>
                         </div>
 

@@ -45,7 +45,7 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label">パスワード</label>
                             <div class="col-md-8">
-                                <input type="password" class="form-control" name="password">
+                                <input type="password" class="form-control" name="password" placeholder="8文字以上">
                             </div>
                         </div>
 

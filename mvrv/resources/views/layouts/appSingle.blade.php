@@ -11,7 +11,7 @@
     </div>
 
 
-
+@include('shared.footer')
 
     <!-- Scripts -->
     <script src="/js/app.js"></script>
