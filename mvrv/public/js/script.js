@@ -125,7 +125,7 @@ var exe = (function() {
                 $tagInput.autocomplete({
                     source: data[group],
                     autoFocus: true,
-                    delay: 300,
+                    delay: 50,
                     minLength: 1,
                     
                     select: function(e, ui){
@@ -142,7 +142,8 @@ var exe = (function() {
                     response: function(e, ui){
                     	//$('.panel-heading').text(ui.content['label']);
                     	//if(ui.content == '') {
-                        	$(e.target).siblings('.add-btn').fadeIn(100).css({display:'inline-block'});
+                        	$(e.target).siblings('.add-btn:hidden').fadeIn(50).css({display:'inline-block'});
+                            //console.log('response');
                         //}
                         //else {
                         //	$(e.target).siblings('.add-btn').fadeOut(100);
@@ -181,7 +182,7 @@ var exe = (function() {
                     }
                 });
                 
-                $tagInput.on('keydown', function(event){ //or keypress
+                $tagInput.on('keydown keyup', function(event){ //or keypress
                 	if(event.which == 13) {//40
                     	if(event.type=='keydown') { // && $('.ui-menu').is(':hidden')
                         	var texts = $(this).val();
@@ -195,13 +196,15 @@ var exe = (function() {
                     	event.preventDefault();
                     }
                     
-                    if($(this).val().length < 2) { //event.which == 8 &&
-                		$(this).next('.add-btn').fadeOut(100);
+                    //if($(this).val().length < 2) { //event.which == 8 &&
+                    if(event.type=='keyup' && $(this).val().length < 1) {
+                		$(this).next('.add-btn').fadeOut(50);
                 	}
                     
-                    
+                    if(event.which != 13 && event.which != 8 && $(this).val().length > 0) {
+                    	$(this).siblings('.add-btn:hidden').fadeIn(100).css({display:'inline-block'});
+                    }
                 });
-                
             
             }); //each function
            

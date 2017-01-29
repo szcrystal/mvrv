@@ -50,7 +50,7 @@
                 <option value="3">ボタンタイプB</option>
             </select>
             <label>リンクURL</label>
-            <input class="link-url" type="text" name="link_url[]" value="http://www.yahoo.co.jp">
+            <input class="link-url" type="text" name="link_url[]" value="">
             <button class="subm-check">チェック</button>
             <div class="link-frame"></div>
             <button class="subm-link">Send</button>

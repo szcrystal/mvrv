@@ -30,6 +30,7 @@ class HomeController extends Controller
         $this->item = $item;
         
         $this->perPage = env('PER_PAGE', 20);
+        $this->itemPerPage = 10;
     }
 
     /**
@@ -102,7 +103,7 @@ class HomeController extends Controller
         $cate = $this->category->find($atcl->cate_id);
         
         //Item
-        $items = $this->item->where(['atcl_id'=>$postId, 'delete_key'=>0])->orderBy('item_sequence', 'asc')->get();
+        $items = $this->item->where(['atcl_id'=>$postId, 'delete_key'=>0])->orderBy('item_sequence', 'asc')->paginate($this->itemPerPage);
         
         //setCount
 		$view = $atcl->view_count;
@@ -117,6 +118,7 @@ class HomeController extends Controller
     	return view('main.single', ['atcl'=>$atcl, 'user'=>$user, 'tagGroups'=>$tagGroups, 'tagGroupAll'=>$tagGroupAll, 'cate'=>$cate, 'items'=>$items ]);
     }
     
+    /*
     private function getArgForView()
     {
     	$posts = ArticlePost::where('open_status', 1)
@@ -141,6 +143,7 @@ class HomeController extends Controller
         
         return compact('posts', 'ranks', 'tagRanks');
     }
+    */
     
     
     

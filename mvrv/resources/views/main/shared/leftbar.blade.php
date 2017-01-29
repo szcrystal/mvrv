@@ -1,7 +1,5 @@
 
-<div id="left-bar" class="row">
-    <div class="col-md-12">
-
+<div id="left-bar">
         <div class="panel panel-default">
             <div class="panel-heading">Left-bar</div>
 
@@ -40,7 +38,6 @@
             </div>
         </div>
 
-    </div>
 </div>
 
 

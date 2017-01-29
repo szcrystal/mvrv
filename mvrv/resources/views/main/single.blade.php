@@ -77,7 +77,9 @@
                     <div>
                     	<div class="well clearfix">
                             <div class="col-md-3 pull-left">
+                            	{{-- @if (App::environment('local')) --}}
                             	<img style="border:8px solid #fff; width:100%;" src="{{ Storage::url($atcl -> thumbnail) }}">
+                                {{-- @else Storage::disk('s3')->url($atcl -> thumbnail) --}}
                             </div>
                             <div class="col-md-6 pull-left">
                                 <p>サムネイル引用元：{{ $atcl -> thumbnail_org }}</p>
@@ -108,6 +110,8 @@
 
                                 @endif
                             @endforeach
+
+                            {{ $items->links() }}
                         </div>
 
 

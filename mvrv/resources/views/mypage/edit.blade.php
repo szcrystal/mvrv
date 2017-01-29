@@ -4,7 +4,7 @@
 
 <div class="container mp-edit">
     <div class="row">
-        <div class="col-md-10 col-md-offset-1">
+        <div class="col-md-12">
         	<a href="{{url('mypage')}}">戻る</a>
             <div class="panel panel-default">
                 <div class="panel-heading"><h3>{{ $atcl->title }} の記事を編集</h3></div>
@@ -126,7 +126,7 @@
 
                             <div class="pull-left col-md-9">
                                 <div class="form-group{{ $errors->has('thumbnail') ? ' has-error' : '' }}">
-                                    <label for="thumbnail" class="col-md-4 control-label">サムネイル</label>
+                                    <label for="thumbnail" class="col-md-3 control-label">サムネイル</label>
 
                                     <div class="col-md-8">
                                         <input id="thumbnail" type="file" name="thumbnail">
@@ -134,7 +134,7 @@
                                 </div>
 
                                 <div class="form-group{{ $errors->has('thumbnail_org') ? ' has-error' : '' }}">
-                                    <label for="thumbnail_org" class="col-md-4 control-label">サムネイル引用元URL</label>
+                                    <label for="thumbnail_org" class="col-md-3 control-label">サムネイル引用元URL</label>
                                     <div class="col-md-8">
                                         <input id="thumbnail_org" type="text" class="form-control" name="thumbnail_org" value="{{ isset($atcl) ? $atcl->thumbnail_org : old('thumbnail_org') }}">
 
@@ -170,8 +170,8 @@
 
 
                         	<div class="tag-group form-group{{ $errors->has($group->slug) ? ' has-error' : '' }}">
-                                <label for="title" class="col-md-4 control-label">{{ $group->name }}</label>
-                                <div class="col-md-4 clearfix">
+                                <label for="title" class="col-md-2 control-label">{{ $group->name }}</label>
+                                <div class="col-md-8 clearfix">
                                     <input id="{{ $group->slug }}" type="text" class="form-control tag-control" name="input-{{ $group->slug }}" value="{{ old($group->slug) }}" autocomplete="off">
 
                                     <div class="add-btn" tabindex="0">追加</div>
@@ -209,14 +209,6 @@
                                 </div>
                             </div>
                         --}}
-
-
-
-
-
-<p>http://www.msn.com/ja-jp?rd=1</p>
-<p>https://www.google.co.jp/?gws_rd=ssl</p>
-<p>http://www.yahoo.co.jp</p>
 
 
                 <div class="add-item">

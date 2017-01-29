@@ -137,8 +137,12 @@ class HomeController extends Controller
         if($request->file('thumbnail') != '') {
             $filename = $request->file('thumbnail')->getClientOriginalName();
             $filename = $userId .'/' . $atclId .'/thumbnail/' . $filename;
+            //if (App::environment('local')) //config('filesystems.cloud')
             $path = $request->file('thumbnail')->storeAs('public', $filename);
-        
+            //else
+            //$path = Storage::disk('s3')->putFileAs($filename, $request->file('thumbnail'), 'public');
+            //$path = $request->file('thumbnail')->storeAs('', $filename, 's3');
+
             $data['thumbnail'] = $filename;
         }
         
@@ -408,7 +412,11 @@ class HomeController extends Controller
         if($request->file('thumbnail') != '') {
         	$filename = $request->file('thumbnail')->getClientOriginalName();
         	$filename = $userId . '/' .$id . '/thumbnail/' . $filename;
-        	$path = $request->file('thumbnail')->storeAs('public', $filename);
+        	//if (App::environment('local'))
+            $path = $request->file('thumbnail')->storeAs('public', $filename);
+            //else
+            //$path = Storage::disk('s3')->putFileAs($filename, $request->file('thumbnail'), 'public');
+            //$path = $request->file('thumbnail')->storeAs('', $filename, 's3');
         
         	$data['thumbnail'] = $filename;
         }

@@ -23,18 +23,9 @@ class CreateAdminsTable extends Migration
         });
         
         DB::table('admins')->insert([
-                'name' => 'admin',
-				'email' => 'opal@frank.fam.cx',
-                'password' => bcrypt('aaaaa111'),
-                'created_at' => date('Y-m-d H:i:s', time()),
-                'updated_at' => date('Y-m-d H:i:s', time()),
-            ]
-        );
-        
-        DB::table('admins')->insert([
-                'name' => 'admin-test',
-				'email' => 'test@mvrv.com',
-                'password' => bcrypt('testtest'),
+                'name' => 'mvrv-admin',
+				'email' => 'mvrv@mvrv.com',
+                'password' => bcrypt('mvrvmvrv'),
                 'created_at' => date('Y-m-d H:i:s', time()),
                 'updated_at' => date('Y-m-d H:i:s', time()),
             ]

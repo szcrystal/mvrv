@@ -19,17 +19,16 @@ Route::get('single/{postId}', 'Main\HomeController@showSingle');
 Route::get('category', 'Main\CategoryController@index');
 Route::get('category/{slug}', 'Main\CategoryController@show');
 
-//Tag =======
-use App\TagGroup;
-$groupSlugs = TagGroup::where('open_status', 1)->get();
-foreach($groupSlugs as $gs) {
-	Route::group(['prefix' => $gs->slug], function(){
-    	Route::get('/', 'Main\TagController@index');
-        Route::get('{tagSlug}', 'Main\TagController@show');
-    });
+//Tag
+if(Schema::hasTable('tag_groups')) {
+    $groupSlugs = DB::table('tag_groups')->where('open_status', 1)->get();
+    foreach($groupSlugs as $gs) {
+        Route::group(['prefix' => $gs->slug], function(){
+            Route::get('/', 'Main\TagController@index');
+            Route::get('{tagSlug}', 'Main\TagController@show');
+        });
+    }
 }
-//Route::get('{groupSlug}', 'Main\TagController@index');
-//Route::get('{groupSlug}/{tagSlug}', 'Main\TagController@show');
 
 //Contact
 Route::get('contact/{id}', 'Main\ContactController@index');
