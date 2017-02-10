@@ -12,7 +12,7 @@
 */
 
 Route::get('/', 'Main\HomeController@index');
-Route::get('single/{postId}', 'Main\HomeController@showSingle');
+Route::get('m/{postId}', 'Main\HomeController@showSingle');
 
 
 //Category
@@ -34,6 +34,14 @@ if(Schema::hasTable('tag_groups')) {
 Route::get('contact/{id}', 'Main\ContactController@index');
 Route::resource('contact', 'Main\ContactController');
 
+//Fix
+if(Schema::hasTable('fixes')) {
+    $fixes = DB::table('fixes')->get();
+    foreach($fixes as $fix) {
+        Route::get($fix->slug, 'Main\HomeController@showFix');
+    }
+}
+
 //Search
 Route::get('search', 'Main\SearchController@index');
 
@@ -41,6 +49,11 @@ Route::get('search', 'Main\SearchController@index');
 //MyPage
 Route::get('mypage/{atclId}/create', 'MyPage\HomeController@create');
 Route::get('mypage/newmovie', 'MyPage\HomeController@newMovie');
+Route::group(['prefix' => 'mypage/base'], function(){
+    Route::get('/', 'MyPage\HomeController@base');
+    Route::get('{atclId}', 'MyPage\HomeController@base');
+    Route::post('/', 'MyPage\HomeController@postBase');
+});
 Route::resource('mypage', 'MyPage\HomeController');
 
 
@@ -55,6 +68,7 @@ Route::post('dashboard/register', 'dashboard\MainController@postRegister');
 Route::get('dashboard/logout', 'dashboard\MainController@getLogout');
 
 //User
+Route::get('dashboard/userlogin/{userId}', 'dashboard\UserController@userLogin');
 Route::resource('dashboard/users', 'dashboard\UserController');
 
 //Article
@@ -67,19 +81,24 @@ Route::resource('dashboard/tags', 'dashboard\TagController');
 //Category
 Route::resource('dashboard/categories', 'dashboard\CategoryController');
 
+//Fix
+Route::resource('dashboard/fixes', 'dashboard\FixController');
+
 //Contact
 Route::get('dashboard/contacts/cate/{cateId}', 'dashboard\ContactController@getEditCate');
 Route::post('dashboard/contacts/cate/{cateId}', 'dashboard\ContactController@postEditCate');
 Route::resource('dashboard/contacts', 'dashboard\ContactController');
 
 
+//Auth
+Route::get('register/confirm/{key}', 'auth\RegisterController@registerConfirm');
 Auth::routes();
 
-Route::get('/home', 'HomeController@index');
-
-Route::get('/auth/register', function () {
-	return view('auth/register');
-});
+//Route::get('/home', 'HomeController@index');
+//
+//Route::get('/auth/register', function () {
+//	return view('auth/register');
+//});
 
 
 

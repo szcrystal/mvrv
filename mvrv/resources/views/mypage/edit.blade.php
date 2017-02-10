@@ -1,19 +1,51 @@
 @extends('layouts.appSingle')
 
 @section('content')
+<?php
+//$url = 'https://minhana.net/wikidata/A0001/picture_normal/A0001_picture_normal_thumb.jp';
+//
+//if($file = fopen($url, 'r'))
+//echo 'aaa';
+//else
+//echo 'bbb';
 
-<div class="container mp-edit">
+?>
     <div class="row">
-        <div class="col-md-12">
-        	<a href="{{url('mypage')}}">戻る</a>
-            <div class="panel panel-default">
-                <div class="panel-heading"><h3>{{ $atcl->title }} の記事を編集</h3></div>
-				@if(session('status'))
+        <div class="col-md-12 py-4 mp-edit">
+        	<a href="{{url('mypage')}}" class="back-btn"><i class="fa fa-angle-double-left" aria-hidden="true"></i> マイページへ戻る</a>
+            <div class="panel panel-default mt-4">
+                <div class="panel-heading clearfix mb-3">
+                	<h2 class="h2">{{ $atcl->title }} の記事を編集</h2>
+					<ul class="list-group col-md-5 float-left">
+						<li class="list-group-item"><b>公開状態：</b>
+							@if($atcl->open_status)
+                            <span class="text-success">公開中</span>
+                            @else
+                            <span class="text-danger">非公開</span>
+                            @endif
+                        </li>
+                        <li class="list-group-item"><b>更新日時：</b>
+							@if($atcl->open_date)
+                            {{ Ctm::changeDate($atcl->open_date) }}
+                            @else
+                            {{ Ctm::changeDate($atcl->created_at) }}
+                            @endif
+                        </li>
+                    </ul>
+
+                    <div class="float-right">
+                    	@include('main.shared.movie')
+                    </div>
+                </div>
+
+                @if(session('status'))
 					<div class="alert alert-success">
                     {{ session('status') }}
                     </div>
                 @endif
-                <div class="panel-body">
+
+                <div class="panel-body mt-4">
+                	<h3 class="h3"><i class="fa fa-square" aria-hidden="true"></i> 基本情報</h3>
 					<div class="table-responsive">
                     	<table class="table table-striped table-bordered">
                             <colgroup>
@@ -27,16 +59,16 @@
                                     <td>{{ $atcl -> title }}</td>
                                 </tr>
                                 <tr>
-                                    <th>カテゴリー</th>
-                                    <td>{{ $cate->name }}</td>
-                                </tr>
-                                <tr>
 									<th>動画サイト</th>
                                     <td>{{ $atcl -> movie_site }}</td>
                                 </tr>
                                 <tr>
 									<th>動画URL</th>
                                     <td><a href="{{ $atcl -> movie_url }}">{{ $atcl -> movie_url }}</a></td>
+                                </tr>
+                                <tr>
+                                    <th>カテゴリー</th>
+                                    <td>{{ $cate->name }}</td>
                                 </tr>
 
 
@@ -55,6 +87,7 @@
 
                                 <?php //$groupAll = $tagGroupModel->all(); ?>
 
+								{{--
 								@foreach($tagGroupAll as $group)
                                 <tr>
                                     <th>{{ $group->name }}</th>
@@ -68,45 +101,56 @@
                                 </tr>
 
                                 @endforeach
+								--}}
 
                             </tbody>
                 		</table>
                     </div>
 
+                    <div class="clearfix pb-5">
+						<a href="{{ url('/mypage/base/'.$atcl->id) }}" class="btn btn-info btn-cus float-right">基本情報を編集 <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+                    </div>
 
+					<hr>
+					<h3 class="h3"><i class="fa fa-square" aria-hidden="true"></i> 詳細情報</h3>
                     <form class="form-horizontal" role="form" method="POST" action="/mypage/{{ $atcl->id }}" enctype="multipart/form-data">
                         {{ csrf_field() }}
 
                         {{ method_field('PUT') }}
 
-						<div class="well">
+						<div class="clearfix mb-5">
                             @if($atcl->open_history)
-                                <div class="form-group">
-                                    <div class="col-md-6 col-md-offset-7">
-                                        <div class="checkbox">
-                                            <label>
-                                                <input type="checkbox" name="open_status" value="1" {{isset($atcl) && $atcl->open_status ? 'checked' : '' }}> 公開する
+                                <div class="form-group text-right">
+                                    <div class="">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" name="not_newdate" value="1" {{isset($atcl) && $atcl->not_newdate ? 'checked' : '' }}> 更新日時を変更しない
                                             </label>
                                         </div>
                                     </div>
                                 </div>
                             @endif
 
-                            <div class="clearfix col-md-offset-7">
-
-                                <div class="form-group pull-left">
-                                    <div class="col-md-3">
+                            <div class="clearfix float-right">
+                                <div class="form-group float-left">
+                                    <div>
                                         <input type="submit" class="btn btn-warning" name="preview" value="保存してプレビュー">
                                     </div>
                                 </div>
-                                <div class="form-group pull-left">
-                                    <div class="col-md-3 col-md-offset-1">
+                                <div class="form-group float-left">
+                                    <div class="ml-2">
                                         <input type="submit" class="btn btn-primary" name="keep" value="保存する">
                                     </div>
                                 </div>
-                                @if(! $atcl->open_history)
-                                <div class="form-group pull-left">
-                                    <div class="col-md-3 col-md-offset-3">
+                                @if($atcl->open_status)
+                                <div class="form-group float-left">
+                                    <div class="ml-2">
+                                        <input type="submit" class="btn btn-info" name="drop" value="公開を取り下げ">
+                                    </div>
+                                </div>
+                                @else
+                                <div class="form-group float-left">
+                                    <div class="ml-2">
                                         <input type="submit" class="btn btn-danger" name="open" value="公開する">
                                     </div>
                                 </div>
@@ -115,40 +159,10 @@
                         </div>
 
 
-						<div class="clearfix thumb-wrap">
-                            <div style="width:170px; height:170px; overflow:hidden;" class="pull-left">
-                                @if($atcl->thumbnail)
-                                <img style="width: 120%;" src="{{ Storage::url($atcl->thumbnail) }}">
-                                @else
-                                <div style="width:100%; height:100%; border:1px solid #ccc;">No Image</div>
-                                @endif
-                            </div>
+                        @include('mypage.shared.thumbnailForm')
 
-                            <div class="pull-left col-md-9">
-                                <div class="form-group{{ $errors->has('thumbnail') ? ' has-error' : '' }}">
-                                    <label for="thumbnail" class="col-md-3 control-label">サムネイル</label>
 
-                                    <div class="col-md-8">
-                                        <input id="thumbnail" type="file" name="thumbnail">
-                                    </div>
-                                </div>
-
-                                <div class="form-group{{ $errors->has('thumbnail_org') ? ' has-error' : '' }}">
-                                    <label for="thumbnail_org" class="col-md-3 control-label">サムネイル引用元URL</label>
-                                    <div class="col-md-8">
-                                        <input id="thumbnail_org" type="text" class="form-control" name="thumbnail_org" value="{{ isset($atcl) ? $atcl->thumbnail_org : old('thumbnail_org') }}">
-
-                                        @if ($errors->has('thumbnail_org'))
-                                            <span class="help-block">
-                                                <strong>{{ $errors->first('thumbnail_org') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                        	</div>
-                        </div>
-
-                        <div class="tag-wrap">
+                        <div class="clearfix tag-wrap">
 
 						@foreach($tagGroupAll as $group)
                         	<?php
@@ -170,8 +184,8 @@
 
 
                         	<div class="tag-group form-group{{ $errors->has($group->slug) ? ' has-error' : '' }}">
-                                <label for="title" class="col-md-2 control-label">{{ $group->name }}</label>
-                                <div class="col-md-8 clearfix">
+                                <label for="title" class="control-label">{{ $group->name }}</label>
+                                <div class="clearfix">
                                     <input id="{{ $group->slug }}" type="text" class="form-control tag-control" name="input-{{ $group->slug }}" value="{{ old($group->slug) }}" autocomplete="off">
 
                                     <div class="add-btn" tabindex="0">追加</div>
@@ -249,7 +263,13 @@
                             <section>
                                 @include('mypage.shared.itemCtrlNav')
 
-                                <img src="{{ Storage::url($item->image_path) }}" width="120" height="120">
+                                <div class="preview float-left">
+                                @if($item->image_path == '')
+								<span class="no-img">No Image</span>
+                                @else
+                                <img src="{{ Storage::url($item->image_path) }}" width="200">
+                                @endif
+								</div>
                                 <h4>{{$item->image_title}}</h4>
                                 <p>引用元：{{$item->image_orgurl}}</p>
                                 <p>コメント：<br>{!! nl2br($item->image_comment) !!}</p>
@@ -261,8 +281,13 @@
                             <section>
                                 @include('mypage.shared.itemCtrlNav')
 
-                                <p><a href="{{ $item->link_url}}">{{ $item->link_title }} Option:{{ $item->link_option }}<br>
-                                <img src="{{ $item->link_imgurl }}"></a></p>
+                                <div class="link-box">
+                                @if($item->link_imgurl)
+                                <a href="{{ $item->link_url}}" title="{{ $item->link_title }}"><img src="{{ $item->link_imgurl }}"></a>
+                                @else
+                                <a href="{{ $item->link_url}}">{{ $item->link_title }}</a>
+                                @endif
+                                </div>
 
                             	@include('mypage.shared.editItemForm')
                             </section>
@@ -281,10 +306,10 @@
 
 
 					</form>
+
                     
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection

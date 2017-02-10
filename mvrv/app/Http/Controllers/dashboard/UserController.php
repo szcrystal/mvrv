@@ -4,6 +4,7 @@ namespace App\Http\Controllers\dashboard;
 
 use App\Admin;
 use App\User;
+use Auth;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -19,7 +20,7 @@ class UserController extends Controller
         $this -> admin = $admin;
         $this->user = $user;
         
-        $this->perPage = 30;
+        $this->perPage = 20;
         
 	}
     /**
@@ -34,6 +35,12 @@ class UserController extends Controller
         //$status = $this->articlePost->where(['base_id'=>15])->first()->open_date;
         
         return view('dashboard.user.index', ['users'=>$users]);
+    }
+    
+    public function userLogin($userId)
+    {
+    	Auth::loginUsingId($userId);
+        return redirect('/');
     }
 
     /**

@@ -1,11 +1,15 @@
 <?php
 
 $url = $_POST['url'];
+
+if($url == '') {
+	echo '<span class="text-danger" data-success="0">URLを入力して下さい</span>';
+	exit();
+}
+
 $data = array();
 $data['url'] = $url;
 
-//phpinfo();
-//exit();
 
 //No Curl -> apt-get -y install php-curl
 //$ch = curl_init();
@@ -30,42 +34,65 @@ $html = file_get_contents($url, false, stream_context_create(array(
     ),
 )));
 
+if($html === FALSE) {
+	echo '<span class="text-danger" data-success="0">URLを取得できません</span>';;
+    exit();
+}
+
+
 $doc = phpQuery::newDocument($html);
 $data['title'] = $doc["title"]->text();
 //$data['image'] = $doc['img'];
 
-
 $imgCount = count($doc['img']);
 
-echo '<label>タイトル</label>'.'<div>'.$data['title'].'</div>'."\n";
-echo '<label>URL</label>'.'<div>'.$data['url'].'</div>'."\n";
+$textFrame = '<span data-success="1">タイトル：</span><div>' . $data['title'].'</div>'."\n";
+$textFrame .= '<span>URL：</span><div>'.$data['url'].'</div>'."\n";
+echo $textFrame;
 
-$imgFrame = '<label>画像</label><div class="linkimg-wrap">'."\n";
+$imgFrame = '<div class="linkimg-wrap">'."\n";
 
 $n = 1;
-foreach($doc['img'] as $val) {
-	if($n > 10) {
-    	break;
-    }
-    //$data['image'][] = pq($val); forjson
+$bool = false;
+if($imgCount > 0) {
+    foreach($doc['img'] as $val) {
+        if($n > 10) {
+            break;
+        }
+        //$data['image'][] = pq($val); forjson
+            
+        $width = pq($val)->attr('width');
+        if($width && $width < 50) {
+            continue;
+        }
         
-    $width = pq($val)->attr('width');
-    if($width && $width < 50) {
-        continue;
+        $src = pq($val)->attr('src');
+        
+        if(strpos($src, '://') === FALSE) {
+            $src = $url.$src;
+        }
+        
+        if($fp = fopen($src, "r")){
+        
+            $imgFrame .= '<img src="'.$src.'" data-count="'.$n.'">'."\n";
+            //$imgFrame .= pq($val)."\n";
+            $bool = true;
+        }
+//        else {
+//            $imgFrame .= '<span class="text-danger">画像がありません</span>';
+//            $bool = false;
+//            break;
+//        }
+        
+        $n++;
     }
-    
-    $src = pq($val)->attr('src');
-    
-    if(strpos($src, '://') === FALSE) {
-        $src = $url.$src;
-    }
-    
-    $imgFrame .= '<img src="'.$src.'" data-count="'.$n.'">'."\n";
-    //$imgFrame .= pq($val)."\n";
-    
-	$n++;
 }
 $firstNum = $n > 1 ? 1 : 0;
+
+if(!$bool) {
+	echo '<span class="text-danger">画像の取得が出来ません</span>';
+	exit();
+}
 
 $imgFrame .= "</div>\n";
 $imgFrame .= '<div class="linksel-wrap">'."\n";

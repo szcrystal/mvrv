@@ -5,7 +5,12 @@
     	
 	{{-- @include('dbd_shared.search') --}}
 
-    <h3>カテゴリー一覧</h3>
+    <div class="clearfix">
+    <h3 class="page-header">カテゴリー一覧</h3>
+    <a href="{{ url('/dashboard/categories/create') }}" class="btn btn-success pull-right">新規追加</a>
+    </div>
+
+    {{ $cates->links() }}
         
     <div class="table-responsive">
         <table class="table table-striped table-bordered">

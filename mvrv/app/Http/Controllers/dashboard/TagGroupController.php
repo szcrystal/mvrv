@@ -130,6 +130,10 @@ class TagGroupController extends Controller
      */
     public function destroy($id)
     {
-        //
+    	$name = $this->tagGroup->find($id)->name;
+        $rel = $this->tagGroup->destroy($id);
+        $status = $rel ? 'タググループ「'.$name.'」が削除されました' : 'タググループ「'.$name.'」が削除出来ませんでした';
+        
+        return redirect('dashboard/taggroups')->with('status', $status);
     }
 }

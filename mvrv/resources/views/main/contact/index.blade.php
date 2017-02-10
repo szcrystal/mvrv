@@ -1,12 +1,9 @@
 @extends('layouts.appSingle')
 
 @section('content')
-<div class="container">
     <div class="row">
-        <div class="col-md-10 col-md-offset-1">
+        <div class="col-md-10 offset-md-1 py-4">
             <div class="panel panel-default">
-
-
 
                 <div class="panel-heading">
                 	<h2>お問い合わせ</h2>
@@ -16,7 +13,7 @@
 
                     @if (count($errors) > 0)
                         <div class="alert alert-danger">
-                            <strong>Error!!</strong> 追加できません<br><br>
+                            <strong>Error!!</strong> 追加できません<br>
                             <ul>
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -33,7 +30,7 @@
 
                         <table class="table table-bordered">
                             <colgroup>
-                                <col style="width:30%;" class="cth">
+                                <col class="cth">
                                 <col class="ctd">
                             </colgroup>
                             
@@ -131,8 +128,8 @@
                             </tbody>
                 		</table>
                         <div class="form-group">
-                            <div class="col-md-7 col-md-offset-5">
-                                <button type="submit" class="btn btn-primary">送信</button>
+                            <div class="col-md-3 mx-auto">
+                                <button type="submit" class="btn btn-primary col-md-12">送信</button>
                             </div>
                         </div>
                     </form>
@@ -143,5 +140,4 @@
 
         </div>
     </div>
-</div>
 @endsection

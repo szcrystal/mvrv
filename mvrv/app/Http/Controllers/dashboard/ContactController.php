@@ -26,9 +26,10 @@ class ContactController extends Controller
         $this->contact = $contact;
         $this->category = $category;
         
+        $this->perPage = 20;
+        
         // URLの生成
 		//$url = route('dashboard');
-        
 	}
     
     /**
@@ -40,8 +41,7 @@ class ContactController extends Controller
     {
         $contacts = //Article::where('active', 1)
            Contact::orderBy('id', 'desc')
-           //->take(10)
-           ->get();
+           ->paginate($this->perPage);
         
         $atcl = $this->article;
         
@@ -75,7 +75,7 @@ class ContactController extends Controller
     public function store(Request $request)
     {
         $rules = [
-//            'admin_name' => 'required|max:255',
+            'category' => 'required|max:255',
 //            'admin_email' => 'required|email|max:255', /* |unique:admins 注意:unique */
 //            'admin_password' => 'required|min:6',
         ];
@@ -101,6 +101,11 @@ class ContactController extends Controller
     //cate編集（Post）
     public function postEditCate(Request $request, $cateId)
     {
+    	$rules = [
+            'category' => 'required|max:255',
+        ];
+        $this->validate($request, $rules);
+        
     	$cate = $this->category->find($cateId);
         $cate->category = $request->input('category');
         $cate->save();
@@ -169,6 +174,9 @@ class ContactController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $this->contact->destroy($id);
+        $status = 'お問合せID：'.$id.'が削除されました！';
+        
+        return redirect('dashboard/contacts')->with('status', $status);
     }
 }

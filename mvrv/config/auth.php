@@ -114,5 +114,8 @@ return [
             'expire' => 60,
         ],
     ],
+    
+    
+    'expire' => 60,
 
 ];

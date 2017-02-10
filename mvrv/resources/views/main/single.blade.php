@@ -1,37 +1,31 @@
 @extends('layouts.appSingle')
 
 @section('content')
-<div class="container single">
+
     <div class="row">
-        <div class="col-md-10 col-md-offset-1">
+        <div class="col-md-12 py-5">
             <div class="panel panel-default">
                 <div class="panel-heading">
                 	<h2>{{ $atcl -> title }}のレビュー</h2>
-
-                    @if($atcl -> movie_url != '')
-                    	<?php $embed = explode('=', $atcl -> movie_url);
-                        //echo $embed[1];
-                        //https://youtu.be/1oeN1gmLzvM
-                    	?>
-
-                		<iframe width="560" height="315" src="https://www.youtube.com/embed/{{$embed[1]}}" frameborder="0" allowfullscreen></iframe>
-                    @endif
+					<div class="movie-frame py-4 text-center">
+                    	@include('main.shared.movie')
+                    </div>
 				</div>
 
                 <div class="panel-body">
 
 					<div class="clearfix">
-                    	@if(session('fromMp'))
-                            <div class="pull-left">
-                                <a href="{{ url(session('fromMp')) }}" class="btn btn-warning center-block">編集画面へ戻る</a>
+                    	@if(Auth::check() && Auth::user()->id == $atcl->owner_id)
+                            <div class="float-left">
+                                <a href="{{ url('mypage/'.$atcl->id.'/edit') }}" class="btn btn-info center-block">この記事を編集</a>
                             </div>
                         @endif
-                        <div class="pull-right">
+                        <div class="float-right">
                             <a href="{{ url('contact/'. $atcl->id) }}" class="btn btn-danger center-block">削除を依頼</a>
                         </div>
                     </div>
 
-                    <div class="table-responsive">
+                    <div class="table-responsive py-3">
                     	<table class="table table-striped table-bordered">
                             <colgroup>
                                 <col class="cth">
@@ -75,20 +69,24 @@
                     </div>
 
                     <div>
-                    	<div class="well clearfix">
-                            <div class="col-md-3 pull-left">
+                    	<div class="row clearfix">
+                            <div class="col-md-3 float-left">
                             	{{-- @if (App::environment('local')) --}}
-                            	<img style="border:8px solid #fff; width:100%;" src="{{ Storage::url($atcl -> thumbnail) }}">
+                                @if($atcl -> thumbnail)
+                            	<img src="{{ Storage::url($atcl->thumbnail) }}" class="img-fluid">
+                                @else
+                                <span class="no-img">No Image</span>
+                                @endif
                                 {{-- @else Storage::disk('s3')->url($atcl -> thumbnail) --}}
                             </div>
-                            <div class="col-md-6 pull-left">
+                            <div class="col-md-6 float-left">
                                 <p>サムネイル引用元：{{ $atcl -> thumbnail_org }}</p>
                                 <p>公開日時：{{ Ctm::changeDate($atcl->open_date, 'notime') }}</p>
                                 <p>レビューオーナー：{{ $user->name }}</p>
                             </div>
                         </div>
 
-                        <div style="margin-top: 3em;" class="rv-content">
+                        <div class="rv-content mt-5">
 							@foreach($items as $item)
 								@if($item->item_type == 'title')
 									@if($item->title_option == 1)
@@ -127,5 +125,4 @@
             </div>
         </div>
     </div>
-</div>
 @endsection

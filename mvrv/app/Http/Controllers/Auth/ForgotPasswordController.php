@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\User;
+use Request;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Support\Facades\Validator;
 
 class ForgotPasswordController extends Controller
 {
@@ -25,8 +29,35 @@ class ForgotPasswordController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(User $user)
     {
         $this->middleware('guest');
+        $this->user = $user;
     }
+    
+//    protected function validator(array $data)
+//    {
+//        return Validator::make($data, [
+//            'email' => 'required|email|max:255',
+//        ]);
+//    }
+    
+//    public function sendResetLinkEmail()
+//    {
+//    	$request = Request::all();
+//        
+//        print_r($request);
+//        //exit();
+//        
+//    	$rules = [
+//            'email' => 'required|email|exists:users|max:255',
+//        ];
+//        
+//        Validator::validate($request, $rules);
+//        
+//        $token = $request['_token'];
+//    	
+//        $this->user->sendPasswordResetNotification($token);
+//        
+//    }
 }

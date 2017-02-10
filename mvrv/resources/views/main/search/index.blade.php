@@ -7,12 +7,15 @@
 		<div class="col-md-12">
 
             <div class="panel panel-default">
-
+				<div class="panel-heading">
+                <h2 class="h2">
             	@if(!count($atcls))
-                <div class="panel-heading">検索ワード：{{ $searchStr }}の記事がありません</div>
+                検索ワード：{{ $searchStr }}の記事がありません
 				@else
-				<div class="panel-heading">検索ワード：{{ $searchStr }}</div>
+				検索ワード：{{ $searchStr }}
                 @endif
+                </h2>
+                </div>
 
                 <div class="panel-body">
                 	@include('main.shared.main')

@@ -7,6 +7,7 @@ use App\Category;
 use App\Tag;
 use App\TagGroup;
 use App\TagRelation;
+use App\Fix;
 
 use Illuminate\Http\Request;
 
@@ -18,6 +19,7 @@ class CustomController extends Controller
     	$this->article = $article;
         $this->category = $category;
         $this->tag = $tag;
+        //$this->fix = $fix;
         
 	}
     
@@ -80,6 +82,25 @@ class CustomController extends Controller
         }
         
         return compact('tagLeftRanks', 'cateLeft', 'rightRanks');
+    }
+    
+    static function shortStr($str, $length)
+    {
+    	if(mb_strlen($str) > $length) {
+        	$continue = '…';
+            $str = mb_substr($str, 0, $length);
+            $str = $str . $continue;
+        }
+
+        return $str;
+    }
+    
+    
+    static function fixList()
+    {
+    	$fixes = Fix::where('not_open', 0)->get();
+        
+        return $fixes;
     }
     
 }

@@ -1,6 +1,5 @@
 @include('dashboard.shared.head')
 
-
 <body class="dashboard">
 
     <div id="wrapper">
@@ -14,7 +13,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">MovieReview DashBoard</a>
+                <a class="navbar-brand" href="/dashboard">MovieReview DashBoard</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -231,10 +230,10 @@
                         <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        <li><a href="{{ url('dashboard/register/'. Auth::guard('admin')->user()->id) }}"><i class="fa fa-gear fa-fw"></i> 編集</a>
                         </li>
                         <li class="divider"></li>
-                        <li><a href="{{ url('dashboard/logout') }}"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        <li><a href="{{ url('dashboard/logout') }}"><i class="fa fa-sign-out fa-fw"></i> ログアウト</a>
                         </li>
                     </ul>
                     <!-- /.dropdown-user -->
@@ -252,7 +251,7 @@
                         </li>
 
 						<li>
-                            <a href="{{ url('/dashboard/users') }}"><i class="fa fa-wrench fa-fw"></i> 会員管理<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-users"></i> 会員管理<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                             	<li>
                                     <a href="{{ url('/dashboard/users') }}">会員一覧</a>
@@ -264,7 +263,7 @@
                         </li>
 
                         <li>
-                            <a href="{{ url('/dashboard/taggroups') }}"><i class="fa fa-wrench fa-fw"></i> タググループ設定<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-tags"></i> タググループ設定<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                             	<li><a href="{{ url('/dashboard/taggroups') }}">タググループ一覧</a></li>
                                 <li><a href="{{ url('/dashboard/taggroups/create') }}">タググループ追加</a></li>
@@ -274,7 +273,7 @@
                         </li>
 
                         <li>
-                            <a href="{{ url('/dashboard/tags') }}"><i class="fa fa-wrench fa-fw"></i> タグ設定<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-tag"></i> タグ設定<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                             	<li><a href="{{ url('/dashboard/tags') }}">タグ一覧</a></li>
                             	<li><a href="{{ url('/dashboard/tags/create') }}">タグ新規追加</a></li>
@@ -283,7 +282,7 @@
                         </li>
 
 						<li>
-                            <a href="{{ url('/dashboard/categories') }}"><i class="fa fa-wrench fa-fw"></i> カテゴリー設定<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-newspaper-o"></i> カテゴリー設定<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                             	<li><a href="{{ url('/dashboard/categories') }}">カテゴリー一覧</a></li>
                             	<li><a href="{{ url('/dashboard/categories/create') }}">カテゴリー追加</a></li>
@@ -292,7 +291,7 @@
                         </li>
 
                         <li>
-                            <a href="{{ url('dashboard/articles') }}"><i class="fa fa-bar-chart-o fa-fw"></i> 記事管理<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-video-camera"></i> 記事管理<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
                                     <a href="{{url('dashboard/articles')}}">記事一覧</a>
@@ -305,7 +304,7 @@
                         </li>
 
                         <li>
-                            <a href="{{ url('/dashboard/contacts') }}"><i class="fa fa-sitemap fa-fw"></i> 問い合わせ管理<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-question-circle"></i> 問い合わせ管理<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
                                     <a href="{{ url('/dashboard/contacts') }}">問い合わせ一覧</a>
@@ -318,10 +317,23 @@
                         </li>
 
                         <li>
-                            <a href="{{ url('dashboard/register') }}"><i class="fa fa-wrench fa-fw"></i> 管理者設定<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-file"></i> 静的ページ<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="{{ url('dashboard/register') }}">管理者追加</a>
+                                    <a href="{{ url('/dashboard/fixes') }}">静的ページ一覧</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url('/dashboard/fixes/create') }}">静的ページ追加</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+
+                        <li>
+                            <a href="#"><i class="fa fa-wrench fa-fw"></i> 管理者設定<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="{{ url('dashboard/register') }}">管理者追加／一覧</a>
                                 </li>
 
                             </ul>
@@ -359,7 +371,8 @@
     <!-- /#wrapper -->
 
     <!-- jQuery -->
-    <!-- <script src="../vendor/jquery/jquery.min.js"></script> -->
+    <script src="{{ asset('/bootstrap/vendor/jquery/jquery.min.js') }}"></script>
+    {{-- <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script> --}}
 
     <!-- Bootstrap Core JavaScript -->
     <script src="{{ asset('/bootstrap/vendor/bootstrap/js/bootstrap.min.js') }}"></script>
@@ -373,7 +386,7 @@
     <script src="{{ asset('/bootstrap/data/morris-data.js') }}"></script>
 
     <!-- Custom Theme JavaScript -->
-    <script src="{{ asset('/dist/js/sb-admin-2.js') }}"></script>
+    <script src="{{ asset('/bootstrap/dist/js/sb-admin-2.js') }}"></script>
 
 </body>
 </html>

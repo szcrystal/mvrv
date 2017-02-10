@@ -17,11 +17,12 @@ class Article extends Model
     
         'thumbnail',
     	'thumbnail_org',
-    	'content',
+    	'thumbnail_comment',
     
 		'open_status',
         'open_history',
         'open_date',
+        'not_newdate',
         'view_count',
 
     ];

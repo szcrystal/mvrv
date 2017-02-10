@@ -9,6 +9,7 @@ use App\TagRelation;
 use App\TagGroup;
 use App\Category;
 use App\Item;
+use App\Fix;
 
 use Ctm;
 
@@ -17,7 +18,7 @@ use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {
-    public function __construct(Article $article, User $user, Tag $tag, TagRelation $tagRelation, TagGroup $tagGroup, Category $category, Item $item)
+    public function __construct(Article $article, User $user, Tag $tag, TagRelation $tagRelation, TagGroup $tagGroup, Category $category, Item $item, Fix $fix)
     {
         $this->middleware('search');
         
@@ -28,6 +29,7 @@ class HomeController extends Controller
         $this->tagGroup = $tagGroup;
         $this->category = $category;
         $this->item = $item;
+        $this->fix = $fix;
         
         $this->perPage = env('PER_PAGE', 20);
         $this->itemPerPage = 10;
@@ -58,6 +60,7 @@ class HomeController extends Controller
         //$cates = $this->category->all();
         
         $rankName = '全体';
+        $className = 'top';
         
         $arg = Ctm::getArgForView('', 'all');
         extract($arg);
@@ -65,14 +68,19 @@ class HomeController extends Controller
         
         $groupModel = $this->tagGroup;
     
-    	return view('main.index', ['atcls'=>$atcls, 'rankName'=>$rankName, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel]);
+    	return view('main.index', ['atcls'=>$atcls, 'rankName'=>$rankName, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel, 'className'=>$className]);
     }
     
     public function showSingle($postId)
     {
-    	$atcl = Article::where([
-                    ['del_status', '=', 0], ['open_status','=',1], ['owner_id', '>', 0]
-                ])->find($postId);
+    	if(session('fromMp')) {
+        	$atcl = Article::find($postId);
+        }
+        else {
+            $atcl = Article::where([
+                ['del_status', '=', 0], ['open_status','=',1], ['owner_id', '>', 0]
+            ])->find($postId);
+        }
         //Error
         if(!isset($atcl)) {
         	abort(404);
@@ -115,7 +123,20 @@ class HomeController extends Controller
         //getArg
         //$arg = $this->getArgForView();
         
-    	return view('main.single', ['atcl'=>$atcl, 'user'=>$user, 'tagGroups'=>$tagGroups, 'tagGroupAll'=>$tagGroupAll, 'cate'=>$cate, 'items'=>$items ]);
+    	return view('main.single', ['atcl'=>$atcl, 'user'=>$user, 'tagGroups'=>$tagGroups, 'tagGroupAll'=>$tagGroupAll, 'cate'=>$cate, 'items'=>$items]);
+    }
+    
+    public function showFix(Request $request)
+    {
+    	$slug = $request->path();
+        
+    	$fix = $this->fix->where(['slug'=>$slug, 'not_open'=>0])->first();
+        
+        if(!$fix) {
+        	abort(404);
+        }
+        
+        return view('main.fix', ['fix'=>$fix]);
     }
     
     /*

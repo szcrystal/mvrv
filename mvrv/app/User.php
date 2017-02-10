@@ -2,6 +2,10 @@
 
 namespace App;
 
+use Mail;
+use Request;
+//use Illuminate\Http\Request;
+
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -15,7 +19,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'active'
+        'name', 'email', 'password', 'active', 'confirm_token',
     ];
 
     /**
@@ -24,6 +28,28 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'confirm_token',
     ];
+    
+
+    
+    public function sendPasswordResetNotification($token)
+    {
+        //$this->notify(new ResetPasswordNotification($token));
+
+        $email = Request::input('email');
+        $user = User::where('email', $email)->first();
+        
+        $data['email'] = $email;
+        $data['name'] = $user->name;
+        $data['token'] = $token;
+        
+        Mail::send('emails.password', $data, function($message) use ($data)
+        {
+            $message -> from(env('ADMIN_EMAIL'), 'MovieReview')
+                     -> to($data['email'], $data['name'])
+                     -> subject('パスワードリセット用リンク');
+            //$message->attach($pathToFile);
+        });
+    }
 }

@@ -7,11 +7,15 @@
 		<div class="col-md-12">
 
             <div class="panel panel-default">
+				<div class="panel-heading">
+                <h2 class="h2">
             	@if($atcls->isEmpty())
-                <div class="panel-heading">{{ $groupName }}の記事がありません</div>
+                {{ $groupName }}の記事がありません
 				@else
-				<div class="panel-heading">{{ $groupName }}の記事</div>
+				{{ $groupName }}の記事
                 @endif
+                </h2>
+                </div>
 
                 <div class="panel-body">
                 	@include('main.shared.main')

@@ -2,10 +2,10 @@
 
 @section('content')
 
-    	
-	{{-- @include('dbd_shared.search') --}}
-
-    <h3>タグ一覧</h3>
+	<div class="clearfix">
+    <h3 class="page-header">タグ一覧</h3>
+    <a href="{{ url('/dashboard/tags/create') }}" class="btn btn-success pull-right">新規追加</a>
+    </div>
 
     {{ $tags->links() }}
         

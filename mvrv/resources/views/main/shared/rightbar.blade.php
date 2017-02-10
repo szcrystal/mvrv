@@ -1,21 +1,27 @@
 
 <div id="right-bar">
     <div class="panel panel-default">
-        <div class="panel-heading">right-bar</div>
 
             <div class="panel-body">
                 <div class="adv">
-                    <h4>広告枠</h4>
+
                 </div>
 
                 <div>
-                <h4>{{ $rankName }} TOP20</h4>
-                <ul class="no-list">
-                <?php foreach($rightRanks as $val) { ?>
-                    <li style="border: 1px solid #aaa;">
-                        <a href="{{url('/single/'.$val->id)}}">{{$val->title}}</a>
+                <h5>{{ $rankName }} TOP20</h5>
+                <ul class="side-rank">
+                <?php $n = 1; ?>
+                @foreach($rightRanks as $val)
+                    <li>
+                    	@if($n < 4)
+                        <span class="rank-{{ $n }}">{{ $n }}</span>
+                        @else
+                        <span class="rank-n">{{ $n }}</span>
+                        @endif
+                        <a href="{{url('m/'.$val->id)}}">{{ Ctm::shortStr($val->title, 25) }}</a>
                     </li>
-                <?php } ?>
+                    <?php $n++; ?>
+                @endforeach
 
                 </ul>
                 </div>

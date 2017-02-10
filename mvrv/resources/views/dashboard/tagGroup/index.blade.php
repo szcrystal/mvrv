@@ -2,24 +2,30 @@
 
 @section('content')
 
-    	
-	{{-- @include('dbd_shared.search') --}}
 
-    <h3>タググループ一覧</h3>
-        
+    <div class="clearfix">
+    <h3 class="page-header">タググループ一覧</h3>
+    <a href="{{ url('/dashboard/taggroups/create') }}" class="btn btn-success pull-right">新規追加</a>
+    </div>
+
+
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
+
+
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
           <thead>
             <tr>
               <th>ID</th>
-              <th class="col-md-2">カテゴリー</th>
-              <th class="col-md-4">タイトル</th>
-              <th class="col-md-2">公開状態</th>
-              <th class="col-md-2">公開日</th>
-              <th class="col-md-3">状態</th>
-              <th class="col-md-3">View数</th>
-              <th></th>
-              
+              <th class="col-md-3">グループ名</th>
+              <th class="col-md-3">スラッグ</th>
+              <th class="col-md-2">状態</th>
+              <th class="col-md-2">作成日</th>
+              <th class="col-md-1"></th>
             </tr>
           </thead>
           <tbody>
@@ -49,8 +55,23 @@
                 </td>
 
                 <td>
-                	<a style="margin:auto;" href="{{url('dashboard/taggroups/'.$group->id)}}" class="btn btn-primary btn-sm center-block">編集</a>
+                	{{ $group->created_at }}
                 </td>
+
+                <td>
+                	<a href="{{url('dashboard/taggroups/'.$group->id)}}" class="btn btn-primary btn-sm center-block">編集</a>
+                </td>
+
+				{{--
+                <td>
+                	<form role="form" method="POST" action="{{ url('/dashboard/taggroups/'.$group->id) }}">
+                    {{ csrf_field() }}
+                    {{ method_field('DELETE') }}
+
+                	<input type="submit" class="btn btn-danger btn-sm center-block" value="削除">
+                    </form>
+                </td>
+                --}}
         	</tr>
         @endforeach
         
@@ -58,7 +79,7 @@
         </table>
         </div>
     
-    <?php //echo $objs->render(); ?>
-        
+    {{-- $groups->links() --}}
+
 @endsection
 

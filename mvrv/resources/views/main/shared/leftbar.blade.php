@@ -1,11 +1,10 @@
 
 <div id="left-bar">
         <div class="panel panel-default">
-            <div class="panel-heading">Left-bar</div>
 
             <div class="panel-body">
                 <div>
-                <h4>カテゴリ</h4>
+                <h5>カテゴリ</h5>
                 <ul class="no-list">
                 <?php foreach($cateLeft as $val) { ?>
                     <li>
@@ -18,10 +17,10 @@
                 </div>
 
                 <div>
-                <h4>人気タグ</h4>
+                <h5>人気タグ</h5>
                 <ul class="no-list">
                 <?php foreach($tagLeftRanks as $val) { ?>
-                    <li style="margin-bottom:0.7em">
+                    <li class="rank-tag">
                         <i class="fa fa-tag" aria-hidden="true"></i><a href="{{url($groupModel->find($val->group_id)->slug.'/'.$val->slug)}}">{{$val->name}}</a>
 
                     </li>
@@ -31,7 +30,7 @@
                 </div>
 
                 <div class="adv">
-                    <h4>広告枠</h4>
+
 
                 </div>
 

@@ -1,16 +1,17 @@
 @extends('layouts.appSingle')
 
 @section('content')
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+    <div class="row pt-5">
+        <div class="col-md-8 mx-auto">
             <div class="panel panel-default">
-                <div class="panel-heading">ログイン</div>
-                <div class="panel-body">
+                <div class="panel-heading">
+                	<h2 class="h2">ログイン</h2>
+                </div>
+                <div class="panel-body mt-4">
 
                     @if (count($errors) > 0)
 						<div class="alert alert-danger">
-							<strong>ログイン出来ません</strong><br><br>
+							<strong>ログイン出来ません</strong><br>
 							<ul>
 								@foreach ($errors->all() as $error)
 									<li>{{ $error }}</li>
@@ -19,12 +20,18 @@
 						</div>
 					@endif
 
+                    @if (session('status'))
+                        <div class="alert alert-success">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
                     <form class="form-horizontal" role="form" method="POST" action="{{ url('/login') }}">
                         {{ csrf_field() }}
 
                         <input type="hidden" name="userLogin" value="1">
 
-                        <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                        <div class="row form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                             <label for="email" class="col-md-4 control-label">メールアドレス</label>
 
                             <div class="col-md-6">
@@ -38,7 +45,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
+                        <div class="row form-group{{ $errors->has('password') ? ' has-error' : '' }}">
                             <label for="password" class="col-md-4 control-label">パスワード</label>
 
                             <div class="col-md-6">
@@ -53,7 +60,7 @@
                         </div>
 
                         <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
+                            <div class="col-md-6 offset-md-4">
                                 <div class="checkbox">
                                     <label>
                                         <input type="checkbox" name="remember"> ログイン状態を保存する
@@ -63,13 +70,13 @@
                         </div>
 
                         <div class="form-group">
-                            <div class="col-md-8 col-md-offset-4">
+                            <div class="col-md-8 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
                                     ログイン
                                 </button>
 
                                 <a class="btn btn-link" href="{{ url('/password/reset') }}">
-                                    パスワードをお忘れですか?
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i> パスワードをお忘れですか
                                 </a>
                             </div>
                         </div>
@@ -78,5 +85,4 @@
             </div>
         </div>
     </div>
-</div>
 @endsection

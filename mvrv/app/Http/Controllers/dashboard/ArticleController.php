@@ -7,6 +7,7 @@ use App\Article;
 use App\Tag;
 use App\User;
 use App\Category;
+use App\TagRelation;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -14,7 +15,7 @@ use App\Http\Controllers\Controller;
 class ArticleController extends Controller
 {
 
-	public function __construct(Admin $admin, Article $article, Tag $tag, User $user, Category $category)
+	public function __construct(Admin $admin, Article $article, Tag $tag, User $user, Category $category, TagRelation $tagRelation)
     {
     	
         $this -> middleware('adminauth');
@@ -24,6 +25,7 @@ class ArticleController extends Controller
         $this-> article = $article;
         $this->user = $user;
         $this->category = $category;
+        $this->tagRelation = $tagRelation;
         
         $this->perPage = 20;
         
@@ -52,6 +54,33 @@ class ArticleController extends Controller
         
         return view('dashboard.article.index', ['atclObjs'=>$atclObjs, 'cateModel'=>$cateModel, 'users'=>$this->user]);
     }
+    
+    public function show($id)
+    {
+    	$article = $this->article->find($id);
+        $cates = $this->category->all();
+        $users = $this->user->where('active',1)->get();
+        
+//        $atclTag = array();
+//        $n = 0;
+//        while($n < 3) {
+//        	$name = 'tag_'.$n+1;
+//            $atclTag[] = explode(',', $article->tag_{$n+1});
+//            $n++;
+//        }
+//        
+//        print_r($atclTag);
+//        exit();
+        
+        //$tags = $this->getTags();
+        
+//        echo $article->tag_1. "aaaaa";
+//        foreach($tags[0] as $tag)
+//        	echo $tag-> id."<br>";
+//        exit();
+        
+    	return view('dashboard.article.form', ['article'=>$article, 'cates'=>$cates, 'users'=>$users, 'id'=>$id, 'edit'=>1]);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -61,7 +90,8 @@ class ArticleController extends Controller
     public function create()
     {
         $cates = $this->category->all();
-    	return view('dashboard.article.form', ['cates'=>$cates]);
+        $users = $this->user->where('active',1)->get();
+    	return view('dashboard.article.form', ['cates'=>$cates, 'users'=>$users]);
     }
 
     /**
@@ -113,9 +143,10 @@ class ArticleController extends Controller
             $status = '動画情報が更新されました！';
         }
         else { //新規追加の時
-        	$data['owner_id'] = 0;
+        	//$data['owner_id'] = 0;
             $data['open_status'] = 0;
             $data['open_history'] = 0;
+            $data['not_newdate'] = 0;
             $data['view_count'] = 0;
             
             $status = '動画情報が追加されました！';
@@ -145,31 +176,7 @@ class ArticleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-    	$article = $this->article->find($id);
-        $cates = $this->category->all();
-        
-//        $atclTag = array();
-//        $n = 0;
-//        while($n < 3) {
-//        	$name = 'tag_'.$n+1;
-//            $atclTag[] = explode(',', $article->tag_{$n+1});
-//            $n++;
-//        }
-//        
-//        print_r($atclTag);
-//        exit();
-        
-        //$tags = $this->getTags();
-        
-//        echo $article->tag_1. "aaaaa";
-//        foreach($tags[0] as $tag)
-//        	echo $tag-> id."<br>";
-//        exit();
-        
-    	return view('dashboard.article.form', ['article'=>$article, 'cates'=>$cates, 'id'=>$id, 'edit'=>1]);
-    }
+    
 
     /**
      * Show the form for editing the specified resource.
@@ -200,7 +207,7 @@ class ArticleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id) //未使用
     {
         
         $rules = [
@@ -246,7 +253,15 @@ class ArticleController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $title = $this->article->find($id)->title;
+        $title = substr($title, 0, 20);
+        
+        $atclDel = $this->article->destroy($id); //article del
+        $relDel = $this->tagRelation->where('atcl_id', $id)->delete(); //tagRelation del
+        
+        $status = $atclDel && $relDel ? '記事「'.$title.'」が削除されました' : '記事「'.$title.'」が削除出来ませんでした';
+        
+        return redirect('dashboard/articles')->with('status', $status);
     }
     
     

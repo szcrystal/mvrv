@@ -21,7 +21,7 @@ class CreateItemsTable extends Migration
             $table->string('main_title')->nullable()->default(NULL);
             $table->integer('title_option')->nullable()->default(NULL);
             
-            $table->string('main_text')->nullable()->default(NULL);
+            $table->longText('main_text')->nullable()->default(NULL);
             
             $table->string('image_path')->nullable()->default(NULL);
             $table->string('image_title')->nullable()->default(NULL);

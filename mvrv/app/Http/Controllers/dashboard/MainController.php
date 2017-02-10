@@ -27,11 +27,11 @@ class MainController extends Controller
         $this -> admin = $admin;
         $this-> articleBase = $articleBase;
         
+        $this->perPage = 20;
+        
         // URLの生成
 		//$url = route('dashboard');
-        
-        /* ************************************** */
-        //env()ヘルパー：環境変数（$_SERVER）の値を取得 .env内の値も$_SERVERに入る
+
 	}
     
     /**
@@ -46,17 +46,32 @@ class MainController extends Controller
     }
     
     
-    public function getRegister () {
-    	return view('dashboard.register');
+    public function getRegister ($id='')
+    {
+    	$editId = 0;
+        $admin = NULL;
+        
+    	if($id) {
+        	$editId = $id;
+            $admin = $this->admin->find($id);
+        }
+        
+    	$admins = $this->admin->paginate($this->perPage);
+        
+    	return view('dashboard.register', ['admins'=>$admins, 'admin'=>$admin, 'editId'=>$editId]);
     }
     
-    public function postRegister(Request $request) {
-        
-    	//$admin = new Admin;
+    public function postRegister(Request $request)
+    {
+    	$editId = $request->input('edit_id');
+        $valueId = '';
+        if($editId) {
+        	$valueId = ','. $editId;
+        }
         
     	$rules = [
             'name' => 'required|max:255',
-            'email' => 'required|email|unique:admins|max:255', /* |unique:admins 注意:unique */
+            'email' => 'required|email|max:255|unique:admins,email'.$valueId, /* |unique:admins 注意:unique */
             'password' => 'required|min:8',
         ];
         
@@ -64,19 +79,32 @@ class MainController extends Controller
         
         $data = $request->all(); //requestから配列として$dataにする
         
-        //$admin->fill($data); //モデルにセット
-        //$admin->save(); //モデルからsave
+        if($data['edit_id']) {
+        	$adminModel = $this->admin->find($data['edit_id']);
+        }
+        else {
+        	$adminModel = $this->admin;
+        }
+        
+        $data['password'] = bcrypt($data['password']);
+        
+        $adminModel->fill($data);
+        $adminModel->save();
         
         //Save&手動ログイン：以下でも可 :Eroquent ORM database/seeds/UserTableSeeder内にもあるので注意
-		$admin = Admin::create([
-            'name' => $data['name'],
-			'email' => $data['email'],
-			'password' => bcrypt($data['password']),
-            //'admin' => 99,
-		]);
+//		$admin = Admin::create([
+//            'name' => $data['name'],
+//			'email' => $data['email'],
+//			'password' => bcrypt($data['password']),
+//            //'admin' => 99,
+//		]);
         
-        return view('dashboard.register', ['status'=>'管理者:'.$data['name'].'さんが追加されました。']);
-    	
+        if($editId)
+        	$status = '管理者情報を更新しました！';
+        else
+	        $status = '管理者:'.$data['name'].'さんが追加されました。';
+        
+        return redirect('dashboard/register')->with('status', $status);
     }
     
     

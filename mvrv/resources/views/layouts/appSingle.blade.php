@@ -4,8 +4,9 @@
     <div id="app">
         @include('shared.headNav')
 
-
+		<div class="container wrap-all single">
         @yield('content')
+        </div>
 
 
     </div>
@@ -13,7 +14,5 @@
 
 @include('shared.footer')
 
-    <!-- Scripts -->
-    <script src="/js/app.js"></script>
 </body>
 </html>

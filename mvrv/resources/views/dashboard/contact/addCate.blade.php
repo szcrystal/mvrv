@@ -5,9 +5,19 @@
     	
 	{{-- @include('dbd_shared.search') --}}
 
-    <div class="panel-heading">
-    	<h3>問合せ：カテゴリー一覧</h3>
-    </div>
+
+    <h3 class="page-header">問合せ：カテゴリー一覧</h3>
+
+	@if (count($errors) > 0)
+        <div class="alert alert-danger">
+            <strong>Error!!</strong> 追加できません<br><br>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     @if (session('status'))
         <div class="alert alert-success">
@@ -15,8 +25,7 @@
         </div>
     @endif
 
-    <div class="panel-body">
-        
+	<div class="row">
     <div class="table-responsive col-md-6">
         <table class="table table-striped table-bordered">
           <thead>
@@ -40,11 +49,11 @@
                 </td>
 
 				<td>
-	        		<strong>{{$cate->category}}</strong>
+	        		{{$cate->category}}
                 </td>
                                     
                 <td>
-                	{{ date('Y/n/j H:i', strtotime($cate->created_at)) }}
+                	{{ date('Y/m/d H:i', strtotime($cate->created_at)) }}
                 </td>
 
                 <td>
@@ -57,15 +66,15 @@
         </table>
         </div>
 
-		<div class="col-md-6">
+		<div class="col-md-5 col-md-offset-1">
 		<form class="form-horizontal" role="form" method="POST" action="/dashboard/contacts">
 
             {{ csrf_field() }}
 
             <div class="form-group{{ $errors->has('category') ? ' has-error' : '' }}">
-                    <label for="category" class="col-md-4 control-label">カテゴリー追加</label>
-                    <div class="col-md-8">
-                        <input id="category" type="text" class="form-control" name="category" value="{{ old('category') }}" required autofocus>
+                    <label for="category" class="col-md-10 text-left">問合せカテゴリー追加</label>
+                    <div class="col-md-10">
+                        <input id="category" type="text" class="form-control" name="category" value="{{ old('category') }}" required>
 
                         @if ($errors->has('category'))
                             <span class="help-block">
@@ -76,16 +85,14 @@
             </div>
 
             <div class="form-group">
-                <div class="col-md-11">
-                    <button type="submit" class="btn btn-primary center-block w-btn"><span class="octicon octicon-sync"></span>追加</button>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary">追 加</button>
                 </div>
             </div>
         </form>
         </div>
-
-    </div>
     
     <?php //echo $objs->render(); ?>
-        
+    </div>
 @endsection
 

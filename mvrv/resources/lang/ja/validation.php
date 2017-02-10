@@ -122,6 +122,7 @@ return [
         'movie_site' => '「動画サイト」',
         'movie_url' => '「動画URL」',
         'slug' => '「スラッグ」',
+        'category' => '「カテゴリー」',
         'address' => '「所在地」',
         'sub_title' => '「サブタイトル」',
         'url_name' => '「リンク名」',

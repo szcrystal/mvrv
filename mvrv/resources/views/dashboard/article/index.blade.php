@@ -2,10 +2,18 @@
 
 @section('content')
 
-    	
-	{{-- @include('dbd_shared.search') --}}
+    <div class="clearfix">
+    	<h3 class="page-header">記事一覧</h3>
+		<a href="{{ url('/dashboard/articles/create') }}" class="btn btn-success pull-right">新規追加</a>
+    </div>
 
-    <h3>記事一覧</h3>
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
+
+    {{ $atclObjs->links() }}
         
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
@@ -19,7 +27,7 @@
               <th class="col-md-3">オーナー名</th>
               <th class="col-md-3">View数</th>
               <th></th>
-              
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -75,6 +83,14 @@
 
                 <td>
                 	<a style="margin:auto;" href="{{url('dashboard/articles/'.$obj->id)}}" class="btn btn-primary btn-sm center-block">編集</a>
+                </td>
+                <td>
+                	<form role="form" method="POST" action="{{ url('/dashboard/articles/'.$obj->id) }}">
+                    {{ csrf_field() }}
+                    {{ method_field('DELETE') }}
+
+                	<input type="submit" class="btn btn-danger btn-sm center-block" value="削除">
+                    </form>
                 </td>
         	</tr>
         @endforeach

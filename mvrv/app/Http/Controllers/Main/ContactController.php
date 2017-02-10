@@ -24,8 +24,6 @@ class ContactController extends Controller
         $this->article = $article;
         $this->mail = $mail;
         
-        //$this->ctm = $ctm;
-       
         //$this->user = Auth::user();
     }
     /**

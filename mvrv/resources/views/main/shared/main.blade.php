@@ -1,17 +1,27 @@
-<div>
-    <ul class="main-list">
-    	@foreach($atcls as $atcl)
-        <li class="clearfix">
-            <a href="{{url('/single/'.$atcl->id)}}">
-                <div class="pull-left">
-                	<img src="{{Storage::url($atcl->thumbnail)}}">
+<div class="main-list clearfix">
+<?php
+    use App\User;
+?>
+    @foreach($atcls as $atcl)
+    <article class="float-left">
+
+            	<a href="{{url('m/'.$atcl->id)}}">
+            	@if($atcl->thumbnail == '')
+                	<span class="no-img">No Image</span>
+                @else
+                	<div style="background-image:url({{Storage::url($atcl->thumbnail)}})" class="main-thumb"></div>
+                @endif
+                </a>
+
+                <h2><a href="{{url('m/'.$atcl->id)}}">{{ Ctm::shortStr($atcl->title, 20) }}</a></h2>
+                <div class="meta">
+					<p>オーナー：{{ User::find($atcl->owner_id)->name }}</p>
+                    <p>公開日：{{ Ctm::changeDate($atcl->open_date)}}</p>
                 </div>
-                <h2 class="pull-right">{{$atcl->title}}</h2></a>
-
-        </li>
-    	@endforeach
-
-</ul>
-{{ $atcls->links() }}
+    </article>
+    @endforeach
 </div>
+
+{{ $atcls->links() }}
+
 

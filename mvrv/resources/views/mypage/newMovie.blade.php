@@ -1,34 +1,38 @@
 @extends('layouts.appSingle')
 
 @section('content')
-
-<div class="container mp-index">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12 py-5 mp-index">
             <div class="panel panel-default">
 
-        @if(count($atcls))
+
             <div class="panel-heading">
             	<a href="{{ url('mypage') }}">{{ $user->name }}さんの記事一覧</a>
-            	新着動画一覧
+            	<span>新しい記事を取得</span>
+                <a href="{{ url('mypage/base') }}" class="btn btn-primary float-right">新しい記事を作成</a>
             </div>
 
-            <div class="panel-body">
+			<div class="panel-body">
+            @if(!count($atcls))
+                <p>現在、新着の動画はありません。</p>
+
+            @else
+
             	@if($closeCount > 4)
                     <p class="text-danger">未公開の記事が5件以上ありますので、記事の取得が出来ません。</p>
                 @endif
 
 					<div class="table-responsive">
-                    <table class="table table-striped table-bordered">
+                    <table class="table table-bordered table-striped responsive-utilities">
                       <thead>
                         <tr>
                           <th>ID</th>
-                          <th class="col-md-1">状態</th>
-                          <th class="col-md-2">カテゴリー</th>
-                          <th class="col-md-3">タイトル</th>
-                          <th class="col-md-1">動画元</th>
-                          <th class="col-md-3">動画URL</th>
-                          <th class="col-md-3"></th>
+                          <th style="width:6em;">状態</th>
+                          <th style="width:8em;">カテゴリー</th>
+                          <th>タイトル</th>
+                          <th>動画元</th>
+                          <th>動画URL</th>
+                          <th></th>
                           
                         </tr>
                       </thead>
@@ -55,7 +59,7 @@
                             </td>
 
                             <td>
-                                <strong>{{$atcl->movie_site}}</strong>
+                                {{$atcl->movie_site}}
                             </td>
 
                             <td>
@@ -67,7 +71,7 @@
 								@if($closeCount > 4)
 									取得不可
                                 @else
-                                <a style="margin:auto;" href="{{url('mypage/'.$atcl->id.'/create')}}" class="btn btn-success btn-sm center-block">取得</a>
+                                <a href="{{url('mypage/'.$atcl->id.'/create')}}" class="btn btn-success btn-md center-block m-auto">取得</a>
                                 @endif
                             </td>
                         </tr>
@@ -78,12 +82,10 @@
                     </div>
 
                 </div>
-            @else
-				<div class="panel-heading">現在、新着の動画はありません。</div>
+
 			@endif
 
 
         </div><!-- panel -->
     </div>
-</div>
 @endsection

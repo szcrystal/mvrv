@@ -7,11 +7,15 @@
 		<div class="col-md-12">
 
             <div class="panel panel-default">
-            	@if($atcls->isEmpty())
-                <div class="panel-heading">カテゴリー：{{ $cateName }}の記事がありません</div>
-				@else
-				<div class="panel-heading">カテゴリー：{{ $cateName }}</div>
-                @endif
+            	<div class="panel-heading">
+                	<h2 class="h2">
+                    @if($atcls->isEmpty())
+                    カテゴリー：{{ $cateName }}の記事がありません</h2></div>
+                    @else
+                    カテゴリー：{{ $cateName }}
+                    @endif
+                    </h2>
+                </div>
 
                 <div class="panel-body">
                 	@include('main.shared.main')

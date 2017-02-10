@@ -159,11 +159,12 @@ var exe = (function() {
                         */
                     },
                     focus: function(e, ui){
-//                    	if($(e.target).val().length > 1) {
-//                        	$(e.target).siblings('.add-btn').fadeIn(100).css({display:'inline-block'});
-//                        }
+						//console.log(ui.item);
                     },
                     search: function(e, ui){
+                    },
+                    change: function(e, ui) {
+                    	console.log(ui);
                     },
                     
             	}); //autocomplete
@@ -187,10 +188,12 @@ var exe = (function() {
                     	if(event.type=='keydown') { // && $('.ui-menu').is(':hidden')
                         	var texts = $(this).val();
                             if(texts != '') {
-                        		if(addTagOnArea(this, texts, group))
+                        		if(addTagOnArea(this, texts, group)) { //tag追加
                              		$(this).val('');
+                                    //$(this).next('.add-btn:visible').fadeOut(50);
+                                }
                              
-                            	console.log(event.type);
+                                $('.ui-autocomplete').hide();                             
                             }
                         }
                     	event.preventDefault();
@@ -198,11 +201,12 @@ var exe = (function() {
                     
                     //if($(this).val().length < 2) { //event.which == 8 &&
                     if(event.type=='keyup' && $(this).val().length < 1) {
-                		$(this).next('.add-btn').fadeOut(50);
+                		$(this).next('.add-btn').fadeOut(10);
+                        $(this).siblings('.tag-area').find('.text-danger').remove();
                 	}
                     
                     if(event.which != 13 && event.which != 8 && $(this).val().length > 0) {
-                    	$(this).siblings('.add-btn:hidden').fadeIn(100).css({display:'inline-block'});
+                    	$(this).siblings('.add-btn:hidden').fadeIn(50).css({display:'inline-block'});
                     }
                 });
             
@@ -245,7 +249,7 @@ var exe = (function() {
                 //if(! $thisPanel.hasClass('first-panel')) {
                 //$thisPanel.find('.item-btn').fadeToggle(100);
            		$('.item-btn').fadeOut(100);
-                $thisTarget.parent('div').fadeOut(100);
+                $thisTarget.parents('div.item-'+targetClass).fadeOut(100);
             }
            
             //submit ---------------------
@@ -257,6 +261,11 @@ var exe = (function() {
                 console.log(submType);
                 
                 var text = $(this).prevAll('input[type="text"]').val();
+                if(text == '') {
+                	$(this).next('span').remove();
+                	$(this).after('<span class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>未入力です</span>');
+                    return false;
+                }
                 
                 var option = $(this).prev('select').val();
                 var addTag = option == 1 ? '<h1>'+text+'</h1>' : '<h2>'+text+'</h2>';
@@ -300,6 +309,11 @@ var exe = (function() {
                 var submType = $(this).parents('.item-form').data('type');
                 
                 var text = $(this).prev('textarea').val();
+                if(text == '') {
+                	$(this).next('span').remove();
+                	$(this).after('<span class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>未入力です</span>');
+                    return false;
+                }
                 var addTag = '<p>'+ th.nl2br(text) +'</p>';
                 
                 if(submType == 'edit') { //編集時
@@ -335,17 +349,19 @@ var exe = (function() {
                 
                 var submType = $(this).parents('.item-form').data('type');
                 
-                var $parent = $(this).parent('.item-image');
+                var $parent = $(this).parents('.item-image');
                 
-                if($parent.find('input[type="file"]').val() == '') {
-                	$(this).after('<span class="text-danger">画像を追加して下さい</span>');
+                //if($parent.find('input[type="file"]').val() == '') {
+                if($parent.find('.image-success-hidden').val() == 0) {
+                	$(this).next('span').remove();
+                	$(this).after('<span class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>画像を追加して下さい</span>');
                     return false;
                 }
                 
-                var title = $parent.find('input[type="text"]').eq(0).val();
-                var orgurl = $parent.find('input[type="text"]').eq(1).val();
+                var title = $parent.find('input[type="text"]').eq(1).val();
+                var orgurl = $parent.find('input[type="text"]').eq(2).val();
                 var comment = $parent.find('textarea').val();
-                var addPreview = $parent.find('.preview');
+                var addPreview = $parent.find('.preview').clone(true,true);
                 var fileVal = $parent.find('input[type="file"]').val();
                 //addTag
                 var addTitle = '<h4>'+title+'</h4>';
@@ -354,9 +370,10 @@ var exe = (function() {
                 
                 if(submType == 'edit') { //編集時
                 	var $thisSection = $(this).parents('section');
+                    $thisSection.children('.preview').remove();
                     $thisSection.find('h4').remove();
                     $thisSection.find('p').remove();
-                    $thisSection.prepend(addTitle).prepend(addOrgurl).prepend(addComment);
+                    $thisSection.prepend(addComment).prepend(addOrgurl).prepend(addTitle).prepend(addPreview);
                     $thisSection.find('.item-image').slideUp(100);
                 }
                 else { //新規追加時
@@ -369,7 +386,7 @@ var exe = (function() {
                     //親panelを編集用にしてsectionに追加
                     $thisPanel.find('.add-nav').remove();
                     $thisPanel.find('.item-btn').remove();
-                    $thisPanel.find('.item-form').data('type', 'edit').children('div').hide();
+                    $thisPanel.find('.item-form').data('type', 'edit')/*.children('div').hide()*/;
                     $thisPanel.find('.item-form').children('.item-image').find('textarea').val(comment);
                     //$thisPanel.find('.item-form').children('.item-image').find('input[type="file"]').val(fileVal);
                     $thisPanel.find('.item-form').children('.type-hidden').val('image');
@@ -394,23 +411,39 @@ var exe = (function() {
                 e.preventDefault();
                 
                 var submType = $(this).parents('.item-form').data('type');
-                
                 var $frame = $(this).prev('.link-frame');
+                var suc = $frame.find('span').eq(0).data('success');
+                //console.log(suc);
+                if(!suc) {
+                	$(this).next('span').remove();
+                	$(this).after('<span class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>このURLは追加できません</span>');
+                    return false;
+                }
+                
                 var title = $frame.find('div').eq(0).text();
                 var url = $frame.find('div').eq(1).text();
                 //image url取得 後ほど-----
                 var imgUrl = $frame.find('img:visible').attr('src'); //find(img:visible).attr(src)
                 // imageUrlEND------
                 var option = $(this).prevAll('select').val();
-                console.log(imgUrl);
+                //console.log(imgUrl);
                 
-                var addTag = '<a href="'+url+'">'+title+'<br><img src="'+imgUrl+'"></a>';
+                var addTag = '';
+                if(imgUrl) {
+                	addTag = '<div class="link-box"><a href="'+url+'" title="'+title+'"><img src="'+imgUrl+'"></a></div>';
+                }
+                else {
+                	addTag = '<div class="link-box"><a href="'+url+'" title="'+title+'">'+title+'</a></div>';
+                }
                 
                 if(submType == 'edit') { //編集時
                 	var $thisSection = $(this).parents('section');
-                    $thisSection.find('.link-frame').remove();
-                    $thisSection.find('.link-frame').find('a').remove();
-                    $thisSection.prepend($frame).after(addTag);
+                    $thisSection.find('.link-box').remove();
+                    //$thisSection.find('.link-frame').find('a').remove();
+                    $thisSection.prepend(addTag);
+                    
+                    $thisSection.find('.item-link').find('.link-title-hidden').val(title);
+                    $thisSection.find('.item-link').find('.link-imgurl-hidden').val(imgUrl);
                     $thisSection.find('.item-link').slideUp(100);
                 }
                 else { //新規追加時
@@ -427,10 +460,9 @@ var exe = (function() {
                     $thisPanel.find('.item-link').find('.link-title-hidden').val(title);
                     $thisPanel.find('.item-link').find('.link-imgurl-hidden').val(imgUrl);
                     
-                    console.log($thisPanel.find('.item-link').find('.link-title-hidden').val());
+                    //console.log($thisPanel.find('.item-link').find('.link-title-hidden').val());
                     
                     $thisPanel.find('.item-form').children('.type-hidden').val('link');
-                    
                     
                     $addSection.append(addTag).append($thisPanel);
 
@@ -448,10 +480,25 @@ var exe = (function() {
         eventItem: function() {
 			
             //ここに追加 Btn
-			$('.add-nav em').on('click', function() {
+			$('.add-nav span').on('click', function() {
             	var $itemBtn = $(this).parent().siblings('.item-btn');
             	$itemBtn.nextAll('.item-form').children('div').fadeOut(100);
-                $itemBtn.slideToggle(150);
+                
+                if($itemBtn.is(':visible')) {
+                	$itemBtn.slideUp(150);
+                    $(this).fadeOut(70);
+                }
+                else {
+                	$itemBtn.slideDown(150);
+//                    $(this).fadeOut(70, function(){
+//                    	$(this).next('span').fadeIn(70);
+//                    });
+                }
+                
+                $(this).fadeOut(70, function(){
+                    $(this).siblings('span').fadeIn(70);
+                });
+                
                 
             });
            
@@ -502,13 +549,88 @@ var exe = (function() {
                 });
             });
            
+           
+            //Thumbnail Upload
+            $('.thumb-file').on('click', function(){
+            	var $th = $(this);
+                $th.on('change', function(e){
+                	var file = e.target.files[0],
+                    reader = new FileReader(),
+                    $preview = $(this).parents('.thumb-wrap').find('.thumb-prev');
+                    //t = this;
+
+                    // 画像ファイル以外の場合は何もしない
+                    if(file.type.indexOf("image") < 0){
+                      return false;
+                    }
+
+                    // ファイル読み込みが完了した際のイベント登録
+                    reader.onload = (function(file) {
+                      return function(e) {
+                        //既存のプレビューを削除
+                        $preview.empty();
+                        // .prevewの領域の中にロードした画像を表示するimageタグを追加
+                        $preview.append($('<img>').attr({
+                                  src: e.target.result,
+                                  width: "100%",
+                                  //class: "preview",
+                                  title: file.name
+                        }));
+                        //console.log(file.name);
+                        $th.parents('.thumb-wrap').children('.thumb-choice-hidden').val(0);
+                    	$th.parents('.thumb-wrap').children('.thumb-success-hidden').val(1);
+                        
+                        console.log($th.parents('.thumb-wrap').children('.thumb-choice-hidden').val());
+                        console.log($th.parents('.thumb-wrap').children('.thumb-success-hidden').val());
+                    };
+                })(file);
+
+                reader.readAsDataURL(file);
+                });
+            	
+            });
+           
+           	//Thumbnail URL check
+            $('.thumb-check').on('click', function(e){
+            	e.preventDefault();
+            	
+                var imgUrl = $(this).prevAll('input').val();
+                var $prevFrame = $(this).parents('.thumb-wrap').find('.thumb-prev');
+                var $th = $(this);
+                var img = new Image();
+                img.src = imgUrl;
+                //console.log(img);
+                
+                img.onerror = function(){
+                	$prevFrame.empty();
+                    $prevFrame.append('<span class="no-img text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> 画像が見つかりません</span>');
+                    
+                    $th.parents('.thumb-wrap').children('.thumb-choice-hidden').val(0);
+                    $th.parents('.thumb-wrap').children('.thumb-success-hidden').val(0);
+                    //console.log('Error');
+                }
+                
+                img.onload = function(){
+                	$prevFrame.empty();
+                	$prevFrame.append('<img src="'+ imgUrl +'">');
+                    
+                    $th.parents('.thumb-wrap').children('.thumb-choice-hidden').val(1);
+                    $th.parents('.thumb-wrap').children('.thumb-success-hidden').val(1);
+                    
+                    console.log($th.parents('.thumb-wrap').children('.thumb-choice-hidden').val());
+                	console.log($th.parents('.thumb-wrap').children('.thumb-success-hidden').val());
+                }
+                
+            });
+            //---------
+           
            	//Image File load Btn
             $('.img-file').on('click', function(){
             	var $th = $(this);
                 $th.on('change', function(e){
                 	var file = e.target.files[0],
                     reader = new FileReader(),
-                    $preview = $(this).prevAll('.preview');
+                    $preview = $(this).parents('.item-image').find('.preview');
                     t = this;
 
                     // 画像ファイル以外の場合は何もしない
@@ -524,11 +646,13 @@ var exe = (function() {
                         // .prevewの領域の中にロードした画像を表示するimageタグを追加
                         $preview.append($('<img>').attr({
                                   src: e.target.result,
-                                  width: "150px",
-                                  class: "preview",
+                                  width: "100%",
+                                  //class: "preview",
                                   title: file.name
-                              }));
-                        console.log(file.name);
+                        }));
+                        //console.log(file.name);
+                        $th.nextAll('.image-choice-hidden').val(0);
+                        $th.nextAll('.image-success-hidden').val(1);
                       };
                 })(file);
 
@@ -538,6 +662,40 @@ var exe = (function() {
             });
            
            
+            $('.img-check').on('click', function(e){
+            	e.preventDefault();
+            	
+                var imgUrl = $(this).prev('input[type="text"]').val();
+                var $prevFrame = $(this).parents('.item-image').find('.preview');
+                var $th = $(this);
+                var img = new Image();
+                img.src = imgUrl;
+                //console.log(img);
+                
+                img.onerror = function(){
+                	$prevFrame.empty();
+                    $prevFrame.append('<span class="no-img text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> 画像が見つかりません</span>');
+                    
+                    $th.nextAll('.image-choice-hidden').val(0);
+                    $th.nextAll('.image-success-hidden').val(0);
+                }
+                
+                img.onload = function(){
+                	$prevFrame.empty();
+                	$prevFrame.append('<img src="'+ imgUrl +'">');
+                    $prevFrame.find('img').attr('width', '170px');
+                    
+                    $th.nextAll('.image-choice-hidden').val(1);
+                    $th.nextAll('.image-success-hidden').val(1);
+                    
+                    //console.log($th.nextAll('.image-choice-hidden').val());
+                    //console.log($th.nextAll('.image-success-hidden').val());
+                }
+                
+            });
+           
+           
+           	//ctrl-nav edit
             $('.edit-sec').on('click', function(e) {
             	var d = $(this).data('target');
                 console.log(d);
@@ -545,6 +703,7 @@ var exe = (function() {
             
             });
            
+            //ctrl-nav delete
             $('.del-sec').on('click', function() {
                 var speed = 250;
                 var $thisSec = $(this).parents('section');
@@ -561,6 +720,7 @@ var exe = (function() {
                 });
             });
            
+            //ctrl-nav up
             $('.up-sec').on('click', function(e) {
             	var speed = 250;
                 var $thisSec = $(this).parents('section');
@@ -584,6 +744,7 @@ var exe = (function() {
             
             });
            
+            //ctrl-nav down
             $('.down-sec').on('click', function(e) {
             	var speed = 250;
                 var $thisSec = $(this).parents('section');
