@@ -49,11 +49,6 @@ Route::get('search', 'Main\SearchController@index');
 //MyPage
 Route::get('mypage/{atclId}/create', 'MyPage\HomeController@create');
 Route::get('mypage/newmovie', 'MyPage\HomeController@newMovie');
-Route::group(['prefix' => 'mypage/base'], function(){
-    Route::get('/', 'MyPage\HomeController@base');
-    Route::get('{atclId}', 'MyPage\HomeController@base');
-    Route::post('/', 'MyPage\HomeController@postBase');
-});
 Route::resource('mypage', 'MyPage\HomeController');
 
 

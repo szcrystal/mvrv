@@ -45,19 +45,31 @@
                 <div class="col-md-6 col-md-offset-3">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="open_status" value="1"{{isset($group) && $group->open_status ? ' checked' : '' }}> 有効にする
+                        	<?php
+                            	$checked = '';
+                                if(Ctm::isOld()) {
+                                    if(old('open_status'))
+                                        $checked = ' checked';
+                                }
+                                else {
+                                    //isset($article) && $article->del_status
+                                    if(isset($group) && $group->open_status)
+                                        $checked = ' checked';
+                                }                                
+                            ?>
+                            <input type="checkbox" name="open_status" value="1"{{ $checked }}> 有効にする
                         </label>
                     </div>
                 </div>
             </div>
 
             <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                <label for="category" class="col-md-3 control-label">グループ名</label>
+                <label for="name" class="col-md-3 control-label">グループ名</label>
 
                 <?php $value = (old('name') !== NULL) ? old('name') : (isset($group) ? $group->name : ''); ?>
 
                 <div class="col-md-6">
-                    <input id="category" type="text" class="form-control" name="name" value="{{ $value }}" required>
+                    <input id="name" type="text" class="form-control" name="name" value="{{ $value }}" required>
 
                     @if ($errors->has('name'))
                         <span class="help-block">

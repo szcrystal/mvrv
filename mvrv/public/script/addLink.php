@@ -35,7 +35,7 @@ $html = file_get_contents($url, false, stream_context_create(array(
 )));
 
 if($html === FALSE) {
-	echo '<span class="text-danger" data-success="0">URLを取得できません</span>';;
+	echo '<span class="text-danger" data-success="0">URLを取得できません</span>';
     exit();
 }
 
@@ -74,7 +74,7 @@ if($imgCount > 0) {
         
         if($fp = fopen($src, "r")){
         
-            $imgFrame .= '<img src="'.$src.'" data-count="'.$n.'">'."\n";
+            $imgFrame .= '<img src="'.$src.'" data-count="'.$n.'" data-linkimg="1">'."\n";
             //$imgFrame .= pq($val)."\n";
             $bool = true;
         }

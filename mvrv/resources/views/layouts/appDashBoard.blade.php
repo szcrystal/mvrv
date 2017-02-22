@@ -230,9 +230,10 @@
                         <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="{{ url('dashboard/register/'. Auth::guard('admin')->user()->id) }}"><i class="fa fa-gear fa-fw"></i> 編集</a>
+                        {{-- <li><a href="{{ url('dashboard/register/'. Auth::guard('admin')->user()->id) }}"><i class="fa fa-gear fa-fw"></i> 編集</a>
                         </li>
                         <li class="divider"></li>
+                         --}}
                         <li><a href="{{ url('dashboard/logout') }}"><i class="fa fa-sign-out fa-fw"></i> ログアウト</a>
                         </li>
                     </ul>

@@ -54,17 +54,18 @@
             <input class="link-url" type="text" name="link_url[]" value="{{$item->link_url}}">
             <button class="subm-check">チェック</button>
             <div class="link-frame">
-                <span>タイトル： </span><div>{{ $item->link_title }}</div>
+                <span data-success="1">タイトル： </span><div>{{ $item->link_title }}</div>
                 <span>URL： </span><div>{{$item->link_url}}</div>
                 <div class="linkimg-wrap">
-				@if($item->link_imgurl)
-                	<img src="{{$item->link_imgurl}}">
+				@if($item->link_imgpath)
+                	<img src="{{ Storage::url($item->link_imgpath) }}" data-linkimg="0">
                 @endif
                 </div>
             </div>
             <button class="subm-link">変更</button>
             <input class="link-title-hidden" type="hidden" name="link_title[]" value="{{ $item->link_title }}">
-            <input class="link-imgurl-hidden" type="hidden" name="link_imgurl[]" value="{{$item->link_imgurl}}">
+            <input class="link-imgurl-hidden" type="hidden" name="link_imgurl[]" value="">
+            <input class="link-imgpath-hidden" type="hidden" name="link_imgpath[]" value="{{$item->link_imgpath}}">
         </div>
 
         <input type="hidden" name="item_type[]" value="{{$item->item_type}}">

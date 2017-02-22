@@ -16,6 +16,7 @@ class CustomController extends Controller
 	
     public function __construct(Article $article, Category $category, Tag $tag)
     {
+    	
     	$this->article = $article;
         $this->category = $category;
         $this->tag = $tag;
@@ -101,6 +102,75 @@ class CustomController extends Controller
     	$fixes = Fix::where('not_open', 0)->get();
         
         return $fixes;
+    }
+    
+    static function isOld()
+    {
+    	return count(old()) > 0;
+    }
+    
+    static function isOldSelected($name, $obj, $objs)
+    {
+    	$selected = '';
+        if(CustomController::isOld()) {
+        	if(old($name) == $obj)
+            	$selected = ' selected';
+        }
+        else {
+        	if(isset($objs) && $objs->$name == $obj) {
+            	$selected = ' selected';
+            }
+        }
+        
+        return $selected;
+    }
+    
+    static function isOldChecked($name, $objs)
+    {
+    	$checked = '';
+        if(CustomController::isOld()) {
+        	if(old($name))
+            	$checked = ' checked';
+        }
+        else {
+        	//isset($article) && $article->del_status
+        	if(isset($objs) && $objs->$name) {
+            	$checked = ' checked';
+            }
+        }
+        
+        return $checked;
+    }
+    
+    static function isAgent($agent)
+    {
+        $ua_sp = array('iPhone','iPod','Mobile ','Mobile;','Windows Phone','IEMobile');
+        $ua_tab = array('iPad','Kindle','Sony Tablet','Nexus 7','Android Tablet');
+        $all_agent = array_merge($ua_sp, $ua_tab);
+        
+        switch($agent) {
+            case 'sp':
+                $agent = $ua_sp;
+                break;
+        
+            case 'tab':
+                $agent = $ua_tab;
+                break;
+            
+            case 'all':
+                $agent = $all_agent;
+                break;
+                
+            default:
+                //$agent = '';
+                break;
+        }
+           
+        if(is_array($agent)) {
+            $agent = implode('|', $agent);
+        }
+        
+        return preg_match('/'. $agent .'/', $_SERVER['HTTP_USER_AGENT']);
     }
     
 }

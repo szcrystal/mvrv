@@ -46,7 +46,7 @@ class User extends Authenticatable
         
         Mail::send('emails.password', $data, function($message) use ($data)
         {
-            $message -> from(env('ADMIN_EMAIL'), 'MovieReview')
+            $message -> from(env('ADMIN_EMAIL'), env('ADMIN_NAME'))
                      -> to($data['email'], $data['name'])
                      -> subject('パスワードリセット用リンク');
             //$message->attach($pathToFile);

@@ -104,7 +104,7 @@ class ContactController extends Controller
         Mail::send('emails.contact', $data, function($message) use ($data) //引数について　http://readouble.com/laravel/5/1/ja/mail.html
         {
             //$dataは連想配列としてviewに渡され、その配列のkey名を変数としてview内で取得出来る
-            $message -> from(env('ADMIN_EMAIL'), 'MovieReview')
+            $message -> from(env('ADMIN_EMAIL'), env('ADMIN_NAME'))
                      -> to($data['user_email'], $data['user_name'])
                      -> subject('お問い合わせの送信が完了しました');
             //$message->attach($pathToFile);
@@ -117,7 +117,7 @@ class ContactController extends Controller
             {
                 $message -> from(env('ADMIN_EMAIL'), env('ADMIN_NAME'))
                          -> to(env('ADMIN_EMAIL'), env('ADMIN_NAME'))
-                         -> subject('お問い合わせがありました - MovieReview -');
+                         -> subject('お問い合わせがありました - '. config('app.name', 'MovieReview'). ' -');
             });
     }
     

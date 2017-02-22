@@ -41,24 +41,23 @@
 
             {{ csrf_field() }}
 
-
-            {{--
-            <div class="form-group">
-                <div class="col-md-6 col-md-offset-3">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="open_status" value="1"{{isset($article) && $article->open_status ? ' checked' : '' }}> 公開する
-                        </label>
-                    </div>
-                </div>
-            </div>
-            --}}
-
             <div class="form-group">
                 <div class="col-md-7 col-md-offset-3">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="del_status" value="1"{{isset($article) && $article->del_status ? ' checked' : '' }}> 削除する
+                        	<?php
+                            	$checked = '';
+                                if(Ctm::isOld()) {
+                                    if(old('del_status'))
+                                        $checked = ' checked';
+                                }
+                                else {
+                                    if(isset($article) && $article->del_status) {
+                                        $checked = ' checked';
+                                    }
+                                }
+                            ?>
+                            <input type="checkbox" name="del_status" value="1"{{ $checked }}> 削除する
                         </label>
                     </div>
                 </div>
@@ -71,7 +70,19 @@
                     <select class="form-control" name="owner_id">
                         <option value="0" selected>未選択</option>
                         @foreach($users as $user)
-                            <option value="{{ $user->id }}"{{ isset($article) && $article->owner_id == $user->id ? ' selected' : '' }}>{{ $user->name }}</option>
+                        	<?php
+                            	$selected = '';
+                                if(Ctm::isOld()) {
+                                    if(old('owner_id') == $user->id)
+                                        $selected = ' selected';
+                                }
+                                else {
+                                    if(isset($article) && $article->owner_id == $user->id) {
+                                        $selected = ' selected';
+                                    }
+                                }
+                            ?>
+                            <option value="{{ $user->id }}"{{ $selected }}>{{ $user->name }}</option>
                         @endforeach
 
                     </select>
@@ -92,7 +103,19 @@
                     <select class="form-control" name="cate_id">
                         <option disabled selected>選択</option>
                         @foreach($cates as $cate)
-                            <option value="{{ $cate->id }}"{{ isset($article) && $article->cate_id == $cate->id ? ' selected' : '' }}>{{ $cate->name }}</option>
+                        	<?php
+                            	$selected = '';
+                                if(Ctm::isOld()) {
+                                    if(old('cate_id') == $cate->id)
+                                        $selected = ' selected';
+                                }
+                                else {
+                                    if(isset($article) && $article->cate_id == $cate->id) {
+                                        $selected = ' selected';
+                                    }
+                                }
+                            ?>
+                            <option value="{{ $cate->id }}"{{ $selected }}>{{ $cate->name }}</option>
                         @endforeach
 
                     </select>
@@ -110,7 +133,7 @@
                 <label for="title" class="col-md-3 control-label">タイトル</label>
 
                 <div class="col-md-7">
-                    <input id="title" type="text" class="form-control" name="title" value="{{ isset($article) ? $article->title : old('title') }}" required>
+                    <input id="title" type="text" class="form-control" name="title" value="{{ Ctm::isOld() ? old('title') : (isset($article) ? $article->title : '') }}" required>
 
                     @if ($errors->has('title'))
                         <span class="help-block">
@@ -192,10 +215,10 @@
                 --}}
 
                 <div class="form-group{{ $errors->has('movie_site') ? ' has-error' : '' }}">
-                    <label for="title" class="col-md-3 control-label">動画サイト</label>
+                    <label for="movie_site" class="col-md-3 control-label">動画サイト</label>
 
                     <div class="col-md-7">
-                        <input id="title" type="text" class="form-control" name="movie_site" value="{{ isset($article) ? $article->movie_site : old('movie_site') }}" required placeholder="youtubeやniconico、vimeoなど">
+                        <input id="movie_site" type="text" class="form-control" name="movie_site" value="{{ Ctm::isOld() ? old('movie_site') : (isset($article) ? $article->movie_site : '') }}" required placeholder="youtubeやniconico、vimeoなど">
 
                         @if ($errors->has('movie_site'))
                             <span class="help-block">
@@ -207,10 +230,10 @@
 
 
                 <div class="form-group{{ $errors->has('movie_url') ? ' has-error' : '' }}">
-                    <label for="title" class="col-md-3 control-label">動画URL</label>
+                    <label for="movie_url" class="col-md-3 control-label">動画URL</label>
 
                     <div class="col-md-7">
-                        <input id="title" type="text" class="form-control" name="movie_url" value="{{ isset($article) ? $article->movie_url : old('movie_url') }}" required>
+                        <input id="movie_url" type="text" class="form-control" name="movie_url" value="{{ Ctm::isOld() ? old('movie_url') : (isset($article) ? $article->movie_url : '') }}" required>
 
                         @if ($errors->has('movie_url'))
                             <span class="help-block">

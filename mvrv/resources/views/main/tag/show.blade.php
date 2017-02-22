@@ -3,8 +3,7 @@
 
 @section('content')
 
-    <div id="main" class="row">
-		<div class="col-md-12">
+    <div id="main">
 
             <div class="panel panel-default">
             	<div class="panel-heading">
@@ -23,7 +22,6 @@
                 </div>
             </div>
 
-	    </div>
 	</div>
 
 @endsection

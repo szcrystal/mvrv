@@ -22,7 +22,7 @@ class Item extends Model
 		
     	'link_title',
         'link_url',
-        'link_imgurl',
+        'link_imgpath',
         'link_option',
     
         'item_sequence',

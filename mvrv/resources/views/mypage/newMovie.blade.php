@@ -9,7 +9,7 @@
             <div class="panel-heading">
             	<a href="{{ url('mypage') }}">{{ $user->name }}さんの記事一覧</a>
             	<span>新しい記事を取得</span>
-                <a href="{{ url('mypage/base') }}" class="btn btn-primary float-right">新しい記事を作成</a>
+                <a href="{{ url('mypage/create') }}" class="btn btn-primary float-right">新しい記事を作成</a>
             </div>
 
 			<div class="panel-body">
@@ -32,7 +32,7 @@
                           <th>タイトル</th>
                           <th>動画元</th>
                           <th>動画URL</th>
-                          <th></th>
+                          <th style="width:3em;"></th>
                           
                         </tr>
                       </thead>

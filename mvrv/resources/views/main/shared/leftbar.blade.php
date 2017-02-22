@@ -7,8 +7,8 @@
                 <h5>カテゴリ</h5>
                 <ul class="no-list">
                 <?php foreach($cateLeft as $val) { ?>
-                    <li>
-                        <i class="fa fa-crosshairs" aria-hidden="true"></i>
+                    <li class="cate-list">
+                        <i class="fa fa-circle" aria-hidden="true"></i>
                         <a href="{{url('/category/'.$val->slug)}}">{{$val->name}}</a>
                     </li>
                 <?php } ?>

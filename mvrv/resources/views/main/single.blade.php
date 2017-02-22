@@ -80,13 +80,14 @@
                                 {{-- @else Storage::disk('s3')->url($atcl -> thumbnail) --}}
                             </div>
                             <div class="col-md-6 float-left">
-                                <p>サムネイル引用元：{{ $atcl -> thumbnail_org }}</p>
-                                <p>公開日時：{{ Ctm::changeDate($atcl->open_date, 'notime') }}</p>
-                                <p>レビューオーナー：{{ $user->name }}</p>
+                                <p>サムネイル引用元：{{ $atcl -> thumbnail_org }}<br>
+                                サムネイルコメント：{{ $atcl -> thumbnail_org }}</p>
+                                <p>公開日時：{{ Ctm::changeDate($atcl->open_date) }}<br>
+                                レビューオーナー：{{ $user->name }}</p>
                             </div>
                         </div>
 
-                        <div class="rv-content mt-5">
+                        <div class="rv-content mt-5 pb-5">
 							@foreach($items as $item)
 								@if($item->item_type == 'title')
 									@if($item->title_option == 1)
@@ -97,26 +98,32 @@
                                 @elseif($item->item_type == 'text')
 									<p>{!! nl2br($item->main_text) !!}</p>
                                 @elseif($item->item_type == 'image')
+                                	<div class="single-img">
                                     <img src="{{ Storage::url($item->image_path) }}">
-                                	<h4>{{$item->image_title}}</h4>
-                                	<p>引用元：{{$item->image_orgurl}}</p>
-                                	<p>コメント：<br>{!! nl2br($item->image_comment) !!}</p>
-
+                                	<h5>{{$item->image_title}}</h5>
+                                	<span>引用元：{{$item->image_orgurl}}<br>
+                                	コメント：{!! nl2br($item->image_comment) !!}</span>
+									</div>
                                 @elseif($item->item_type == 'link')
-                                	<p>{{ $item->link_title }} Option:{{ $item->link_option }}</p>
-                                	<a href="{{ $item->link_url}}"><img src="{{ $item->link_imgurl }}"></a>
+                                	<div class="single-link">
+                                    @if($item->link_option == 2)
+										<a href="{{ $item->link_url }}" class="type-a">{{ $item->link_title }}<i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+                                    @elseif($item->link_option == 3)
+                                    	<a href="{{ $item->link_url }}" class="type-b">{{ $item->link_title }}<i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+                                    @elseif($item->link_imgpath != '')
+                                    	<a href="{{ $item->link_url }}"><img src="{{ Storage::url($item->link_imgpath) }}"></a>
+                                    @else
+										<a href="{{ $item->link_url }}" class="type-n">{{ $item->link_title }}<i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+                                    @endif
 
+									</div>
                                 @endif
                             @endforeach
 
-                            {{ $items->links() }}
+
                         </div>
 
-
-
-
-
-
+						{{ $items->links() }}
 
                 	</div>
 

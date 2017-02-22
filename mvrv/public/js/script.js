@@ -266,6 +266,11 @@ var exe = (function() {
                 	$(this).after('<span class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>未入力です</span>');
                     return false;
                 }
+                else if(text.length > 255) {
+                	$(this).next('span').remove();
+                	$(this).after('<span class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>255文字以内で入力して下さい</span>');
+                    return false;
+                }
                 
                 var option = $(this).prev('select').val();
                 var addTag = option == 1 ? '<h1>'+text+'</h1>' : '<h2>'+text+'</h2>';
@@ -351,16 +356,28 @@ var exe = (function() {
                 
                 var $parent = $(this).parents('.item-image');
                 
+                var title = $parent.find('input[type="text"]').eq(1).val();
+                var orgurl = $parent.find('input[type="text"]').eq(2).val();
+                var comment = $parent.find('textarea').val();
+                
                 //if($parent.find('input[type="file"]').val() == '') {
                 if($parent.find('.image-success-hidden').val() == 0) {
                 	$(this).next('span').remove();
                 	$(this).after('<span class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>画像を追加して下さい</span>');
                     return false;
                 }
+                else if(title.length > 255) {
+                	$(this).next('span').remove();
+                	$(this).after('<span class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>タイトルを255文字以内にして下さい</span>');
+                    return false;
+                }
+                else if(orgurl.length > 255) {
+                	$(this).next('span').remove();
+                	$(this).after('<span class="text-danger"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>参照元URLを255文字以内にして下さい</span>');
+                    return false;
+                }
                 
-                var title = $parent.find('input[type="text"]').eq(1).val();
-                var orgurl = $parent.find('input[type="text"]').eq(2).val();
-                var comment = $parent.find('textarea').val();
+                
                 var addPreview = $parent.find('.preview').clone(true,true);
                 var fileVal = $parent.find('input[type="file"]').val();
                 //addTag
@@ -424,13 +441,20 @@ var exe = (function() {
                 var url = $frame.find('div').eq(1).text();
                 //image url取得 後ほど-----
                 var imgUrl = $frame.find('img:visible').attr('src'); //find(img:visible).attr(src)
+                var isGetLink = $frame.find('img:visible').data('linkimg');
                 // imageUrlEND------
                 var option = $(this).prevAll('select').val();
                 //console.log(imgUrl);
                 
                 var addTag = '';
-                if(imgUrl) {
-                	addTag = '<div class="link-box"><a href="'+url+'" title="'+title+'"><img src="'+imgUrl+'"></a></div>';
+                if(option == 2) {
+                	addTag = '<div class="link-box single-link"><a href="'+url+'" title="'+title+'" class="type-a">'+ title +'</a></div>';
+                }
+                else if(option == 3) {
+                	addTag = '<div class="link-box single-link"><a href="'+url+'" title="'+title+'" class="type-b">'+ title +'</a></div>';
+                }
+                else if(imgUrl) {
+                	addTag = '<div class="link-box single-link"><a href="'+url+'" title="'+title+'"><img src="'+imgUrl+'"></a></div>';
                 }
                 else {
                 	addTag = '<div class="link-box"><a href="'+url+'" title="'+title+'">'+title+'</a></div>';
@@ -443,7 +467,9 @@ var exe = (function() {
                     $thisSection.prepend(addTag);
                     
                     $thisSection.find('.item-link').find('.link-title-hidden').val(title);
-                    $thisSection.find('.item-link').find('.link-imgurl-hidden').val(imgUrl);
+                    if(imgUrl != '' && isGetLink) {
+                    	$thisSection.find('.item-link').find('.link-imgurl-hidden').val(imgUrl);
+                    }
                     $thisSection.find('.item-link').slideUp(100);
                 }
                 else { //新規追加時
@@ -496,7 +522,7 @@ var exe = (function() {
                 }
                 
                 $(this).fadeOut(70, function(){
-                    $(this).siblings('span').fadeIn(70);
+                    $(this).siblings('span').fadeIn(70).css({display:'block'});
                 });
                 
                 
@@ -653,15 +679,16 @@ var exe = (function() {
                         //console.log(file.name);
                         $th.nextAll('.image-choice-hidden').val(0);
                         $th.nextAll('.image-success-hidden').val(1);
+                        
                       };
-                })(file);
+                	})(file);
 
-                reader.readAsDataURL(file);
+                	reader.readAsDataURL(file);
                 });
             	
             });
            
-           
+           	//Image url check
             $('.img-check').on('click', function(e){
             	e.preventDefault();
             	
@@ -688,8 +715,6 @@ var exe = (function() {
                     $th.nextAll('.image-choice-hidden').val(1);
                     $th.nextAll('.image-success-hidden').val(1);
                     
-                    //console.log($th.nextAll('.image-choice-hidden').val());
-                    //console.log($th.nextAll('.image-success-hidden').val());
                 }
                 
             });
@@ -792,6 +817,78 @@ var exe = (function() {
         },
         
         
+        mypagePost: function() {
+        	var preventEvent = true;
+           
+        	$('input#keep, input#open, input#preview, input#drop').on('click', function(e){
+            	$('.help-block').find('strong').text('');
+                
+            	if(preventEvent) {
+                    e.preventDefault();
+                    var action = $(this).parents('form').attr('action');
+                    console.log(action);
+                    var errors = [];
+                    var hisu = '必須項目です';
+                    var leng = '255文字以内で入力して下さい';
+                    
+                    function outputError (id, str) {
+                        $('input#'+id).next('.help-block').find('strong').text(str);
+                        return str;
+                    }
+                    
+                    //title
+                    if($('input#title').val() == '') {
+                    	errors.push(outputError('title', hisu));
+                    }
+                    else if($('input#title').val().length > 255) {
+                    	errors.push(outputError('title', leng));
+                    }
+                    //site
+                    if($('input#movie_site').val() == '') {
+                    	errors.push(outputError('movie_site', hisu));
+                    }
+                    else if($('input#movie_site').val().length > 255) {
+                    	errors.push(outputError('movie_site', leng));
+                    }
+                    //url
+                    if($('input#movie_url').val() == '') {
+                    	errors.push(outputError('movie_url', hisu));
+                    }
+                    else if($('input#movie_url').val().length > 255) {
+                    	errors.push(outputError('movie_url', leng));
+                    }
+                    //url unique
+                    var urls = $('.movie-url').text();
+                    var urlArr = urls.split(',');
+                    var url = $('input#movie_url').val();
+                    if(url.slice(-1) == '/') {
+                    	url = url.slice(0, -1);
+                    }
+                    $.each(urlArr, function(key, elem) {
+                    	if(url == elem) {
+                        	errors.push(outputError('movie_url', '既存の動画サイトです'));
+                        	return false;
+                        }
+                    });
+                    
+                    
+                    if(!$('select#cate_id').val()) {
+                    	$('select#cate_id').next('.help-block').find('strong').text('選択してください');
+                    	errors.push('選択してください');
+                    }
+                    
+                    //console.log(errors.length);
+                    
+                    if(!errors.length) {
+                    	preventEvent = false;
+                		$(this).trigger('click');
+                    }
+                }
+                
+            });
+        },
+        
+        
     } //return
 
 })();
@@ -807,6 +904,7 @@ $(function(e){ //ready
   
     exe.addItem();
     exe.eventItem();
+    exe.mypagePost();
     
 });
 

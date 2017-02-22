@@ -1,15 +1,7 @@
 @extends('layouts.appSingle')
 
 @section('content')
-<?php
-//$url = 'https://minhana.net/wikidata/A0001/picture_normal/A0001_picture_normal_thumb.jp';
-//
-//if($file = fopen($url, 'r'))
-//echo 'aaa';
-//else
-//echo 'bbb';
 
-?>
     <div class="row">
         <div class="col-md-12 py-4 mp-edit">
         	<a href="{{url('mypage')}}" class="back-btn"><i class="fa fa-angle-double-left" aria-hidden="true"></i> マイページへ戻る</a>
@@ -38,6 +30,17 @@
                     </div>
                 </div>
 
+                @if (count($errors) > 0)
+                    <div class="alert alert-danger">
+                        <strong>Error!!</strong> 追加できません<br><br>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 @if(session('status'))
 					<div class="alert alert-success">
                     {{ session('status') }}
@@ -45,77 +48,39 @@
                 @endif
 
                 <div class="panel-body mt-4">
-                	<h3 class="h3"><i class="fa fa-square" aria-hidden="true"></i> 基本情報</h3>
-					<div class="table-responsive">
-                    	<table class="table table-striped table-bordered">
-                            <colgroup>
-                                <col class="cth">
-                                <col class="ctd">
-                            </colgroup>
-                            
-                            <tbody>
-                                <tr>
-                                    <th>動画タイトル</th>
-                                    <td>{{ $atcl -> title }}</td>
-                                </tr>
-                                <tr>
-									<th>動画サイト</th>
-                                    <td>{{ $atcl -> movie_site }}</td>
-                                </tr>
-                                <tr>
-									<th>動画URL</th>
-                                    <td><a href="{{ $atcl -> movie_url }}">{{ $atcl -> movie_url }}</a></td>
-                                </tr>
-                                <tr>
-                                    <th>カテゴリー</th>
-                                    <td>{{ $cate->name }}</td>
-                                </tr>
+                    {{--
+                    @foreach($tagGroups as $key => $tagArr)
+                    <tr>
+                        <th>タグ: {{ $tagGroupModel->find($key)->name }}</th>
+                        <td>
+                        @foreach($tagArr as $tag)
+                            <a href="{{ url('tag/'. $tag['slug']) }}">{{ $tag['name'] }}</a>
+                        @endforeach
+                        </td>
+                    </tr>
+                    @endforeach
+                    --}}
 
+                    <?php //$groupAll = $tagGroupModel->all(); ?>
 
-								{{--
-                                @foreach($tagGroups as $key => $tagArr)
-                                <tr>
-                                    <th>タグ: {{ $tagGroupModel->find($key)->name }}</th>
-                                    <td>
-                                    @foreach($tagArr as $tag)
-                                        <a href="{{ url('tag/'. $tag['slug']) }}">{{ $tag['name'] }}</a>
-                                    @endforeach
-                                    </td>
-                                </tr>
-                                @endforeach
-								--}}
+                    {{--
+                    @foreach($tagGroupAll as $group)
+                    <tr>
+                        <th>{{ $group->name }}</th>
+                        <td>
+                        @if(isset($tagGroups[$group->id]))
+                            @foreach($tagGroups[$group->id] as $tag)
+                                <a href="{{ url($group->slug .'/'. $tag['slug']) }}">{{ $tag['name'] }}</a>&nbsp;&nbsp;
+                            @endforeach
+                        @endif
+                        </td>
+                    </tr>
 
-                                <?php //$groupAll = $tagGroupModel->all(); ?>
+                    @endforeach
+                    --}}
 
-								{{--
-								@foreach($tagGroupAll as $group)
-                                <tr>
-                                    <th>{{ $group->name }}</th>
-                                    <td>
-                                    @if(isset($tagGroups[$group->id]))
-                                    	@foreach($tagGroups[$group->id] as $tag)
-											<a href="{{ url($group->slug .'/'. $tag['slug']) }}">{{ $tag['name'] }}</a>&nbsp;&nbsp;
-                                        @endforeach
-									@endif
-                                    </td>
-                                </tr>
-
-                                @endforeach
-								--}}
-
-                            </tbody>
-                		</table>
-                    </div>
-
-                    <div class="clearfix pb-5">
-						<a href="{{ url('/mypage/base/'.$atcl->id) }}" class="btn btn-info btn-cus float-right">基本情報を編集 <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
-                    </div>
-
-					<hr>
-					<h3 class="h3"><i class="fa fa-square" aria-hidden="true"></i> 詳細情報</h3>
                     <form class="form-horizontal" role="form" method="POST" action="/mypage/{{ $atcl->id }}" enctype="multipart/form-data">
                         {{ csrf_field() }}
-
                         {{ method_field('PUT') }}
 
 						<div class="clearfix mb-5">
@@ -134,33 +99,38 @@
                             <div class="clearfix float-right">
                                 <div class="form-group float-left">
                                     <div>
-                                        <input type="submit" class="btn btn-warning" name="preview" value="保存してプレビュー">
+                                        <input id="preview" type="submit" class="btn btn-warning" name="preview" value="保存してプレビュー">
                                     </div>
                                 </div>
                                 <div class="form-group float-left">
                                     <div class="ml-2">
-                                        <input type="submit" class="btn btn-primary" name="keep" value="保存する">
+                                        <input id="keep" type="submit" class="btn btn-primary" name="keep" value="保存する">
                                     </div>
                                 </div>
                                 @if($atcl->open_status)
                                 <div class="form-group float-left">
                                     <div class="ml-2">
-                                        <input type="submit" class="btn btn-info" name="drop" value="公開を取り下げ">
+                                        <input id="drop" type="submit" class="btn btn-info" name="drop" value="公開を取り下げ">
                                     </div>
                                 </div>
                                 @else
                                 <div class="form-group float-left">
                                     <div class="ml-2">
-                                        <input type="submit" class="btn btn-danger" name="open" value="公開する">
+                                        <input id="open" type="submit" class="btn btn-danger" name="open" value="公開する">
                                     </div>
                                 </div>
                                 @endif
                             </div>
                         </div>
 
+                        <?php //base ------------------------- ?>
+
+                        @include('mypage.shared.baseForm')
+
+						<?php //thumbnail --------------------- ?>
 
                         @include('mypage.shared.thumbnailForm')
-
+                        
 
                         <div class="clearfix tag-wrap">
 
@@ -186,17 +156,26 @@
                         	<div class="tag-group form-group{{ $errors->has($group->slug) ? ' has-error' : '' }}">
                                 <label for="title" class="control-label">{{ $group->name }}</label>
                                 <div class="clearfix">
-                                    <input id="{{ $group->slug }}" type="text" class="form-control tag-control" name="input-{{ $group->slug }}" value="{{ old($group->slug) }}" autocomplete="off">
+                                    <input id="{{ $group->slug }}" type="text" class="form-control tag-control" name="input-{{ $group->slug }}" value="" autocomplete="off">
 
                                     <div class="add-btn" tabindex="0">追加</div>
 
                                     <span style="display:none;">{{ implode(',', $allNames) }}</span>
 
                                     <div class="tag-area">
+                                    	<?php
+                                        	if(count(old()) > 0) {
+                                        		$names = old($group->slug);
+                                        	}
+                                        ?>
+
+                                        @if(isset($names))
 										@foreach($names as $name)
 											<span><em>{{ $name }}</em><i class="fa fa-times del-tag" aria-hidden="true"></i></span>
            									<input type="hidden" name="{{ $group->slug }}[]" value="{{ $name }}">
                                         @endforeach
+                                        @endif
+
                                     </div>
                                 </div>
                             </div>
@@ -225,6 +204,9 @@
                         --}}
 
 
+				<?php //print_r(old()); ?>
+
+
                 <div class="add-item">
                 	<div class="visible-none">
                         @include('mypage.shared.itemCtrlNav')
@@ -234,6 +216,12 @@
 
                     @include('mypage.shared.newItemForm')
                     {{-- <div class="item-panel first-panel"> --}}
+
+					<?php //print_r(old('item_type')); ?>
+
+                    @if(count(old()) > 0)
+                        @include('mypage.shared.oldForm')
+                    @else
 
 
                     @foreach($items as $item)
@@ -281,11 +269,15 @@
                             <section>
                                 @include('mypage.shared.itemCtrlNav')
 
-                                <div class="link-box">
-                                @if($item->link_imgurl)
-                                <a href="{{ $item->link_url}}" title="{{ $item->link_title }}"><img src="{{ $item->link_imgurl }}"></a>
+                                <div class="link-box single-link">
+                                @if($item->link_option == 2)
+                                    <a href="{{ $item->link_url }}" class="type-a">{{ $item->link_title }}<i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+                                @elseif($item->link_option == 3)
+                                    <a href="{{ $item->link_url }}" class="type-b">{{ $item->link_title }}<i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+                                @elseif($item->link_imgpath != '')
+                                	<a href="{{ $item->link_url}}" title="{{ $item->link_title }}"><img src="{{ Storage::url($item->link_imgpath) }}"></a>
                                 @else
-                                <a href="{{ $item->link_url}}">{{ $item->link_title }}</a>
+                                    <a href="{{ $item->link_url }}" class="type-n">{{ $item->link_title }}<i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
                                 @endif
                                 </div>
 
@@ -297,8 +289,10 @@
 
 						@include('mypage.shared.newItemForm')
 
-
                     @endforeach
+
+                    @endif
+
 
                 </div><?php /*addItem*/ ?>
 

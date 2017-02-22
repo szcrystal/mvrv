@@ -7,6 +7,12 @@
 
     <h3 class="page-header">ユーザー一覧</h3>
 
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
+
     {{ $users->links() }}
 
     <div class="table-responsive">
@@ -18,6 +24,7 @@
               <th class="col-md-3">メールアドレス</th>
               <th class="col-md-2">状態</th>
               <th class="col-md-2">登録日</th>
+              <th></th>
               <th></th>
               <th></th>
             </tr>
@@ -57,6 +64,18 @@
                 </td>
                 <td>
                 	<a href="{{url('dashboard/userlogin/'.$obj->id)}}" class="btn btn-warning btn-sm center-block" target="_brank">Login</a>
+                </td>
+                <td>
+                	@if($obj->id == 1)
+                    	<span class="btn center-block">--</span>
+                    @else
+                    <form role="form" method="POST" action="{{ url('/dashboard/users/'.$obj->id) }}">
+                    {{ csrf_field() }}
+                    {{ method_field('DELETE') }}
+
+                	<input type="submit" class="btn btn-danger btn-sm center-block" value="削除">
+                    </form>
+                    @endif
                 </td>
         	</tr>
         @endforeach

@@ -70,6 +70,7 @@
             <button class="subm-link">追加</button>
             <input class="link-title-hidden" type="hidden" name="link_title[]" value="">
             <input class="link-imgurl-hidden" type="hidden" name="link_imgurl[]" value="">
+            <input class="link-imgpath-hidden" type="hidden" name="link_imgpath[]" value="">
         </div>
 
         <input class="type-hidden" type="hidden" name="item_type[]" value="">

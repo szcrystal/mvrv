@@ -1,4 +1,6 @@
+
 <?php $item_type = ''; ?>
+
 @if(isset($item))
 	<?php $item_type = $item->item_type; ?>
 @endif

@@ -73,18 +73,18 @@ class HomeController extends Controller
         return view('mypage.newMovie', ['atcls'=>$atcls, 'user'=>$user, 'cateModel'=>$cateModel, 'closeCount'=>$closeCount]);
     }
     
-    public function base($atclId = '')
+    public function newCreate()
     {
-        $atcl = null;
-        
-        if($atclId) {
-        	$atcl = $this->article->find($atclId);
-        }
+//        $atcl = null;
+//        
+//        if($atclId) {
+//        	$atcl = $this->article->find($atclId);
+//        }
         
         $userId = Auth::user()->id;
         $cates = $this->category->all();
         
-        return view('mypage.newCreate', ['atcl'=>$atcl, 'userId'=>$userId, 'cates'=>$cates]);
+        return view('mypage.create', ['userId'=>$userId, 'cates'=>$cates]);
     }
     
     public function postBase(Request $request)
@@ -130,18 +130,35 @@ class HomeController extends Controller
      */
     public function create($atclId='')
     {
-    	
-        $atcl = Article::find($atclId);
+    	if($atclId) { //from Admin
+        	$atcl = Article::find($atclId);
+            $cate = Category::find($atcl->cate_id);
+            
+            $movieUrl = $this->article->whereNotIn('id', [$atclId])->get()->map(function($item) {
+                return $item->movie_url;
+            })->all();
+        }
+        else { //new create
+        	$atcl = NULL;
+            $cate = '';
+            
+            $movieUrl = $this->article->get()->map(function($item) {
+                //return rtrim($item->movie_url, '/');
+                return $item->movie_url;
+            })->all();
+        }
+        
         $userId = Auth::user()->id;
-        $cate = Category::find($atcl->cate_id);
         
         $cates = $this->category->all();
         
         $tagGroupAll = $this->tagGroup->where('open_status', 1)->get();
         
         $tags = $this->tag->all()->groupBy('group_id')->toArray();
+        
+        
 
-        return view('mypage.create', ['atcl'=> $atcl, 'userId'=>$userId, 'cate'=>$cate, 'cates'=>$cates, 'tagGroupAll'=>$tagGroupAll, 'tags'=>$tags]);
+        return view('mypage.create', ['atcl'=> $atcl, 'userId'=>$userId, 'cate'=>$cate, 'cates'=>$cates, 'tagGroupAll'=>$tagGroupAll, 'tags'=>$tags, 'movieUrl'=>$movieUrl]);
     }
 
     /**
@@ -154,46 +171,28 @@ class HomeController extends Controller
     {
         
     	$rules = [
-//        	'title' => 'required|max:255',
-//            'movie_site' => 'required|max:255', /* |unique:admins 注意:unique */
-//            'movie_url' => 'required|max:255',
+        	//'title' => 'required|max:255',
+            //'movie_url' => 'required|max:255',
         ];
         $this->validate($request, $rules);
         
-        
-    	$atclId = $request->input('atcl_id');
         $userId = Auth::user()->id;
         
-        $atcl = Article::find($atclId);
-
-
-    	if($atcl->owner_id) { //オーナーが先に決まった時
-        	//return redirect('mypage/error')->with('owner_status', 1);
-            return view('mypage.error', ['owner_status'=>1, 'atcl'=>$atcl]);
-    	}
-        
-        //オーナーが決まっていなければowner_idをセットして継続
-        $atcl->owner_id = $userId;
-        $atcl->save();
-
-
         $data = $request->all(); //requestから配列として$dataにする
         
-        if(isset($data['keep'])) {
-            $data['open_status'] = 0;
-        }
-        if(isset($data['open'])) {
-            $data['open_status'] = 1;
-            $data['open_history'] = 1;
-            $data['open_date'] = date('Y-m-d H:i:s', time());
-        }
+        $inputAtclId = $request->input('atcl_id') ? $request->input('atcl_id') : 0;
+        $rand = mt_rand();
+        
         
         //Thumbnail Upload
         if($data['thumb_success']) {
         	if(!$data['thumb_choice']) { //input Upload
             	if($request->file('thumbnail') != '') {
                     $filename = $request->file('thumbnail')->getClientOriginalName();
-                    $filename = $userId . '/' .$atclId . '/thumbnail/' . $filename;
+                    
+                    $aId = $inputAtclId ? $inputAtclId : $rand;
+                    $pre = time() . '-';
+                    $filename = $userId . '/' .$aId . '/thumbnail/' . $pre . $filename;
                     //if (App::environment('local'))
                     $path = $request->file('thumbnail')->storeAs('public', $filename);
                     //else
@@ -205,10 +204,19 @@ class HomeController extends Controller
         	}
             else { //URL入力の時
                 if($data['thumbnail_outurl'] != '') {
-                    $file = file_get_contents($data['thumbnail_outurl']);
+                	try {
+                    	$file = file_get_contents($data['thumbnail_outurl']);
+                    }
+                    catch (\Exception $e) {
+                    	$getId = $inputAtclId ? $inputAtclId .'/' : '';
+                        return redirect('mypage/'.$getId.'create')->withInput()->withErrors(array('画像の取得ができませんでした'));
+                    }
+                    
                     $info = pathinfo($data['thumbnail_outurl']);
-                    //echo $info['basename'];
-                    $name = 'public/' . $userId . '/' .$atclId . '/thumbnail/'. $info['basename'];
+                    
+                    $aId = $inputAtclId ? $inputAtclId : $rand;
+                    $pre = time() . '-';
+                    $name = 'public/' . $userId . '/' .$aId . '/thumbnail/'. $pre . $info['basename'];
                     
                     Storage::put($name, $file);
                     
@@ -218,8 +226,6 @@ class HomeController extends Controller
         }
         
         $imgArr = $request->file('image_path');
-//            print_r($imgArr);
-//            exit();
         
         if(isset($data['item_type'])) {
             $sequence_num = 1;
@@ -235,7 +241,11 @@ class HomeController extends Controller
                 if(! $data['image_choice'][$key]) { // by UpLoad
                     if(isset($imgArr[$key])) {
                         $itemFileName = $imgArr[$key]->getClientOriginalName();
-                        $itemFileName = $userId . '/' .$atclId . '/item/' . $itemFileName;
+                        
+                        $aId = $inputAtclId ? $inputAtclId : $rand;
+                        $pre = time() . '-';
+                        $itemFileName = $userId . '/' .$aId . '/item/' . $pre . $itemFileName;
+                        
                         $itemPath = $imgArr[$key]->storeAs('public', $itemFileName);
                 
                         $data['image_path'][$key] = $itemFileName;
@@ -246,9 +256,18 @@ class HomeController extends Controller
                 }
                 else { //by URL
                     if($data['image_outurl'][$key] != '') {
-                        $file = file_get_contents($data['image_outurl'][$key]);
+                    	try {
+                        	$file = file_get_contents($data['image_outurl'][$key]);
+                        }
+                        catch (\Exception $e) {
+                            $getId = $inputAtclId ? $inputAtclId .'/' : '';
+                        	return redirect('mypage/'.$getId.'create')->withInput()->withErrors(array('画像の取得ができませんでした'));
+                        }
                         $info = pathinfo($data['image_outurl'][$key]);
-                        $name = 'public/' . $userId . '/' .$atclId . '/item/'. $info['basename'];
+                        
+                        $aId = $inputAtclId ? $inputAtclId : $rand;
+                        $pre = time() . '-';
+                        $name = 'public/' . $userId . '/' .$aId . '/item/'. $pre . $info['basename'];
                         
                         Storage::put($name, $file);
                         
@@ -259,12 +278,31 @@ class HomeController extends Controller
                     }
                 }
                 
-                
+                //by Link img url
+                if($data['link_imgurl'][$key] != '') {
+                    try {
+                        $lFile = file_get_contents($data['link_imgurl'][$key]);
+                    }
+                    catch (\Exception $e) {
+                        $getId = $inputAtclId ? $inputAtclId .'/' : '';
+                        return redirect('mypage/'.$getId.'create')->withInput()->withErrors(array('画像の取得ができませんでした'));
+                    }
+                    $lInfo = pathinfo($data['link_imgurl'][$key]);
+                    
+                    $aId = $inputAtclId ? $inputAtclId : $rand;
+                    $lPre = time() . '-';
+                    $lName = 'public/' . $userId . '/' .$aId . '/item/'. $lPre . $lInfo['basename'];
+                    
+                    Storage::put($lName, $lFile);
+                    
+                    $data['link_imgpath'][$key] = $lName;
+                }
+                //else { $data['link_imgpath'][$key] = ''; }
 
                 $itemModel = Item::create(
                     //['id' => $item_id, 'atcl_id' => $id],
                     [
-                        'atcl_id' => $atclId,
+                        'atcl_id' => 0,
                         'item_type' => $data['item_type'][$key],
                         'main_title' => $data['main_title'][$key],
                         'title_option' => $data['title_option'][$key] ? $data['title_option'][$key] : 0,
@@ -275,15 +313,86 @@ class HomeController extends Controller
                         'image_comment' => $data['image_comment'][$key],
                         'link_title' => $data['link_title'][$key],
                         'link_url' => $data['link_url'][$key],
-                        'link_imgurl' => $data['link_imgurl'][$key],
+                        'link_imgpath' => $data['link_imgpath'][$key],
                         'link_option' => $data['link_option'][$key] ? $data['link_option'][$key] : 0, //or NULL
                         'item_sequence' => $sequence_num,
                     ]
                 );
                 
+                $itemId[] = $itemModel->id;
+                
                 $sequence_num++;
             }
             //exit();
+        }
+        
+        
+        if(isset($data['keep'])) {
+            $data['open_status'] = 0;
+        }
+        if(isset($data['open'])) {
+            $data['open_status'] = 1;
+            $data['open_history'] = 1;
+            $data['open_date'] = date('Y-m-d H:i:s', time());
+        }
+
+        
+        if($inputAtclId) {
+            $atclId = $inputAtclId;
+            $atcl = Article::find($atclId);
+            
+            if($atcl->owner_id) { //オーナーが先に決まった時
+                //return redirect('mypage/error')->with('owner_status', 1);
+                return view('mypage.error', ['owner_status'=>1, 'atcl'=>$atcl]);
+            }
+            
+            //オーナーが決まっていなければowner_idをセットして継続
+            $atcl->owner_id = $userId;
+            $atcl->save();
+        }
+        else {
+        	$atcl = $this->article;
+            
+            $atcl->del_status = 0;
+            $atcl->owner_id = $userId;
+            $atcl->title = $data['title'];
+            $atcl->movie_site = $data['movie_site'];
+            $atcl->movie_url = $data['movie_url'];
+            $atcl->cate_id = $data['cate_id'];
+            $atcl->open_status = $data['open_status'];
+            $atcl->open_history = isset($data['open_history']) ? $data['open_history'] : 0;
+            $atcl->not_newdate = 0;
+            $atcl->view_count = 0;
+            
+            $atcl->save();
+            $atclId = $atcl->id;
+            
+            if(Storage::exists('public/' . $userId .'/'.$rand)) {
+                Storage::move('public/' . $userId .'/'.$rand, 'public/' . $userId .'/'.$atclId);
+                
+                $data['thumbnail'] = str_replace($rand, $atclId, $data['thumbnail']);
+                
+                if(isset($itemId)) {
+                    $this->item->find($itemId)->map(function($obj) use($atclId, $rand) {
+                        $obj->image_path = str_replace($rand, $atclId, $obj->image_path);
+                        $obj->link_imgpath = str_replace($rand, $atclId, $obj->link_imgpath);
+                        $obj->save();
+                    });
+                }
+            }
+        }
+        
+        //$atclModel = $this->article;
+        $data['movie_url'] = rtrim($data['movie_url'], '/');
+        $atcl->fill($data); //モデルにセット
+        $atcl->save(); //モデルからsave
+        //$id = $atcl->id;
+		
+        if(isset($itemId)) {
+            $this->item->find($itemId)->map(function($obj) use($atclId) {
+                $obj->atcl_id = $atclId;
+                $obj->save();
+            });
         }
         
         
@@ -373,12 +482,7 @@ class HomeController extends Controller
 //            }
         
 
-        //$atclModel = $this->article;
         
-        $atcl->fill($data); //モデルにセット
-        $atcl->save(); //モデルからsave
-        
-        $id = $atcl->id;
         
         //articleBaseにpost_idをセット
         //$atcl->post_id = $id;
@@ -406,7 +510,7 @@ class HomeController extends Controller
 //            }
 
         //return view('dashboard.article.form', ['thisClass'=>$this, 'tags'=>$tags, 'status'=>'記事が更新されました。']);
-        return redirect('mypage/'.$id.'/edit')->with('status', '記事が追加されました！');
+        return redirect('mypage/'.$atclId.'/edit')->with('status', '記事が追加されました！');
         
     }
 
@@ -464,7 +568,11 @@ class HomeController extends Controller
 		
         //$tagModel = $this->tag;
         
-        return view('mypage.edit', ['atcl'=>$atcl, 'cate'=>$cate, 'cates'=>$cates, 'edit'=>1, 'tagGroups'=>$tagGroups, 'tagGroupAll'=>$tagGroupAll, 'tags'=>$tags, 'items'=>$items]);
+        $movieUrl = $this->article->whereNotIn('id', [$id])->get()->map(function($item) {
+            return $item->movie_url;
+        })->all();
+        
+        return view('mypage.edit', ['atcl'=>$atcl, 'cate'=>$cate, 'cates'=>$cates, 'edit'=>1, 'tagGroups'=>$tagGroups, 'tagGroupAll'=>$tagGroupAll, 'tags'=>$tags, 'items'=>$items, 'movieUrl'=>$movieUrl]);
     }
 
     /**
@@ -479,12 +587,10 @@ class HomeController extends Controller
     	$userId = Auth::user()->id;
         
         $rules = [
-//            'admin_name' => 'required|max:255',
-//            'admin_email' => 'required|email|max:255', /* |unique:admins 注意:unique */
-//            'admin_password' => 'required|min:6',
+            //'title' => 'required|max:255',
         ];
         
-        $this->validate($request, $rules);
+        $this->validate($request, $rules); //return redirect('mypage/'.$id.'/edit')->withInput();
         
         $data = $request->all(); //requestから配列として$dataにする
         
@@ -512,7 +618,8 @@ class HomeController extends Controller
         	if(!$data['thumb_choice']) { //input Upload
             	if($request->file('thumbnail') != '') {
                     $filename = $request->file('thumbnail')->getClientOriginalName();
-                    $filename = $userId . '/' .$id . '/thumbnail/' . $filename;
+                    $pre = time() . '-';
+                    $filename = $userId . '/' .$id . '/thumbnail/' . $pre . $filename;
                     //if (App::environment('local'))
                     $path = $request->file('thumbnail')->storeAs('public', $filename);
                     //else
@@ -524,12 +631,18 @@ class HomeController extends Controller
         	}
             else { //URL入力の時
                 if($data['thumbnail_outurl'] != '') {
-                    $file = file_get_contents($data['thumbnail_outurl']);
-                    $info = pathinfo($data['thumbnail_outurl']);
-                    //echo $info['basename'];
-                    $name = 'public/' . $userId . '/' .$id . '/thumbnail/'. $info['basename'];
+                    try {
+                    	$file = file_get_contents($data['thumbnail_outurl']);
+                    }
+                    catch (\Exception $e) {
+                        return redirect('mypage/'.$id.'/edit')->withInput()->withErrors(array('画像の取得ができませんでした'));
+                    }
                     
-                    Storage::put($name, $file);
+                    $info = pathinfo($data['thumbnail_outurl']);
+                    $pre = time() . '-';
+                    $name = 'public/' . $userId . '/' .$id . '/thumbnail/'. $pre . $info['basename'];
+                    
+                    Storage::put($name, $file); //s3
                     
                     $data['thumbnail'] = $name;
                 }
@@ -538,6 +651,7 @@ class HomeController extends Controller
 
         
         $imgArr = $request->file('image_path');
+        
 //        print_r($imgArr);
 //        print_r($data['main_title']);
 //        exit();
@@ -559,9 +673,11 @@ class HomeController extends Controller
                 else {
                 	//Item画像
                     if(! $data['image_choice'][$key]) { // by UpLoad
+
                         if(isset($imgArr[$key])) {
                             $itemFileName = $imgArr[$key]->getClientOriginalName();
-                            $itemFileName = $userId . '/' .$id . '/item/' . $itemFileName;
+                            $pre = time() . '-';
+                            $itemFileName = $userId . '/' .$id . '/item/' . $pre . $itemFileName;
                             $itemPath = $imgArr[$key]->storeAs('public', $itemFileName);
                     
                             $data['image_path'][$key] = $itemFileName;
@@ -569,13 +685,19 @@ class HomeController extends Controller
                         else {
                             $data['image_path'][$key] = $data['image_path_hidden'][$key]; //空をセット
                         }
+                        
                     }
                     else { //by URL
 						if($data['image_outurl'][$key] != '') {
-                            $file = file_get_contents($data['image_outurl'][$key]);
+                        	try {
+                            	$file = file_get_contents($data['image_outurl'][$key]);
+                            }
+                            catch (\Exception $e) {
+                                return redirect('mypage/'.$id.'/edit')->withInput()->withErrors(array('画像の取得ができませんでした'));
+                            }
                             $info = pathinfo($data['image_outurl'][$key]);
-                            $name = 'public/' . $userId . '/' .$id . '/item/'. $info['basename'];
-                            
+                            $pre = time() . '-';
+                            $name = 'public/' . $userId . '/' .$id . '/item/'. $pre . $info['basename'];
                             Storage::put($name, $file);
                             
                             $data['image_path'][$key] = $name;
@@ -584,6 +706,24 @@ class HomeController extends Controller
                         	$data['image_path'][$key] = $data['image_path_hidden'][$key];
                         }
                     }
+                    
+                    //by Link img url
+                    if($data['link_imgurl'][$key] != '') {
+                    	try {
+                    		$lFile = file_get_contents($data['link_imgurl'][$key]);
+                        }
+                        catch (\Exception $e) {
+                            return redirect('mypage/'.$id.'/edit')->withInput()->withErrors(array('画像の取得ができませんでした'));
+                        }
+                        $lInfo = pathinfo($data['link_imgurl'][$key]);
+                        $lPre = time() . '-';
+                        $lName = 'public/' . $userId . '/' .$id . '/item/'. $lPre . $lInfo['basename'];
+                        
+                        Storage::put($lName, $lFile);
+                        
+                        $data['link_imgpath'][$key] = $lName;
+                    }
+                    //else { $data['link_imgpath'][$key] = ''; }
 
                     $itemModel = Item::updateOrCreate(
                         ['id' => $item_id, 'atcl_id' => $id],
@@ -599,7 +739,7 @@ class HomeController extends Controller
                             'image_comment' => $data['image_comment'][$key],
                             'link_title' => $data['link_title'][$key],
                             'link_url' => $data['link_url'][$key],
-                            'link_imgurl' => $data['link_imgurl'][$key],
+                            'link_imgpath' => $data['link_imgpath'][$key],
                             'link_option' => $data['link_option'][$key] ? $data['link_option'][$key] : 0, //or NULL
                             'item_sequence' => $sequence_num,
                         ]
@@ -682,6 +822,7 @@ class HomeController extends Controller
         }
         
         //exit();
+        $data['movie_url'] = rtrim($data['movie_url'], '/');
         
         $postModel = $this->article->find($id);
         $postModel->fill($data); //モデルにセット

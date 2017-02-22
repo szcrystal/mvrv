@@ -102,11 +102,18 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+    	$except = '';
+    	if($request->input('edit_id') !== NULL ) {
+        	$except = ','. $request->input('edit_id');
+        }
+        $request['movie_url'] = rtrim($request->input('movie_url'), '/');
+        //exit();
+        
         $rules = [
             'cate_id' => 'required',
             'title' => 'required|max:255', /* |unique:admins 注意:unique */
             'movie_site' => 'required|max:255',
-            'movie_url' => 'required',
+            'movie_url' => 'required|max:255|unique:articles,movie_url'.$except,
         ];
         
         $this->validate($request, $rules);
@@ -153,6 +160,8 @@ class ArticleController extends Controller
             
         	$atclModel = $this->article;
         }
+        
+        $data['movie_url'] = rtrim($data['movie_url'], '/');
         
         $atclModel->fill($data); //モデルにセット
         $atclModel->save(); //モデルからsave
@@ -238,6 +247,8 @@ class ArticleController extends Controller
         
         $article = $this->articleBase->find($id);
         $data = $request->all(); //$data:配列
+        
+        $data['movie_url'] = rtrim($data['movie_url'], '/');
         
         $article->fill($data);
         $article->save();

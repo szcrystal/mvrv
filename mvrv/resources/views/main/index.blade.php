@@ -2,12 +2,16 @@
 
 @section('content')
 
-    <div class="panel panel-default">
+<div id="main">
 
-        <div id="main" class="panel-body">
-            @include('main.shared.main')
+        <div class="panel panel-default">
+
+            <div class="panel-body">
+                @include('main.shared.main')
+            </div>
         </div>
-    </div>
+
+</div>
 
 @endsection
 

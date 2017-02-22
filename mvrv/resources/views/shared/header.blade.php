@@ -17,7 +17,9 @@
     
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <link href="/css/style.css" rel="stylesheet">
-
+    @if(Ctm::isAgent('all'))
+    <link href="/css/style-sp.css" rel="stylesheet">
+	@endif
 
   <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>

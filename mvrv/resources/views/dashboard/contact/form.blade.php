@@ -75,7 +75,7 @@
                                 <td><a href="mailto:{{ $contact->user_email }}">{{ $contact->user_email }}</a></td>
                             </tr>
                             <tr>
-                                <th>テキスト</th>
+                                <th>コメント</th>
                                 <td>{!! nl2br($contact->context) !!}</td>
                             </tr>
                             <tr>

@@ -6,13 +6,14 @@
         <div class="col-md-12 py-4 mp-create">
         	<a href="{{url('/mypage/newmovie')}}" class="back-btn"><i class="fa fa-angle-double-left" aria-hidden="true"></i> マイページへ戻る</a>
             <div class="panel panel-default mt-4">
-
-                @if($atcl->owner_id)
+                @if(isset($atcl) && $atcl->owner_id && Auth::user()->id != $atcl->owner_id)
 					<p class="mb-4">この動画のオーナーが他のユーザーに決まりました。<br>マイページへ戻り、他の動画を取得してください。</p>
 				@else
 
+
                 <div class="panel-heading clearfix mb-3">
-                	<h2 class="h2">{{ $atcl->title }} に記事を書く</h2>
+                	<h2 class="h2">{{ isset($atcl) ? $atcl->title.'に記事を書く' : '記事を新規作成' }}</h2>
+                @if(isset($atcl))
                     <ul class="list-group col-md-5 float-left">
 						<li class="list-group-item"><b>公開状態：</b>
 							@if($atcl->open_status)
@@ -34,6 +35,18 @@
                     	@include('main.shared.movie')
                     </div>
                 </div>
+            	@endif
+
+                @if (count($errors) > 0)
+                    <div class="alert alert-danger">
+                        <strong>Error!!</strong> 追加できません<br><br>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
 				@if(session('status'))
                 	<div class="alert alert-success">
@@ -42,63 +55,37 @@
                 @endif
 
                 <div class="panel-body mt-4">
-                    <h3 class="h3"><i class="fa fa-square" aria-hidden="true"></i> 基本情報</h3>
-                    <div class="table-responsive">
-                    	<table class="table table-striped table-bordered">
-                            <colgroup>
-                                <col class="cth">
-                                <col class="ctd">
-                            </colgroup>
-                            
-                            <tbody>
-                                <tr>
-                                    <th>動画タイトル</th>
-                                    <td>{{ $atcl -> title }}</td>
-                                </tr>
-                                <tr>
-                                    <th>カテゴリー</th>
-                                    <td>{{ $cate->name }}</td>
-                                </tr>
-                                <tr>
-									<th>動画サイト</th>
-                                    <td>{{ $atcl -> movie_site }}</td>
-                                </tr>
-                                <tr>
-									<th>動画URL</th>
-                                    <td><a href="{{ $atcl -> movie_url }}">{{ $atcl -> movie_url }}</a></td>
-                                </tr>
 
-                            </tbody>
-                		</table>
-                    </div>
-
-                    <div class="clearfix pb-5">
-						<a href="{{ url('/mypage/base/'.$atcl->id) }}" class="btn btn-info float-right">基本情報を編集 <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
-                    </div>
-
-					<hr>
-					<h3 class="h3"><i class="fa fa-square" aria-hidden="true"></i> 詳細情報</h3>
                     <form class="form-horizontal" role="form" method="POST" action="/mypage" enctype="multipart/form-data">
                         {{ csrf_field() }}
 
                         <input type="hidden" name="user_id" value="{{$userId}}">
+                        @if(isset($atcl))
                         <input type="hidden" name="atcl_id" value="{{ $atcl->id }}">
+                        @endif
 
 						<div class="clearfix">
                             <div class="float-right">
                             	<div class="form-group float-left">
                                 <div>
-                                    <input type="submit" class="btn btn-primary" name="keep" value="保存する">
+                                    <input id="keep" type="submit" class="btn btn-primary" name="keep" value="保存する">
                                 </div>
                                 </div>
 
 								<div class="form-group float-left">
                                 <div class="ml-2">
-                                    <input type="submit" class="btn btn-danger" name="open" value="公開する">
+                                    <input id="open" type="submit" class="btn btn-danger" name="open" value="公開する">
                                 </div>
                                 </div>
                             </div>
                         </div>
+
+
+                        <?php //base ------------------------- ?>
+
+                        @include('mypage.shared.baseForm')
+
+						<?php //base END ?>
 
 
                         @include('mypage.shared.thumbnailForm')
@@ -117,13 +104,23 @@
                         	<div class="tag-group form-group{{ $errors->has($group->slug) ? ' has-error' : '' }}">
                                 <label for="title" class="control-label">{{ $group->name }}</label>
                                 <div class="clearfix">
-                                    <input id="{{ $group->slug }}" type="text" class="form-control tag-control" name="input-{{ $group->slug }}" value="{{ old($group->slug) }}" autocomplete="off">
+                                    <input id="{{ $group->slug }}" type="text" class="form-control tag-control" name="input-{{ $group->slug }}" value="" autocomplete="off">
 
                                     <div class="add-btn" tabindex="0">追加</div>
 
                                     <span style="display:none;">{{ implode(',', $allNames) }}</span>
 
-                                    <div class="tag-area"></div>
+                                    <div class="tag-area">
+										@if(count(old()) > 0)
+                                            <?php $names = old($group->slug); ?>
+											@if(isset($names))
+                                                @foreach($names as $name)
+                                                <span><em>{{ $name }}</em><i class="fa fa-times del-tag" aria-hidden="true"></i></span>
+                                                <input type="hidden" name="{{ $group->slug }}[]" value="{{ $name }}">
+                                                @endforeach
+                                            @endif
+										@endif
+                                    </div>
 
                                 </div>
 
@@ -158,6 +155,9 @@
 
                         @include('mypage.shared.newItemForm')
 
+                        @if(count(old()) > 0)
+                        	@include('mypage.shared.oldForm')
+                    	@endif
 
                     </div><?php /*addItem*/ ?>
 

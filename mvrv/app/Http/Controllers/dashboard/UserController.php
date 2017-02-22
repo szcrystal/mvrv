@@ -4,6 +4,7 @@ namespace App\Http\Controllers\dashboard;
 
 use App\Admin;
 use App\User;
+use App\Article;
 use Auth;
 
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ use App\Http\Controllers\Controller;
 
 class UserController extends Controller
 {
-	public function __construct(Admin $admin, User $user)
+	public function __construct(Admin $admin, User $user, Article $article)
     {
         $this -> middleware('adminauth');
         //$this->middleware('auth:admin', ['except' => 'index']);
@@ -19,9 +20,9 @@ class UserController extends Controller
         
         $this -> admin = $admin;
         $this->user = $user;
+        $this->article = $article;
         
         $this->perPage = 20;
-        
 	}
     /**
      * Display a listing of the resource.
@@ -128,6 +129,19 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+    	$user = $this->user->find($id);
+        $userId = $user->id;
+        
+        $atcls = $this->article->where('owner_id', $user->id)->get()->map(function($atcl){
+        	$atcl->owner_id = 1;
+            $atcl->save();
+        });
+        
+        
+        $userDel = $this->user->destroy($id); //article del
+        
+        $status = $userDel ? '記事「'. $user->name.'」が削除されました' : '記事「'.$user->name.'」が削除出来ませんでした';
+        
+        return redirect('dashboard/users')->with('status', $status);
     }
 }

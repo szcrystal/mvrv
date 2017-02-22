@@ -37,7 +37,7 @@ class CreateArticlesTable extends Migration
         });
         
         $n = 0;
-        while($n < 5) {
+        while($n < 1) {
             DB::table('articles')->insert([
                     'owner_id' => 0,
                     'del_status' => 0,

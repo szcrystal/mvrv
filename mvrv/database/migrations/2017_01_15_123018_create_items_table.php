@@ -16,7 +16,7 @@ class CreateItemsTable extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->increments('id');
             
-            $table->integer('atcl_id');
+            $table->integer('atcl_id')->nullable()->default(NULL);
             $table->string('item_type');
             $table->string('main_title')->nullable()->default(NULL);
             $table->integer('title_option')->nullable()->default(NULL);
@@ -30,7 +30,7 @@ class CreateItemsTable extends Migration
             
             $table->string('link_title')->nullable()->default(NULL);
             $table->string('link_url')->nullable()->default(NULL);
-            $table->string('link_imgurl')->nullable()->default(NULL);
+            $table->string('link_imgpath')->nullable()->default(NULL);
             $table->integer('link_option')->nullable()->default(NULL);
             
             $table->integer('item_sequence')->nullable()->default(NULL);

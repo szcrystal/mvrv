@@ -7,7 +7,7 @@
                 <div class="panel-heading clearfix">
                 	<span>{{ $user->name }}さんの記事一覧</span>
 					<a href="{{ url('mypage/newmovie') }}">新しい記事を取得</a>
-					<a href="{{ url('mypage/base') }}" class="btn btn-primary float-right">新しい記事を作成</a>
+					<a href="{{ url('mypage/create') }}" class="btn btn-primary float-right">新しい記事を作成</a>
                 </div>
 
 

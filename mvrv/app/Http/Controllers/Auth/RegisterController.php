@@ -112,13 +112,12 @@ class RegisterController extends Controller
     
     private function sendRegistMail($data)
     {
-        Mail::send('emails.register', $data, function($message) use ($data) //引数について　http://readouble.com/laravel/5/1/ja/mail.html
+        Mail::send('emails.register', $data, function($message) use ($data)
         {
             //$dataは連想配列としてviewに渡され、その配列のkey名を変数としてview内で取得出来る
-            $message -> from(env('ADMIN_EMAIL'), 'MovieReview')
+            $message -> from(env('ADMIN_EMAIL'), env('ADMIN_NAME'))
                      -> to($data['email'], $data['name'])
                      -> subject('ユーザーの仮登録が完了しました');
-            //$message->attach($pathToFile);
         });
         
         //$rel = $mail->failures();
@@ -137,8 +136,9 @@ class RegisterController extends Controller
         $this->create($request->all());
  
         $status = 'ユーザー登録用確認メールを送信しました。';
+        $sended = 1;
  
-        return redirect('register')->with('status', $status);
+        return redirect('register')->with(['status'=>$status, 'sended'=>$sended]);
     }
     
 
