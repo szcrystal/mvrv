@@ -286,6 +286,8 @@ ul.side-rank {
 .mp-index .panel-heading a.btn {
 	background: orange;
     border-radius: 3px;
+    border: none;
+    margin-top: -5px;
 }
 .mp-index th {
 	background: #fff;

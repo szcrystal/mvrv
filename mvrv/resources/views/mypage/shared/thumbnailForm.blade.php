@@ -20,14 +20,14 @@
 
     <div class="float-left col-md-9">
         <div class="form-group{{ $errors->has('thumbnail') ? ' has-error' : '' }}">
-            <label for="thumbnail" class="col-md-3 control-label">サムネイル アップロード</label>
+            <label for="thumbnail" class="col-md-10 control-label">サムネイル アップロード</label>
             <div class="col-md-10">
                 <input id="thumbnail" class="thumb-file" type="file" name="thumbnail">
             </div>
         </div>
 
         <div class="form-group{{ $errors->has('thumbnail_outurl') ? ' has-error' : '' }}">
-            <label for="thumbnail_outurl" class="col-md-3 control-label">URL入力</label>
+            <label for="thumbnail_outurl" class="col-md-10 control-label">URL入力</label>
             <div class="col-md-10">
                 <input id="thumbnail_outurl" type="text" class="form-control" name="thumbnail_outurl" value="{{ count(old()) >0 ? old('thumbnail_outurl') : (isset($atcl) ? $atcl->thumbnail_org : '') }}">
 
@@ -42,7 +42,7 @@
         </div>
 
         <div class="form-group{{ $errors->has('thumbnail_org') ? ' has-error' : '' }}">
-            <label for="thumbnail_org" class="col-md-3 control-label">サムネイル参照元URL</label>
+            <label for="thumbnail_org" class="col-md-10 control-label">サムネイル参照元URL</label>
             <div class="col-md-10">
                 <input id="thumbnail_org" type="text" class="form-control" name="thumbnail_org" value="{{ count(old()) >0 ? old('thumbnail_org') : (isset($atcl) ? $atcl->thumbnail_org : '') }}">
 
@@ -55,7 +55,7 @@
         </div>
 
         <div class="form-group{{ $errors->has('thumbnail_comment') ? ' has-error' : '' }}">
-            <label for="thumbnail_comment" class="col-md-3 control-label">コメント</label>
+            <label for="thumbnail_comment" class="col-md-10 control-label">コメント</label>
             <div class="col-md-10">
                 <textarea id="thumbnail_comment" class="form-control" name="thumbnail_comment">{{ count(old()) >0 ? old('thumbnail_comment') : (isset($atcl) ? $atcl->thumbnail_comment : '') }}</textarea>
 

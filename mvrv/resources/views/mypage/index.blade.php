@@ -22,7 +22,7 @@
                           <th>ID</th>
                           <th>状態</th>
                           <th>サムネイル</th>
-                          <th>カテゴリー</th>
+                          <th style="width:8em;">カテゴリー</th>
                           <th>タイトル</th>
                           <th>更新日</th>
                           <th></th>

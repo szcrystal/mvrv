@@ -77,7 +77,7 @@
                                     	<div class="form-group{{ $errors->has('user_name') ? ' has-error' : '' }}">
                                             {{-- <label for="user_name" class="col-md-4 control-label">お名前</label> --}}
 
-                                            <div class="col-md-10">
+                                            <div class="col-md-12">
                                                 <input id="user_name" type="text" class="form-control" name="user_name" value="{{ old('user_name') }}" required>
 
                                                 @if ($errors->has('user_name'))
@@ -94,7 +94,7 @@
                                 	<th>メールアドレス</th>
                                     <td>
                                     	<div class="form-group{{ $errors->has('user_email') ? ' has-error' : '' }}">
-                                            <div class="col-md-10">
+                                            <div class="col-md-12">
                                                 <input id="user_email" type="user_email" class="form-control" name="user_email" value="{{ old('user_email') }}" required>
 
                                                 @if ($errors->has('user_email'))
@@ -110,7 +110,7 @@
                                 	<th>コメント</th>
                                     <td>
 										<div class="form-group{{ $errors->has('context') ? ' has-error' : '' }}">
-                                            <div class="col-md-10">
+                                            <div class="col-md-12">
                                                 <textarea id="context" class="form-control" name="context" required>{{ old('context') }}</textarea>
 
                                                 @if ($errors->has('context'))

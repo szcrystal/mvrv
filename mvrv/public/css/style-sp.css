@@ -3,7 +3,7 @@
 
 @media only screen and (max-width: 1000px) {
 	body {
-    	font-size: 0.9em;
+    	font-size: 14px;
     }
     .container {
         min-width: 100%;
@@ -11,7 +11,7 @@
 
 	.main-list article,
     .top .main-list article {
-    	height: 200px;
+    	height: 210px;
         width: 32.6%;
     }
     
@@ -24,7 +24,21 @@
     .main-list article .meta p {
     	font-size: 0.75em;
     }
+    .top .main-list article:nth-of-type(3n) {
+        margin-right: 0;
+    }
+    .top .main-list article:nth-of-type(4n) {
+        margin-right: 1%;
+    }
 
+	.mp-index th {
+    	font-size: 0.8em;
+    }
+    
+    .thumb-wrap .form-group .col-md-10 {
+    	width: 100%;
+    }
+    
 
 }	
 
