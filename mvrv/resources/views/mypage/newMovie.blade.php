@@ -27,12 +27,12 @@
                       <thead>
                         <tr>
                           <th>ID</th>
-                          <th style="width:6em;">状態</th>
-                          <th style="width:8em;">カテゴリー</th>
-                          <th>タイトル</th>
+                          <th style="min-width:7em;">状態</th>
+                          <th style="min-width:8em;">カテゴリー</th>
+                          <th style="min-width:15em;">タイトル</th>
                           <th>動画元</th>
                           <th>動画URL</th>
-                          <th style="width:3em;"></th>
+                          <th style="min-width:3em;"></th>
                           
                         </tr>
                       </thead>

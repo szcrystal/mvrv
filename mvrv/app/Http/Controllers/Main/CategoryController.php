@@ -44,8 +44,8 @@ class CategoryController extends Controller
                     ->paginate($this->perPage);
         
         //getSidebarArg
-        $arg = Ctm::getArgForView($cateSlug, 'cate');
-        extract($arg);
+        $rightRanks = Ctm::getArgForView($cateSlug, 'cate');
+        //extract($arg);
 
         
         //Count
@@ -55,9 +55,9 @@ class CategoryController extends Controller
         $cate->save();
         
         $rankName = 'カテゴリー:'.$cate->name;
-        $groupModel = $this->tagGroup;
+        //$groupModel = $this->tagGroup;
         
-        return view('main.category.show', ['atcls'=> $atcls, 'cateName'=>$cate->name, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel]);
+        return view('main.category.show', ['atcls'=> $atcls, 'cateName'=>$cate->name, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName]);
     }
     
 

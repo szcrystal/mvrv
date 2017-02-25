@@ -71,12 +71,12 @@ class SearchController extends Controller
         
         //Sidebar
         $rankName = '全体';
-        $arg = Ctm::getArgForView('', 'all');
-        extract($arg);
+        $rightRanks = Ctm::getArgForView('', 'all');
+        //extract($arg);
         
-        $groupModel = $this->tagGroup;
+        //$groupModel = $this->tagGroup;
         
-    	return view('main.search.index', ['atcls'=>$allResults, 'searchStr' => $search, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel]);
+    	return view('main.search.index', ['atcls'=>$allResults, 'searchStr' => $search, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName]);
     }
     
     

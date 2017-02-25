@@ -96,7 +96,7 @@
                                 </div>
                             @endif
 
-                            <div class="clearfix float-right">
+                            <div class="clearfix float-right btn-wrap">
                                 <div class="form-group float-left">
                                     <div>
                                         <input id="preview" type="submit" class="btn btn-warning" name="preview" value="保存してプレビュー">
@@ -184,27 +184,6 @@
 
                         </div><?php //tagwrap ?>
 
-
-                        {{--
-                        	@foreach($tagGroups as $key => $tagArr)
-                                    //$groupSlug = $tagGroupModel->find($key)->slug;
-                            
-                                @foreach($tagArr as $tag)
-                                        //$tagNames[$groupSlug][] = $tag['name'];
-                            
-                                @endforeach
-
-                            @endforeach
-                            <div class="form-group{{ $errors->has($key) ? ' has-error' : '' }}">
-                                <label for="title" class="col-md-4 control-label">タグ：{{ $tagGroupModel->find($key)->name }}</label>
-                                <div class="col-md-6">
-                                    <input id="keyword" type="text" class="form-control" name="{{ $tagGroupModel->find($key)->slug }}" value="{{ implode(' ', $tagNames) }}" required>
-                                </div>
-                            </div>
-                        --}}
-
-
-				<?php //print_r(old()); ?>
 
 
                 <div class="add-item">

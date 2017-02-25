@@ -13,7 +13,10 @@
         @endif
         </a>
 
-        <h2><a href="{{url('m/'.$atcl->id)}}">{{ Ctm::shortStr($atcl->title, 20) }}</a></h2>
+        <?php
+        	$num = Ctm::isAgent('sp') ? 30 : 20;
+        ?>
+        <h2><a href="{{url('m/'.$atcl->id)}}">{{ Ctm::shortStr($atcl->title, $num) }}</a></h2>
         <div class="meta">
             <p>オーナー：{{ User::find($atcl->owner_id)->name }}</p>
             <p>公開日：{{ Ctm::changeDate($atcl->open_date)}}</p>
@@ -22,6 +25,8 @@
     @endforeach
 </div>
 
+
 {{ $atcls->links() }}
+
 
 

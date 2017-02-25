@@ -50,13 +50,13 @@ class TagController extends Controller
                 ])->orderBy('open_date','DESC')->paginate($this->perPage);
         
         //getArg
-        $arg = Ctm::getArgForView('', 'all');
-        extract($arg);
+        $rightRanks = Ctm::getArgForView('', 'all');
+        //extract($arg);
         
         $rankName = '全体'; /* ******** */
-        $groupModel = $this->tagGroup;
+        //$groupModel = $this->tagGroup;
         
-        return view('main.tag.index', ['atcls'=>$atcls, 'groupName'=>$groupName, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel]);
+        return view('main.tag.index', ['atcls'=>$atcls, 'groupName'=>$groupName, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName]);
     
     }
     
@@ -80,13 +80,13 @@ class TagController extends Controller
         
         
         //getArg
-        $arg = Ctm::getArgForView($tagSlug, 'tag');
-        extract($arg);
+        $rightRanks = Ctm::getArgForView($tagSlug, 'tag');
+        //extract($arg);
         
         $groupName = $this->tagGroup->find($tag->group_id)->name;
         $rankName = $groupName.'：'.$tag->name;
         
-        $groupModel = $this->tagGroup;
+        //$groupModel = $this->tagGroup;
         
         //Count
 		$view = $tag->view_count;
@@ -94,7 +94,7 @@ class TagController extends Controller
         $tag->view_count = $view;
         $tag->save();
         
-        return view('main.tag.show', ['atcls'=>$atcls, 'tagName'=>$tag->name, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel, 'groupName'=>$groupName]);
+        return view('main.tag.show', ['atcls'=>$atcls, 'tagName'=>$tag->name, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupName'=>$groupName]);
     }
     
 }

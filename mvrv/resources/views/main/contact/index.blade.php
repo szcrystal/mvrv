@@ -1,7 +1,7 @@
 @extends('layouts.appSingle')
 
 @section('content')
-    <div class="row">
+    <div class="row contact">
         <div class="col-md-10 mx-auto py-4">
             <div class="panel panel-default">
 

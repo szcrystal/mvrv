@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="row pt-5">
+<div class="row pt-5 logreg">
     <div class="col-md-9 mx-auto">
         <div class="panel panel-default">
             <div class="panel-heading">

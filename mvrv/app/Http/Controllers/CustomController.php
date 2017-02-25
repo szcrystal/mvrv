@@ -49,15 +49,17 @@ class CustomController extends Controller
 //    	$ranks = $this->articlePost ->find($objId)->where('open_status', 1)->take(20);
         
         //非Openのグループidを取る
-        $tgIds = TagGroup::where('open_status', 0)->get()->map(function($tg){
-            return $tg->id;
-        })->all();
-        
-        //人気タグ
-        $tagLeftRanks = Tag::whereNotIn('group_id', $tgIds)->where('view_count','>',0)->orderBy('view_count', 'desc')->take(10)->get();
-        
-        //Category
-        $cateLeft = Category::all(); //open_status
+//        $tgIds = TagGroup::where('open_status', 0)->get()->map(function($tg){
+//            return $tg->id;
+//        })->all();
+//        
+//        //人気タグ
+//        $tagLeftRanks = Tag::whereNotIn('group_id', $tgIds)->where('view_count','>',0)->orderBy('view_count', 'desc')->take(10)->get();
+//        
+//        //Category
+//        $cateLeft = Category::all(); //open_status
+		
+        $rightRanks = '';
         
         //TOP20
         if($type == 'tag') {
@@ -82,7 +84,23 @@ class CustomController extends Controller
            ->get();
         }
         
-        return compact('tagLeftRanks', 'cateLeft', 'rightRanks');
+        //return compact('tagLeftRanks', 'cateLeft', 'rightRanks');
+        return $rightRanks;
+    }
+    
+    static function getLeftbar() {
+    	//非Openのグループidを取る
+        $tgIds = TagGroup::where('open_status', 0)->get()->map(function($tg){
+            return $tg->id;
+        })->all();
+        
+        //人気タグ
+        $tagLeftRanks = Tag::whereNotIn('group_id', $tgIds)->where('view_count','>',0)->orderBy('view_count', 'desc')->take(10)->get();
+        
+        //Category
+        $cateLeft = Category::all(); //open_status
+        
+        return compact('tagLeftRanks', 'cateLeft');
     }
     
     static function shortStr($str, $length)

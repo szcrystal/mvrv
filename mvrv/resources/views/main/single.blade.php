@@ -56,7 +56,10 @@
                                     <td>
                                     @if(isset($tagGroups[$group->id]))
                                     	@foreach($tagGroups[$group->id] as $tag)
-											<a href="{{ url($group->slug.'/'. $tag['slug']) }}">{{ $tag['name'] }}</a>&nbsp;&nbsp;
+                                        	<span class="rank-tag">
+                        					<i class="fa fa-tag" aria-hidden="true"></i>
+											<a href="{{ url($group->slug.'/'. $tag['slug']) }}">{{ $tag['name'] }}</a>
+                                            </span>
                                         @endforeach
 									@endif
                                     </td>

@@ -32,7 +32,7 @@ class HomeController extends Controller
         $this->fix = $fix;
         
         $this->perPage = env('PER_PAGE', 20);
-        $this->itemPerPage = 10;
+        $this->itemPerPage = 15;
     }
 
     /**
@@ -62,13 +62,14 @@ class HomeController extends Controller
         $rankName = '全体';
         $className = 'top';
         
-        $arg = Ctm::getArgForView('', 'all');
-        extract($arg);
+        $rightRanks = Ctm::getArgForView('', 'all');
+        //extract($arg);
         //compact('allRanks', 'tagLeftRanks', 'cateLeft', 'rightRanks')
         
-        $groupModel = $this->tagGroup;
+        //$groupModel = $this->tagGroup;
     
-    	return view('main.index', ['atcls'=>$atcls, 'rankName'=>$rankName, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'groupModel'=>$groupModel, 'className'=>$className]);
+    	return view('main.index', ['atcls'=>$atcls, 'rankName'=>$rankName, 'rightRanks'=>$rightRanks, 'rankName'=>$rankName, 'className'=>$className]);
+    	//'groupModel'=>$groupModel, 'tagLeftRanks'=>$tagLeftRanks, 'cateLeft'=>$cateLeft
     }
     
     public function showSingle($postId)

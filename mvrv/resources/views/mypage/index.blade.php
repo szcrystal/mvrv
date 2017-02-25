@@ -16,14 +16,14 @@
                     @if(count($posts))
 
 					<div class="table-responsive">
-                    <table class="table table-bordered table-striped responsive-utilities">
+                    <table class="table table-bordered table-striped">
                       <thead>
                         <tr>
                           <th>ID</th>
-                          <th>状態</th>
+                          <th style="min-width:7em;">状態</th>
                           <th>サムネイル</th>
-                          <th style="width:8em;">カテゴリー</th>
-                          <th>タイトル</th>
+                          <th style="min-width:8em;">カテゴリー</th>
+                          <th style="min-width:15em;">タイトル</th>
                           <th>更新日</th>
                           <th></th>
                           

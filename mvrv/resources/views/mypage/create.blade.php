@@ -64,18 +64,16 @@
                         <input type="hidden" name="atcl_id" value="{{ $atcl->id }}">
                         @endif
 
-						<div class="clearfix">
-                            <div class="float-right">
-                            	<div class="form-group float-left">
+						<div class="clearfix float-right btn-wrap">
+                            <div class="form-group float-left">
                                 <div>
                                     <input id="keep" type="submit" class="btn btn-primary" name="keep" value="保存する">
                                 </div>
-                                </div>
+                            </div>
 
-								<div class="form-group float-left">
+                            <div class="form-group float-left">
                                 <div class="ml-2">
                                     <input id="open" type="submit" class="btn btn-danger" name="open" value="公開する">
-                                </div>
                                 </div>
                             </div>
                         </div>

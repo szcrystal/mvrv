@@ -2,17 +2,20 @@
 <body>
 
     <div id="app">
-        @include('shared.headNav')
+    	@if(Ctm::isAgent('sp'))
+			@include('shared.headNavSp')
+        @else
+        	@include('shared.headNav')
+        @endif
 
 		<div class="container wrap-all">
 			<div class="row">
-            <?php $className = isset($className) ? $className : ''; ?>
-    		<div class="flex col-md-12 py-4 {{ $className }}"><!-- offset-md-1-->
-
-                @yield('content')
-                @yield('leftbar')
-                @yield('rightbar')
-            </div>
+                <?php $className = isset($className) ? $className : ''; ?>
+                <div class="flex col-md-12 py-4 {{ $className }}"><!-- offset-md-1-->
+                    @yield('content')
+                    @yield('leftbar')
+                    @yield('rightbar')
+                </div>
             </div>
 
         </div>
