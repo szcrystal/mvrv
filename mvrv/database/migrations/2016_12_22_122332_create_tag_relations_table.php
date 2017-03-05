@@ -19,6 +19,9 @@ class CreateTagRelationsTable extends Migration
             $table->integer('tag_id');
             //$table->string('tag_name');
             $table->timestamps();
+            
+            $table->index('atcl_id');
+            $table->index('tag_id');
         });
         
         

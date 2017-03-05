@@ -8,19 +8,20 @@ use App\Tag;
 use App\TagGroup;
 use App\TagRelation;
 use App\Fix;
+use App\TotalizeAll;
 
 use Illuminate\Http\Request;
 
 class CustomController extends Controller
 {
 	
-    public function __construct(Article $article, Category $category, Tag $tag)
+    public function __construct(Article $article, Category $category, Tag $tag, TotalizeAll $totalizeAll)
     {
     	
     	$this->article = $article;
         $this->category = $category;
         $this->tag = $tag;
-        //$this->fix = $fix;
+        $this->totalizeAll = $totalizeAll;
         
 	}
     
@@ -65,23 +66,38 @@ class CustomController extends Controller
         if($type == 'tag') {
         	$tag = Tag::where('slug', $slug)->first();
             $atclIds = TagRelation::where('tag_id', $tag->id)->get()->map(function($tr){
-            	return $tr->atcl_id;
+            	$atcl = Article::find($tr->atcl_id);
+                if($atcl) {
+                    if($atcl->open_status && ! $atcl->del_status && $atcl->owner_id > 0) {
+                        return $tr->atcl_id;
+                    }
+                }
             })->all();
             
-            $rightRanks = Article::find($atclIds)->where('open_status', 1)->sortByDesc('view_count')->take(20);
+            $rightRanks = TotalizeAll::whereIn('atcl_id', $atclIds)->orderBy('total_count', 'desc')->take(20)->get();
+
         }
         else if($type == 'cate') {
         	$cate = Category::where('slug', $slug)->first();
         	
-            $rightRanks = Article::where('cate_id', $cate->id)->orderBy('view_count','desc')->take(20)->get();
+            $atclIds = Article::where(['open_status'=>1, 'del_status'=>0, 'cate_id'=>$cate->id])->whereNotIn('owner_id', [0])
+                ->get()->map(function($al){
+                    return $al->id;
+                })->all();
+            
+            $rightRanks = TotalizeAll::whereIn('atcl_id', $atclIds)->orderBy('total_count', 'desc')->take(20)->get();
+            
         }
         else { //all
-        	$rightRanks = Article::where([
-                    ['del_status', '=', '0'], ['owner_id', '>', '0'], ['open_status','=',1]
-                ])
-           ->orderBy('view_count', 'desc')
-           ->take(20)
-           ->get();
+            $atclIds = Article::where([
+                ['open_status','=',1], ['del_status', '=', '0'], ['owner_id', '>', '0']
+            ])
+            ->get()->map(function($al){
+                return $al->id;
+            })->all();
+            
+            $rightRanks = TotalizeAll::whereIn('atcl_id', $atclIds)->orderBy('total_count', 'desc')->take(20)->get();
+
         }
         
         //return compact('tagLeftRanks', 'cateLeft', 'rightRanks');

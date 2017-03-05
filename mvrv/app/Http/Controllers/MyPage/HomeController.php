@@ -362,7 +362,7 @@ class HomeController extends Controller
             $atcl->open_status = $data['open_status'];
             $atcl->open_history = isset($data['open_history']) ? $data['open_history'] : 0;
             $atcl->not_newdate = 0;
-            $atcl->view_count = 0;
+            //$atcl->view_count = 0;
             
             $atcl->save();
             $atclId = $atcl->id;

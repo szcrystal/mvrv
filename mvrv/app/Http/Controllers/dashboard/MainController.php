@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\dashboard;
 
 use App\Admin;
-use App\ArticleBase;
 use App\Tag;
+use App\Article;
+use App\Totalize;
 
 use Illuminate\Http\Request;
 
@@ -17,7 +18,7 @@ class MainController extends Controller
 {
 	//protected $redirectTo = 'dashboard/login';
     
-	public function __construct(Admin $admin, ArticleBase $articleBase, Tag $tag)
+	public function __construct(Admin $admin, Tag $tag, Article $article, Totalize $totalize)
     {
     	
         $this -> middleware('adminauth'/*, ['except' => ['getRegister','postRegister']]*/);
@@ -25,7 +26,8 @@ class MainController extends Controller
         //$this -> middleware('log', ['only' => ['getIndex']]);
         
         $this -> admin = $admin;
-        $this-> articleBase = $articleBase;
+        $this-> article = $article;
+        $this -> totalize = $totalize;
         
         $this->perPage = 20;
         
@@ -42,7 +44,34 @@ class MainController extends Controller
     public function index()
     {
     	$adminUser = Auth::guard('admin')->user();
-        return view('dashboard.index', ['name'=>$adminUser->name]);
+        
+        $date = date('Y-m-d', time());
+        $week = date('Y-m-d', strtotime('-1 week'));
+        
+        $dayTotal = $this->totalize->where(['view_date' => $date])->orderBy('view_count','desc')->paginate($this->perPage);
+        
+        $count = $this->totalize->where(['view_date' => $date])->get()->sum('view_count');
+        
+        $atcl = $this->article;
+        
+        return view('dashboard.index', ['name'=>$adminUser->name, 'atcl'=> $atcl, 'dayTotal'=>$dayTotal, 'date'=>$date, 'count'=>$count]);
+    }
+    
+    public function getWeekly()
+    {
+    	//$adminUser = Auth::guard('admin')->user();
+        
+        $date = date('Y-m-d', time());
+        $week = date('Y-m-d', strtotime('-1 week'));
+        
+        $weekTotal = $this->totalize->whereBetween('view_date', [$week, $date])->orderBy('view_count','desc')->paginate($this->perPage);
+        
+        $count = $this->totalize->whereBetween('view_date', [$week, $date])->get()->sum('view_count');
+        $span = $week . ' 〜 ' . $date;
+        
+        $atcl = $this->article;
+        
+        return view('dashboard.weekly', ['atcl'=> $atcl, 'weekTotal'=>$weekTotal, 'span'=>$span, 'count'=>$count]);
     }
     
     

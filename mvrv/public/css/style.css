@@ -249,7 +249,10 @@ ul.side-rank {
 	margin: 2em 0;
 }
 
-
+.alert-danger ul {
+	margin-top: 0.7em;
+    //border: 1px solid red;
+}
 
 .single .no-img {
 	line-height: 230px;

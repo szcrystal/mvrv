@@ -54,6 +54,7 @@ Route::resource('mypage', 'MyPage\HomeController');
 
 //DashBoard
 Route::get('dashboard', 'dashboard\MainController@index');
+Route::get('dashboard/weekly', 'dashboard\MainController@getWeekly');
 
 Route::get('dashboard/login', 'dashboard\LoginController@index');
 Route::post('dashboard/login', 'dashboard\LoginController@postLogin');

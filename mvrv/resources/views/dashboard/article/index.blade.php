@@ -25,7 +25,6 @@
               <th class="col-md-2">公開状態</th>
               <th class="col-md-2">公開日</th>
               <th class="col-md-3">オーナー名</th>
-              <th class="col-md-3">View数</th>
               <th></th>
               <th></th>
             </tr>
@@ -41,7 +40,11 @@
                 </td>
 
 				<td>
+                	@if($obj->cate_id)
 	        		{{ $cateModel->find($obj->cate_id)->name }}
+                    @else
+                    --
+                    @endif
                 </td>
                                     
                 <td>
@@ -75,10 +78,6 @@
                 	{{ $users->find($obj->owner_id)->name }}
 
                     @endif
-                </td>
-
-                <td>
-                	{{ $obj->view_count }}
                 </td>
 
                 <td>

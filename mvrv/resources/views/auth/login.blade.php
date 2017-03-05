@@ -38,7 +38,7 @@
                                 <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus>
 
                                 @if ($errors->has('email'))
-                                    <span class="help-block">
+                                    <span class="help-block text-danger">
                                         <strong>{{ $errors->first('email') }}</strong>
                                     </span>
                                 @endif
@@ -52,7 +52,7 @@
                                 <input id="password" type="password" class="form-control" name="password" placeholder="8文字以上" required>
 
                                 @if ($errors->has('password'))
-                                    <span class="help-block">
+                                    <span class="help-block text-danger">
                                         <strong>{{ $errors->first('password') }}</strong>
                                     </span>
                                 @endif
@@ -69,7 +69,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group login-btn">
                             <div class="col-md-8 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
                                     ログイン

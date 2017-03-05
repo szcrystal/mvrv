@@ -52,7 +52,10 @@
                                 @endif
                             </td>
 
-                            <td>{{$cateModel->find($atcl->cate_id)->name}}</td>
+                            <td>
+							@if($atcl->cate_id)
+                            {{$cateModel->find($atcl->cate_id)->name}}</td>
+                            @endif
 
                             <td>
                                 {{$atcl->title}}

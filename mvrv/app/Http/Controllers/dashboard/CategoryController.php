@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\dashboard;
 
 use App\Category;
+use App\Article;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class CategoryController extends Controller
 {
-	public function __construct(Category $category)
+	public function __construct(Category $category, Article $article)
     {
     	$this->category = $category;
+        $this->article = $article;
         $this->perPage = 30;
     }
     /**
@@ -129,6 +131,17 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $name = $this->category->find($id)->name;
+        
+        $atcls = $this->article->where('cate_id', $id)->get()->map(function($atcl){
+        	$atcl->cate_id = 0;
+            $atcl->save();
+        });
+        
+        $cateDel = $this->category->destroy($id);
+        
+        $status = $cateDel ? 'カテゴリー「'.$name.'」が削除されました' : '記事「'.$name.'」が削除出来ませんでした';
+        
+        return redirect('dashboard/categories')->with('status', $status);
     }
 }

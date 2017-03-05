@@ -81,7 +81,7 @@ var exe = (function() {
                 $leftbar.find('.panel-body').css({height:h-60});
 
             	if($leftbar.is(':visible')) {
-                	$leftbar.stop().animate({left:'-200px'}, 100, 'linear', function(){
+                	$leftbar.stop().animate({left:'-200px'}, 80, 'linear', function(){
                     	$(this).hide(0);
                         $('html,body').css({position:'static'}).scrollTop(t);
                     });

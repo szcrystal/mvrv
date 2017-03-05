@@ -21,7 +21,7 @@ class CreateArticlesTable extends Migration
             $table->integer('cate_id');
             $table->string('title');
             $table->string('movie_site');
-            $table->string('movie_url');
+            $table->string('movie_url')->unique();
             
             $table->string('thumbnail')->nullable()->default(NULL);
             $table->string('thumbnail_org')->nullable()->default(NULL);
@@ -31,9 +31,12 @@ class CreateArticlesTable extends Migration
             $table->boolean('open_history');
             $table->timestamp('open_date')->nullable()->default(NULL);
             $table->boolean('not_newdate');
-            $table->integer('view_count');
+            //$table->integer('view_count');
             
             $table->timestamps();
+            
+            $table->index('owner_id');
+            $table->index(['open_status','del_status']);
         });
         
         $n = 0;
@@ -55,7 +58,7 @@ class CreateArticlesTable extends Migration
                     'open_history' => 0,
                     'open_date' => '2017-01-10 11:11:11',
                     'not_newdate' => 0,
-                    'view_count' => $n+3,
+                    //'view_count' => $n+3,
                     
                     'created_at' => date('Y-m-d H:i:s', time()),
                     'updated_at' => date('Y-m-d H:i:s', time()),

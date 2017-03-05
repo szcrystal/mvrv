@@ -47,7 +47,11 @@
                                 </tr>
                                 <tr>
                                     <th>カテゴリー</th>
-                                    <td><a href="{{ url('category/' . $cate->slug) }}">{{ $cate->name }}</a></td>
+                                    <td>
+                                    @if($cate)
+                                    <a href="{{ url('category/' . $cate->slug) }}">{{ $cate->name }}</a>
+                                    @endif
+                                    </td>
                                 </tr>
 
                                 @foreach($tagGroupAll as $group)

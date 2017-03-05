@@ -18,10 +18,12 @@ class CreateFixesTable extends Migration
             $table->boolean('not_open');
             $table->string('title');
             $table->string('sub_title')->nullable()->default(NULL);
-            $table->string('slug');
+            $table->string('slug')->unique();
             $table->text('contents')->nullable()->default(NULL);
 
             $table->timestamps();
+            
+            //$table->index('slug');
         });
         
         DB::table('fixes')->insert([

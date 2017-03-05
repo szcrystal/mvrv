@@ -34,8 +34,9 @@
                     <div class="float-right">
                     	@include('main.shared.movie')
                     </div>
+                @endif
                 </div>
-            	@endif
+
 
                 @if (count($errors) > 0)
                     <div class="alert alert-danger">

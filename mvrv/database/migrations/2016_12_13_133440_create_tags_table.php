@@ -20,10 +20,12 @@ class CreateTagsTable extends Migration
             $table->string('slug')->unique()->nullable()->default(NULL);
             $table->integer('view_count')->nullable()->default(NULL);
             $table->timestamps();
+            
+            $table->index('group_id');
         });
         
         $n = 0;
-        while($n < 5) {
+        while($n < 3) {
             DB::table('tags')->insert([
             		'group_id' => 1,
                     'name' => 'りんご_'.$n,

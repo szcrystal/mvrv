@@ -10,6 +10,8 @@ use App\TagGroup;
 use App\Category;
 use App\Item;
 use App\Fix;
+use App\Totalize;
+use App\TotalizeAll;
 
 use Ctm;
 
@@ -18,7 +20,7 @@ use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {
-    public function __construct(Article $article, User $user, Tag $tag, TagRelation $tagRelation, TagGroup $tagGroup, Category $category, Item $item, Fix $fix)
+    public function __construct(Article $article, User $user, Tag $tag, TagRelation $tagRelation, TagGroup $tagGroup, Category $category, Item $item, Fix $fix, Totalize $totalize, TotalizeAll $totalizeAll)
     {
         $this->middleware('search');
         
@@ -30,6 +32,8 @@ class HomeController extends Controller
         $this->category = $category;
         $this->item = $item;
         $this->fix = $fix;
+        $this->totalize = $totalize;
+        $this->totalizeAll = $totalizeAll;
         
         $this->perPage = env('PER_PAGE', 20);
         $this->itemPerPage = 15;
@@ -74,7 +78,7 @@ class HomeController extends Controller
     
     public function showSingle($postId)
     {
-    	if(session('fromMp')) {
+    	if(session('fromMp')) { //from MyPage
         	$atcl = Article::find($postId);
         }
         else {
@@ -115,14 +119,55 @@ class HomeController extends Controller
         $items = $this->item->where(['atcl_id'=>$postId, 'delete_key'=>0])->orderBy('item_sequence', 'asc')->paginate($this->itemPerPage);
         
         //setCount
-		$view = $atcl->view_count;
-        $view++;
-        $atcl->view_count = $view;
-        $atcl->save();
+        $date = date('Y-m-d', time());
+        $total = $this->totalize->where(['atcl_id' => $postId, 'view_date' => $date])->first();
         
+        //totalize
+        if($total) {
+        	$view = $total->view_count;
+            $view++;
+            $total->view_count = $view;
+	        $total->save();
+        }
+        else {
+        	$total = $this->totalize->create(
+            	[
+                    'atcl_id' => $postId,
+                    'view_date' => $date,
+                    'view_last' => date('Y-m-d H:i:s', time()),
+                    'view_count' => 1,
+                ]
+            );
+        }
         
-        //getArg
-        //$arg = $this->getArgForView();
+        //totalize all
+        $totalAll = $this->totalizeAll->where(['atcl_id' => $postId])->first();
+        if($totalAll) {
+        	$totalView = $totalAll->total_count;
+            $totalView++;
+            $totalAll->total_count = $totalView;
+            $totalAll->view_last = $total->view_last;
+	        $totalAll->save();
+        }
+        else {
+        	$totalAll = $this->totalizeAll->create(
+            	[
+                    'atcl_id' => $postId,
+                    'view_date' => $date,
+                    'view_last' => $total->view_last,
+                    'total_count' => 1,
+                ]
+            );
+        }
+        
+//        $flight = TotalizeAll::updateOrCreate(
+//    		['atcl_id' => $postId],
+//    		[
+//            	'view_date' => $total->view_date,
+//                'view_last' => $total -> view_last,
+//            	'total_count'
+//            ]
+//		);
         
     	return view('main.single', ['atcl'=>$atcl, 'user'=>$user, 'tagGroups'=>$tagGroups, 'tagGroupAll'=>$tagGroupAll, 'cate'=>$cate, 'items'=>$items]);
     }
@@ -140,33 +185,5 @@ class HomeController extends Controller
         return view('main.fix', ['fix'=>$fix]);
     }
     
-    /*
-    private function getArgForView()
-    {
-    	$posts = ArticlePost::where('open_status', 1)
-               ->orderBy('open_date', 'desc')
-               ->take(30)
-               ->get();
-        
-        $rankObjs = ArticleBase::where([
-        				['del_status', '=', '0'], ['owner_id', '>', '0']
-                    ])
-               ->orderBy('view_count', 'desc')
-               ->get();
-        
-        foreach($rankObjs as $obj) {
-        	$objId[] = $obj->post_id;
-            //$rankObj[] = $this->articlePost->find($obj->post_id);
-        }
-    
-    	$ranks = $this->articlePost ->find($objId)->where('open_status', 1)->take(20);
-        
-        $tagRanks = $this->tag->orderBy('view_count', 'desc')->take(10)->get();
-        
-        return compact('posts', 'ranks', 'tagRanks');
-    }
-    */
-    
-    
-    
 }
+

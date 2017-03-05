@@ -38,7 +38,7 @@ class CategoryController extends Controller
     	$cate = $this->category->where('slug', $cateSlug)->first();
         //$posts = $this->article->where(['cate_id'=>$cate->id, 'open_status'=>1])->get();
         $atcls = $this->article
-                    ->where(['cate_id'=>$cate->id, 'open_status'=>1, 'del_status'=>0])
+                    ->where(['open_status'=>1, 'del_status'=>0, 'cate_id'=>$cate->id])
                     ->whereNotIn('owner_id', [0])
                     ->orderBy('open_date','DESC')
                     ->paginate($this->perPage);

@@ -46,7 +46,7 @@ class TagController extends Controller
         
         
         $atcls = $this-> article->whereIn('id', $atclIds)->where([
-                    ['del_status', '=', 0], ['open_status','=',1], ['owner_id', '>', 0]
+                    ['open_status','=',1], ['del_status', '=', 0], ['owner_id', '>', 0]
                 ])->orderBy('open_date','DESC')->paginate($this->perPage);
         
         //getArg
@@ -75,7 +75,7 @@ class TagController extends Controller
         })->all();
         
         $atcls = $this->article->whereIn('id', $tagIds)->where([
-        	['del_status', '=', 0], ['open_status','=',1], ['owner_id', '>', 0]
+        	['open_status','=',1], ['del_status', '=', 0], ['owner_id', '>', 0]
         ])->orderBy('open_date','DESC')->paginate($this->perPage);
         
         

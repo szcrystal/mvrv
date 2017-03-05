@@ -44,6 +44,9 @@ class CreateItemsTable extends Migration
 //            $table->boolean('open_history');
 
             $table->timestamps();
+            
+            $table->index('atcl_id');
+            $table->index('item_type');
         });
     }
 

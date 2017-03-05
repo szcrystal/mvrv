@@ -23,7 +23,7 @@ class Article extends Model
         'open_history',
         'open_date',
         'not_newdate',
-        'view_count',
+        //'view_count',
 
     ];
 

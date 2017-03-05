@@ -66,7 +66,7 @@ class SearchController extends Controller
         */
         
         $allResults = $this->article->whereIn('id', $allResIds)->where([
-        	['del_status', '=', 0], ['open_status', '=', 1], ['owner_id', '>', 0]
+        	['open_status', '=', 1], ['del_status', '=', 0], ['owner_id', '>', 0]
         ])->orderBy('open_date','DESC')->paginate($this->perPage);
         
         //Sidebar

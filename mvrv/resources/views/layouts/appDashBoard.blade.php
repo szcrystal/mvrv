@@ -248,7 +248,12 @@
                     <ul class="nav" id="side-menu">
 
                         <li>
-                            <a href="{{ url('/dashboard') }}"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            <a href="#"><i class="fa fa-dashboard fa-fw"></i> 集計<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                            	<li><a href="{{ url('/dashboard') }}">Daily ランキング</a></li>
+                                <li><a href="{{ url('/dashboard/weekly') }}">Weekly ランキング</a></li>
+                            </ul>
+
                         </li>
 
 						<li>

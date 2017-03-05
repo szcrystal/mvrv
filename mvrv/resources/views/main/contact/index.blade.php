@@ -66,7 +66,7 @@
 
                                     <tr>
 										<th>削除依頼記事タイトル</th>
-                                        <td>{{$atclObj->title}}</td>
+                                        <td><p class="col-md-10">{{$atclObj->title}}</p></td>
                                         <input type="hidden" name="delete_id" value="{{$atclObj->id}}">
                                     </tr>
                                 @endif

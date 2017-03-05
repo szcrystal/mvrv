@@ -3,11 +3,11 @@
 @section('content')
 
 	<div class="clearfix">
-    	<h3 class="page-header">Daily Ranking</h3>
-        <p class="text-success">{{ $date . ': '}}<span style="font-weight: bold;">{{ $count }}</span></p>
+    	<h3 class="page-header">Weekly Ranking</h3>
+        <p class="text-success">{{ $span . ': '}}<span style="font-weight: bold;">{{ $count }}</span></p>
     </div>
 
-    {{ $dayTotal->links() }}
+    {{ $weekTotal->links() }}
 
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
@@ -21,7 +21,7 @@
           </thead>
           <tbody>
 
-            @foreach($dayTotal as $obj)
+            @foreach($weekTotal as $obj)
                 <tr>
                     <td>
                         {{$obj->view_date}}

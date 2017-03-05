@@ -94,7 +94,11 @@ class RegisterController extends Controller
     	
         $user = User::find($request->input('uid'));
         
-        if (! $user || $key != $user->confirm_token) {
+        if($user->active && $user->confirm_token == '') {
+        	abort(404);
+        }
+        
+        if(! $user || $key != $user->confirm_token) {
             $errorStatus = 'ユーザーを有効化することが出来ませんでした。';
             if($user)
 	            $user->delete();
