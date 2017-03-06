@@ -17,14 +17,11 @@ class CreateTotalizeAllsTable extends Migration
             $table->increments('id');
             
             $table->integer('atcl_id');
-            $table->date('view_date');
-            $table->timestamp('view_last');
             $table->integer('total_count')->default(0);
             
             $table->timestamps();
             
             $table->index('atcl_id');
-            $table->index('view_date');
         });
     }
 

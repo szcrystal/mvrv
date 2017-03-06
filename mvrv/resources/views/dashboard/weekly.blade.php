@@ -7,7 +7,7 @@
         <p class="text-success">{{ $span . ': '}}<span style="font-weight: bold;">{{ $count }}</span></p>
     </div>
 
-    {{ $weekTotal->links() }}
+    {{ $obj->links() }}
 
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
@@ -21,29 +21,32 @@
           </thead>
           <tbody>
 
-            @foreach($weekTotal as $obj)
+            @foreach($obj as $val)
                 <tr>
                     <td>
-                        {{$obj->view_date}}
+                    	{{ $val['view_date'] }}
                     </td>
 
                     <td>
-                        {{$obj->atcl_id}}
+                        {{ $val['atcl_id'] }}
                     </td>
                     <td>
-                        {{$atcl->find($obj->atcl_id)->title}}
+                        {{ $atcl->find($val['atcl_id'])->title }}
                     </td>
 
                     <td>
-                        {{$obj->view_count}}
+                        {{ $val['view_count'] }}
                     </td>
                 </tr>
             @endforeach
+
 
         </tbody>
     </table>
 
     </div>
+
+    {{ $obj->links() }}
 
         
 @endsection

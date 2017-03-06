@@ -2,6 +2,9 @@
 
 namespace App\Console;
 
+use App\Totalize;
+use App\TotalizeAll;
+
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,7 +16,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        //\App\Console\Commands\Inspire::class,
     ];
 
     /**
@@ -24,8 +27,40 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $num = env('TOTALIZE_TIME', 3);
+        $time = $num . ':00';
+        
+        $schedule->call(function () use($num) {
+ 
+            if($num >= 0 && $num < 12) {
+            	$date = date('Y-m-d', strtotime('-1 day'));
+            }
+            else {
+            	$date = date('Y-m-d', time());
+            }
+            
+        
+        	$dayTotal = Totalize::where(['view_date' => $date])->get();
+            $atclGroup = $dayTotal->groupBy('atcl_id')->toArray();
+            
+            foreach($atclGroup as $key => $val) {
+            	$totalAll = TotalizeAll::where(['atcl_id' => $key])->first();
+                $count = count($val);
+                
+                if($totalAll) {
+                	$totalAll->increment('total_count', $count);
+                }
+                else {
+                	$totalAll = TotalizeAll::create(
+                        [
+                            'atcl_id' => $key,
+                            'total_count' => $count,
+                        ]
+                    );
+                }
+            }
+            
+        })->dailyAt($time);
     }
 
     /**

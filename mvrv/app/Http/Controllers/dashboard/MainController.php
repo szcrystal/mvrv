@@ -14,6 +14,8 @@ use App\Http\Controllers\Controller;
 
 use Auth;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+
 class MainController extends Controller
 {
 	//protected $redirectTo = 'dashboard/login';
@@ -41,37 +43,112 @@ class MainController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
     	$adminUser = Auth::guard('admin')->user();
         
         $date = date('Y-m-d', time());
         $week = date('Y-m-d', strtotime('-1 week'));
         
-        $dayTotal = $this->totalize->where(['view_date' => $date])->orderBy('view_count','desc')->paginate($this->perPage);
-        
+        $dayTotal = $this->totalize->where(['view_date' => $date])->get();
         $count = $this->totalize->where(['view_date' => $date])->get()->sum('view_count');
+        
+        $group = $dayTotal->groupBy('atcl_id')->toArray();
+        
+        $obj = array();
+        foreach($group as $key => $val) {
+        	$ct = count($val);
+            $obj[] = array('atcl_id'=>$key, 'view_date'=>$date, 'view_count'=>$ct);
+        }
+        
+        $sort = array();
+        foreach($obj as $k => $v) {
+            $sort[$k] = $v['view_count'];
+        }
+        array_multisort($sort, SORT_DESC, $obj);
+        
+		//Custom Pagination
+        $perPage = $this->perPage;
+        $total = count($obj);
+        $chunked = array();
+        
+        if($total) {
+            $chunked = array_chunk($obj, $perPage);
+            $current_page = $request->page ? $request->page : 1;
+            $chunked = $chunked[$current_page - 1]; //現在のページに該当する配列を$chunkedに入れる
+        }
+        
+        $obj = new LengthAwarePaginator($chunked, $total, $perPage); //pagination インスタンス作成
+        $obj -> setPath('/dashboard'); //url pathセット
+        //Custom pagination END
         
         $atcl = $this->article;
         
-        return view('dashboard.index', ['name'=>$adminUser->name, 'atcl'=> $atcl, 'dayTotal'=>$dayTotal, 'date'=>$date, 'count'=>$count]);
+        return view('dashboard.index', ['name'=>$adminUser->name, 'dayTotal'=>$dayTotal, 'date'=>$date, 'count'=>$count, 'obj'=>$obj, 'atcl'=> $atcl]);
     }
     
-    public function getWeekly()
+    public function getWeekly(Request $request)
     {
-    	//$adminUser = Auth::guard('admin')->user();
-        
         $date = date('Y-m-d', time());
         $week = date('Y-m-d', strtotime('-1 week'));
         
-        $weekTotal = $this->totalize->whereBetween('view_date', [$week, $date])->orderBy('view_count','desc')->paginate($this->perPage);
+        $weekTotal = $this->totalize->whereBetween('view_date', [$week, $date])->orderBy('view_date','desc')->get();
+        $dateGroup = $weekTotal->groupBy('view_date')->toArray();
         
+        $ids = array();
+        $allArr = array();
+        $obj = array();
+        
+        foreach($dateGroup as $key => $value) {
+        	$ids[$key] = array();
+            $allArr[$key] = array();
+            
+            foreach($value as $val) {
+                if(! in_array($val['atcl_id'], $ids[$key])) {
+                	$allArr[$key][] = $val;
+                    $ids[$key][] = $val['atcl_id'];
+                }
+                else {
+                	foreach($allArr[$key] as $k => $v) {
+                    	if($v['atcl_id'] == $val['atcl_id']) {
+                        	$allArr[$key][$k]['view_count'] = $v['view_count'] + 1;
+                        }
+                    }
+                }
+            }
+        }
+        
+        foreach($allArr as $value) {
+        	$sort = array();
+        	foreach($value as $k => $v) {
+            	$sort[$k] = $v['view_count'];
+            }
+            array_multisort($sort, SORT_DESC, $value);
+            $obj = array_merge($obj, $value);
+        }
+        
+        //Custom Pagination
+        $perPage = $this->perPage;
+        $total = count($obj);
+        $chunked = array();
+        
+        if($total) {
+            $chunked = array_chunk($obj, $perPage);
+            $current_page = $request->page ? $request->page : 1;
+            $chunked = $chunked[$current_page - 1]; //現在のページに該当する配列を$chunkedに入れる
+        }
+        
+        $obj = new LengthAwarePaginator($chunked, $total, $perPage); //pagination インスタンス作成
+        $obj -> setPath('weekly'); //url pathセット
+        //Custom pagination END
+        
+
         $count = $this->totalize->whereBetween('view_date', [$week, $date])->get()->sum('view_count');
         $span = $week . ' 〜 ' . $date;
         
         $atcl = $this->article;
         
-        return view('dashboard.weekly', ['atcl'=> $atcl, 'weekTotal'=>$weekTotal, 'span'=>$span, 'count'=>$count]);
+        return view('dashboard.weekly', ['atcl'=> $atcl, 'weekTotal'=>$weekTotal, 'dateGroup'=>$dateGroup, 'span'=>$span, 'count'=>$count, 'obj'=>$obj]);
     }
     
     
@@ -141,71 +218,7 @@ class MainController extends Controller
     	//$request->session()->pull('admin');
         Auth::guard('admin')->logout();
         return redirect('dashboard/login'); //->intended('/')
-        //return view('dashboard.login');
     }
-    
-//    public function getArticles()
-//    {
-//    	$atclObjs = //Article::where('active', 1)
-//               ArticleBase::orderBy('id', 'asc')
-//               //->take(10)
-//               ->get();
-//        
-//        return view('dashboard.article.article', ['atclObjs'=>$atclObjs]);
-//    }
-//    
-//    public function getArticlesAdd()
-//    {
-//    	$tags = $this->getTags();
-//        
-//    	return view('dashboard.article.form', ['thisClass'=>$this, 'tags'=>$tags]);
-//    }
-    
-//    public function postArticlesAdd(Request $request)
-//    {
-//    	$rules = [
-////            'admin_name' => 'required|max:255',
-////            'admin_email' => 'required|email|max:255', /* |unique:admins 注意:unique */
-////            'admin_password' => 'required|min:6',
-//        ];
-//        
-//        $this->validate($request, $rules);
-//        
-//        $data = $request->all(); //requestから配列として$dataにする
-//        
-//        if(! isset($data['open_status'])) {
-//        	$data['open_status'] = 0;
-//        }
-//        if(! isset($data['del_status'])) {
-//        	$data['del_status'] = 0;
-//        }
-//        
-//        
-//        $data['up_date'] = $request->input('up_year'). '-' .$request->input('up_month') . '-' . $request->input('up_day');
-//        
-//        foreach($data as $key=>$val) { //checkboxの複数選択をカンマ区切りにする
-//        	if(is_array($data[$key]))
-//            	$data[$key] = implode(',', $data[$key]);
-//        }
-//
-//        
-//        $this->articleBase->fill($data); //モデルにセット
-//        $this->articleBase->save(); //モデルからsave
-//        
-//        //Save&手動ログイン：以下でも可 :Eroquent ORM database/seeds/UserTableSeeder内にもあるので注意
-////		$admin = Article::create([
-////            'admin_name' => $data['admin_name'],
-////			'admin_email' => $data['admin_email'],
-////			'admin_password' => bcrypt($data['admin_password']),
-////		]);
-//        
-//        $tags = $this->getTags();
-//        //いずれeditに
-//    	return view('dashboard.article.form', ['thisClass'=>$this, 'tags'=>$tags, 'status'=>'記事が更新されました。']);
-//        return redirect('dashboard/pages-edit/'."$id")->with('status', '固定ページが追加されました！');
-//    }
-    
-    
     
     
     public function getTags() {
@@ -222,46 +235,7 @@ class MainController extends Controller
         
         return $tags;
     }
-    
-    public function user()
-    {
-    	$value = $request->session()->get('admin.name', false);
-        
-        return $value;
-    }
-    
-    
-    
-    
-    
-    public function selectBox($first, $last, $objNum=null) {
-	
-        if($objNum == null) {
-            echo '<option value="--" selected>--</option>';
-        }
-        else {
-            $select = ($objNum == '0000' || $objNum == '00') ? ' selected' : '';
-            echo '<option value="--"' . $select .'>--</option>';
-        }
-        
-        if($first > $last) { //逆順の時 Yearにて
-            for($first; $first >= $last; $first--) {
-                if(isset($objNum) && $first == $objNum)
-                    echo '<option value="'.$first .'" selected>'.$first.'</option>';
-                else
-                    echo '<option value="'.$first .'">'.$first.'</option>';
-            }
-        }
-        else {
-            for($first; $first <= $last; $first++) {
-                if(isset($objNum) && $first == $objNum)
-                    echo '<option value="'.$first .'" selected>'.$first.'</option>';
-                else
-                    echo '<option value="'.$first .'">'.$first.'</option>';
-            }
-        }
-    }
-    
+
     
 
     /**

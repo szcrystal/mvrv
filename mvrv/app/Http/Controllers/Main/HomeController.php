@@ -120,16 +120,15 @@ class HomeController extends Controller
         
         //setCount
         $date = date('Y-m-d', time());
-        $total = $this->totalize->where(['atcl_id' => $postId, 'view_date' => $date])->first();
+        //$total = $this->totalize->where(['atcl_id' => $postId, 'view_date' => $date])->first();
         
-        //totalize
-        if($total) {
-        	$view = $total->view_count;
-            $view++;
-            $total->view_count = $view;
-	        $total->save();
-        }
-        else {
+//        if($total) {
+//        	$view = $total->view_count;
+//            $view++;
+//            $total->view_count = $view;
+//	        $total->save();
+//        }
+//        else {
         	$total = $this->totalize->create(
             	[
                     'atcl_id' => $postId,
@@ -138,36 +137,9 @@ class HomeController extends Controller
                     'view_count' => 1,
                 ]
             );
-        }
+        //}
         
-        //totalize all
-        $totalAll = $this->totalizeAll->where(['atcl_id' => $postId])->first();
-        if($totalAll) {
-        	$totalView = $totalAll->total_count;
-            $totalView++;
-            $totalAll->total_count = $totalView;
-            $totalAll->view_last = $total->view_last;
-	        $totalAll->save();
-        }
-        else {
-        	$totalAll = $this->totalizeAll->create(
-            	[
-                    'atcl_id' => $postId,
-                    'view_date' => $date,
-                    'view_last' => $total->view_last,
-                    'total_count' => 1,
-                ]
-            );
-        }
         
-//        $flight = TotalizeAll::updateOrCreate(
-//    		['atcl_id' => $postId],
-//    		[
-//            	'view_date' => $total->view_date,
-//                'view_last' => $total -> view_last,
-//            	'total_count'
-//            ]
-//		);
         
     	return view('main.single', ['atcl'=>$atcl, 'user'=>$user, 'tagGroups'=>$tagGroups, 'tagGroupAll'=>$tagGroupAll, 'cate'=>$cate, 'items'=>$items]);
     }
