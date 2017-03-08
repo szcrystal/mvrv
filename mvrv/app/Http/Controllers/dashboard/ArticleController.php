@@ -12,6 +12,7 @@ use App\TagRelation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+
 class ArticleController extends Controller
 {
 
@@ -43,10 +44,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $atclObjs = //Article::where('active', 1)
-           Article::orderBy('id', 'desc')
-           //->take(10)
-           ->paginate($this->perPage);
+        $atclObjs = Article::orderBy('id', 'desc')->paginate($this->perPage);
         
         $cateModel = $this->category;
         
@@ -125,8 +123,6 @@ class ArticleController extends Controller
         	$data['del_status'] = 0;
         }
         
-        //$data['up_date'] = $request->input('up_year'). '-' .$request->input('up_month') . '-' . $request->input('up_day');
-//        $data['up_date'] = '2017-01-01 11:11:11';
 //        $data['sumbnail'] = '/images/abc.jpg';
 //        $data['sumbnail_url'] = 'http://example.com';
         
@@ -238,8 +234,6 @@ class ArticleController extends Controller
         }
         
         
-        $data['up_date'] = $request->input('up_year'). '-' .$request->input('up_month') . '-' . $request->input('up_day');
-        
         foreach($data as $key=>$val) { //checkboxの複数選択をカンマ区切りにする
         	if(is_array($data[$key]))
             	$data[$key] = implode(',', $data[$key]);
@@ -253,7 +247,7 @@ class ArticleController extends Controller
         $article->fill($data);
         $article->save();
         
-        return redirect('dashboard/articles/'.$id.'/edit')->with('status', '固定ページが更新されました！');
+        return redirect('dashboard/articles/'.$id.'/edit')->with('status', 'ページが更新されました！');
     }
 
     /**
