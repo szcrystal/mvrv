@@ -15,7 +15,7 @@ class articles extends Command
      *
      * @var string
      */
-    protected $signature = 'article:input';
+    protected $signature = 'input';
 
     /**
      * The console command description.

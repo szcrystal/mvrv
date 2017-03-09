@@ -14,7 +14,7 @@
         </a>
 
         <?php
-        	$num = Ctm::isAgent('sp') ? 30 : 20;
+        	$num = Ctm::isAgent('sp') ? 30 : 18;
         ?>
         <h2><a href="{{url('m/'.$atcl->id)}}">{{ Ctm::shortStr($atcl->title, $num) }}</a></h2>
         <div class="meta">

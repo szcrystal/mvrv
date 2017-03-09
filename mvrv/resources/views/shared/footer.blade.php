@@ -26,7 +26,6 @@
             @endif
         </div>
 
-
     </div>
 	<p><small><i class="fa fa-copyright" aria-hidden="true"></i> MovieReview</small></p>
 

@@ -74,7 +74,7 @@
     
 }	
 
-@media only screen and (max-width: 800px) { /* iPad */
+@media only screen and (max-width: 800px) {
 
 }
 
@@ -97,7 +97,6 @@
         left: -200px;
         width: 70%;
         margin: 0;
-        //margin-right: 0;
         z-index: 10000;
         background: #CC181E;
         padding: 0.8em 0.6em 0.3em 0.8em;
@@ -111,7 +110,6 @@
     #left-bar .panel-body {
     	overflow-y: scroll;
         height: 500px;
-        //border: 1px solid red;
     }
     #left-bar h5 {
     	color: #fff;
@@ -156,10 +154,8 @@
         width: 93%;
         margin: auto;
         padding: 0.4em 0 0;
-        //background: #CC181E;
         display: none;
         z-index: 9999;
-        //border: 1px solid green;
     }
     
     .h2 {
@@ -178,7 +174,6 @@
     	width: 100%;
         height: 130px;
         margin-bottom: 0.7em;
-        //border: 1px solid red;
     }
     .main-list article:after {
     	display: block;
@@ -193,7 +188,6 @@
         float: left;
         background-size: 130% auto;
     	background-position: center top;
-        //border: 1px solid red;
     }
     .main-list h2,
     .main-list .meta {
@@ -344,8 +338,6 @@
     }
     
     
-    
-    
     .contact .table tbody tr td [class*="col-"] {
     	max-width: 100%;
         padding: 0;
@@ -405,9 +397,7 @@
     
     .item-btn li {
     	font-size: 75%;
-        //margin-right: 1.2em;
     }
-    
 
 }
 

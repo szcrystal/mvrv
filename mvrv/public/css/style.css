@@ -6,18 +6,10 @@
 .fixed-top {
 	z-index: 10000;
 }
-.navbar .container {
-}
-.navbar-header {
-
-}
 .navbar-brand {
 	font-size: 1.4em;
 	font-family: 'Quicksand', sans-serif;
     color: #fff;
-}
-.collapse {
-	//display: block;
 }
 .navbar-collapse {
     padding-left: 2em;
@@ -35,9 +27,7 @@
     border: none;
     height: 50%;
     border-left: 1px solid #ddd;
-    //border-color: red;
 }
-
 .btn {
 	cursor: pointer;
 }
@@ -47,14 +37,13 @@
 .h3 {
 	font-size: 1.2em;
 }
-
-
-#app {
-	//min-height: 1000px;
-}
 .container {
 	min-width: 1200px;
 }
+
+
+
+/* Custom */
 .wrap-all {
 	margin-top: 4em;
     min-height: 1000px;
@@ -64,28 +53,25 @@
 }
 #main {
 	width: 726px;
-    //border: 1px solid red;
-    //float: left;
+/*    float: left;*/
     margin: 0;
     min-height: 1000px;
     order: 2;
 }
 #left-bar {
-	//float: left;
+/*	float: left;*/
     width: 205px;
     margin-left: 0;
     margin-right: 17px;
     padding: 0;
     order: 1;
-    //border: 1px solid #ccc;
 }
 #right-bar {
-	//float: right;
+/*	float: right;*/
     width: 205px;
     margin-left: 17px;
     margin-right: 0;
     order: 3;
-    //border: 1px solid #ccc;
 }
 
 .adv {
@@ -183,9 +169,7 @@ ul.side-rank {
 
 
 
-
-
-/* Custom */
+/* Custom Main */
 .main-list article {
 	width: 32.6%;
     height: 250px;
@@ -251,7 +235,6 @@ ul.side-rank {
 
 .alert-danger ul {
 	margin-top: 0.7em;
-    //border: 1px solid red;
 }
 
 .single .no-img {
@@ -275,20 +258,17 @@ ul.side-rank {
 .mp-index .panel-heading a {
 	display: inline-block;
 	border: 1px solid #eaeaea;
-    //border-width: 1px 1px 0 1px;
     border-bottom-color: #fff;
     margin-bottom: -1px;
     border-radius: 3px 3px 0 0;
     padding: 0.6em 1.2em;
     background: #fff;
-    //font-size: 0.95em;
 }
 .mp-index .panel-heading span {
 	
 }
 .mp-index .panel-heading a {
 	background: aliceblue;
-    //color: #fff;
     border-bottom-color: #eaeaea;
 }
 .mp-index .panel-heading a.btn {
@@ -353,11 +333,9 @@ a.ui-button:active,
 
 .tag-wrap {
 	margin: 3em 0 5em;
-    //border: 1px solid purple;
 }
 .tag-group {
 	margin-bottom: 2em;
-    //border: 1px solid blue;
 }
 .tag-group .tag-control {
 	display: inline;
@@ -366,7 +344,6 @@ a.ui-button:active,
 .tag-group .tag-control + .add-btn {
 	display: none;
     width: auto;
-    //float: right;
     border: 1px solid #aaa;
     border-radius: 3px;
     cursor: pointer;
@@ -376,7 +353,6 @@ a.ui-button:active,
 .tag-area {
 	margin-top: 0.8em;
     width: 100%;
-    //border: 1px solid red;
 }
 .tag-area span {
 	display: inline-block;
@@ -400,7 +376,6 @@ a.ui-button:active,
     line-height: 1.7em;
     text-align: center;
     margin-left: 0.2em;
-    //padding: 0.3em;
     border: 1px solid #aaa;
     border-radius: 50%;
     cursor: pointer;
@@ -450,19 +425,17 @@ textarea {
 	display: none;
 }
 .item-form {
-	//border: 1px solid red;
     clear: both;
 }
 .ctrl-nav {
 	display: inline-block;
     list-style: none;
     float: right;
-    //width: 40%;
+/*    width: 40%;*/
     position: absolute;
     top: 0.3em;
     right: 0;
-    //margin-top: -2em;
-    //border: 1px solid red;
+/*    margin-top: -2em;*/
 }
 .ctrl-nav:after {
 	display: block;
@@ -484,8 +457,6 @@ textarea {
 
 .item-panel {
 	width: 100%;
-    //border: 1px solid blue;
-    //position: relative;
 }
 .item-panel.border-dash {
     padding: 0.3em 0.3em 0.3em;
@@ -498,7 +469,6 @@ textarea {
     border-radius: 0;
     padding: 0;
     margin: 1.5em 0 0;
-    //margin-bottom: 0;
 }
 .item-btn ul {
 	border: 1px solid #ddd;
@@ -541,10 +511,7 @@ textarea {
 }
 
 .add-nav {
-	//border: 1px dashed #aaa;
-    //margin-top: 1em;
-    //border-radius: 0.5em;
-    //padding: 0.3em 0 0.5em;
+
 }
 .add-nav span {
 	display: block;
@@ -594,12 +561,12 @@ textarea {
 }
 .item-link input[type="text"] {
 	display: block;
-    //margin-bottom: 0.2em;
+/*    margin-bottom: 0.2em;*/
 }
 .item-link .subm-check {
 	display: block;
     margin-top: -3px;
-    //margin-bottom: 1em;
+/*    margin-bottom: 1em;*/
 }
 .link-frame {
 	display: block;
@@ -608,7 +575,7 @@ textarea {
     margin-top: 1.2em;
 }
 .item-link .link-check {
-    //display: block;
+/*    display: block;*/
 }
 .linkimg-wrap {
 	overflow: hidden;
@@ -793,8 +760,6 @@ button.subm-link {
 }
 #colop ul li {
 	display: inline-block;
-    //margin-right: 1.4em;
-    //border-left: 1px solid #aaa;
     padding: 0.1em 1.2em;
 }
 #colop ul li a,
@@ -805,7 +770,7 @@ button.subm-link {
 	margin-right: 0.15em;
 }
 #colop ul li:last-of-type {
-	//border-right: 1px solid #aaa;
+
 }
 #colop > p {
 	margin: 0;
